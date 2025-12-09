@@ -183,17 +183,6 @@ flowchart TB
     class SY1,SY2,SY3 sys
 ```
 
-### Roadmap Summary
-
-| Phase | Focus Area | Topics | Priority |
-|-------|------------|--------|----------|
-| **Phase 1** | Foundation | Networking (4) + Load Balancing (4) | 🔴 Critical |
-| **Phase 2** | Core Concepts | Scalability (4) + Reliability (3) | 🔴 Critical |
-| **Phase 3** | Performance | Caching (9) + CDN (4) | 🔴 Critical |
-| **Phase 4** | Data Layer | Databases (4) + Data Management (4) | 🔴 Critical |
-| **Phase 5** | Distributed | Communication (1) + Patterns (4) | 🟡 Important |
-| **Phase 6** | Advanced | Security (1) + Systems (3) | 🟢 Good to Know |
-
 ---
 
 ## Topics Overview
