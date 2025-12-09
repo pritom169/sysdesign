@@ -4,6 +4,198 @@ This guide covers the essential building blocks for designing scalable, reliable
 
 ---
 
+## Learning Roadmap
+
+```mermaid
+flowchart TB
+    subgraph START [" "]
+        direction TB
+        S((🚀 START)) --> NET
+    end
+
+    subgraph FOUNDATION ["🏗️ PHASE 1: FOUNDATION"]
+        direction TB
+
+        subgraph NET ["📡 Networking"]
+            N1[Network Essentials]
+            N2[TCP vs UDP]
+            N3[URL/URI/URN]
+            N4[DNS]
+            N1 --> N2 --> N3 --> N4
+        end
+
+        subgraph LB ["⚖️ Load Balancing"]
+            L1[Load Balancing Basics]
+            L2[Algorithms]
+            L3[Use Cases]
+            L4[L4 vs L7 Types]
+            L1 --> L2 --> L3 --> L4
+        end
+
+        NET --> LB
+    end
+
+    subgraph CORE ["⚡ PHASE 2: CORE CONCEPTS"]
+        direction TB
+
+        subgraph SCALE ["📈 Scalability"]
+            SC1[Horizontal vs Vertical]
+            SC2[Distributed Systems Characteristics]
+            SC3[Latency & Performance]
+            SC4[Concurrency & Coordination]
+            SC1 --> SC2 --> SC3 --> SC4
+        end
+
+        subgraph RELY ["🛡️ Reliability"]
+            R1[Monitoring & Observability]
+            R2[Resilience & Error Handling]
+            R3[Fault Tolerance vs HA]
+            R1 --> R2 --> R3
+        end
+
+        SCALE --> RELY
+    end
+
+    subgraph PERF ["🚄 PHASE 3: PERFORMANCE"]
+        direction TB
+
+        subgraph CACHE ["💾 Caching"]
+            C1[Caching Fundamentals]
+            C2[Strategies & Patterns]
+            C3[Invalidation & Eviction]
+            C4[Distributed Caching]
+            C5[Challenges & Metrics]
+            C1 --> C2 --> C3 --> C4 --> C5
+        end
+
+        subgraph CDN ["🌐 CDN"]
+            CD1[CDN Basics]
+            CD2[Use Cases]
+            CD3[Challenges]
+            CD1 --> CD2 --> CD3
+        end
+
+        CACHE --> CDN
+    end
+
+    subgraph DATA ["🗄️ PHASE 4: DATA LAYER"]
+        direction TB
+
+        subgraph DB ["💿 Databases"]
+            D1[SQL vs NoSQL]
+            D2[ACID vs BASE]
+            D3[Indexing]
+            D4[Bloom Filters]
+            D1 --> D2 --> D3 --> D4
+        end
+
+        subgraph DM ["📊 Data Management"]
+            DM1[Partitioning/Sharding]
+            DM2[Replication]
+            DM3[CAP Theorem]
+            DM4[Proxy Servers]
+            DM1 --> DM2 --> DM3 --> DM4
+        end
+
+        DB --> DM
+    end
+
+    subgraph DIST ["🔄 PHASE 5: DISTRIBUTED SYSTEMS"]
+        direction TB
+
+        subgraph COMM ["📨 Communication"]
+            CM1[Long Polling]
+            CM2[WebSockets]
+            CM3[Server-Sent Events]
+            CM1 --> CM2 --> CM3
+        end
+
+        subgraph PATT ["🔗 Patterns"]
+            P1[Quorum]
+            P2[Heartbeat]
+            P3[Checksum]
+            P4[Leader-Follower]
+            P1 --> P2 --> P3 --> P4
+        end
+
+        COMM --> PATT
+    end
+
+    subgraph ADV ["🎯 PHASE 6: ADVANCED"]
+        direction TB
+
+        subgraph SEC ["🔐 Security"]
+            SE1[Auth & Encryption]
+            SE2[Rate Limiting]
+            SE3[API Security]
+            SE1 --> SE2 --> SE3
+        end
+
+        subgraph SYS ["⚙️ Systems"]
+            SY1[Distributed Messaging]
+            SY2[Distributed File Systems]
+            SY3[Misc Concepts]
+            SY1 --> SY2 --> SY3
+        end
+
+        SEC --> SYS
+    end
+
+    subgraph FINISH [" "]
+        E((🏆 MASTER))
+    end
+
+    FOUNDATION --> CORE
+    CORE --> PERF
+    PERF --> DATA
+    DATA --> DIST
+    DIST --> ADV
+    ADV --> FINISH
+
+    %% Styling
+    classDef phase fill:#1a1a2e,stroke:#16213e,stroke-width:3px,color:#eee
+    classDef startEnd fill:#e94560,stroke:#0f3460,stroke-width:4px,color:#fff
+    classDef network fill:#4361ee,stroke:#3a0ca3,color:#fff
+    classDef loadbal fill:#7209b7,stroke:#560bad,color:#fff
+    classDef scale fill:#f72585,stroke:#b5179e,color:#fff
+    classDef rely fill:#4cc9f0,stroke:#4895ef,color:#000
+    classDef cache fill:#06d6a0,stroke:#059669,color:#000
+    classDef cdn fill:#118ab2,stroke:#073b4c,color:#fff
+    classDef db fill:#ef476f,stroke:#d62839,color:#fff
+    classDef datam fill:#ffd166,stroke:#f4a261,color:#000
+    classDef comm fill:#8338ec,stroke:#5a189a,color:#fff
+    classDef patt fill:#ff006e,stroke:#c9184a,color:#fff
+    classDef sec fill:#fb5607,stroke:#ff6d00,color:#fff
+    classDef sys fill:#3a86ff,stroke:#0077b6,color:#fff
+
+    class S,E startEnd
+    class N1,N2,N3,N4 network
+    class L1,L2,L3,L4 loadbal
+    class SC1,SC2,SC3,SC4 scale
+    class R1,R2,R3 rely
+    class C1,C2,C3,C4,C5 cache
+    class CD1,CD2,CD3 cdn
+    class D1,D2,D3,D4 db
+    class DM1,DM2,DM3,DM4 datam
+    class CM1,CM2,CM3 comm
+    class P1,P2,P3,P4 patt
+    class SE1,SE2,SE3 sec
+    class SY1,SY2,SY3 sys
+```
+
+### Roadmap Summary
+
+| Phase | Focus Area | Topics | Priority |
+|-------|------------|--------|----------|
+| **Phase 1** | Foundation | Networking (4) + Load Balancing (4) | 🔴 Critical |
+| **Phase 2** | Core Concepts | Scalability (4) + Reliability (3) | 🔴 Critical |
+| **Phase 3** | Performance | Caching (9) + CDN (4) | 🔴 Critical |
+| **Phase 4** | Data Layer | Databases (4) + Data Management (4) | 🔴 Critical |
+| **Phase 5** | Distributed | Communication (1) + Patterns (4) | 🟡 Important |
+| **Phase 6** | Advanced | Security (1) + Systems (3) | 🟢 Good to Know |
+
+---
+
 ## Topics Overview
 
 | # | Topic | Category | Key Concept |
