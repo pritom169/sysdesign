@@ -1,6 +1,6 @@
 # System Design Fundamentals - Walkthrough
 
-A comprehensive guide to the 44 topics covered in `00-sysdesign-fundementals`.
+This guide covers the essential building blocks for designing scalable, reliable, and performant distributed systems. Whether you're preparing for system design interviews or building production systems, these 44 topics in `00-sysdesign-fundementals` provide the foundational knowledge you need—from load balancing and caching to databases, CAP theorem, and distributed patterns.
 
 ---
 
