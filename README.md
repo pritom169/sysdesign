@@ -4632,5 +4632,18 @@ Node B: cart = [item1, item2, item3]  ← now consistent
 
 ---
 
+### Real-World Database Choices
 
+| Company | Use Case | Database Choice | Why |
+|---------|----------|-----------------|-----|
+| **Uber** | Trip data | PostgreSQL + Cassandra | SQL for transactions, Cassandra for scale |
+| **Netflix** | User data | Cassandra | Global scale, availability over consistency |
+| **Airbnb** | Listings | MySQL + Elasticsearch | MySQL for data, ES for search |
+| **Twitter** | Tweets | MySQL + Manhattan (custom) | Started SQL, built custom for scale |
+| **Instagram** | Posts/Users | PostgreSQL + Cassandra | Postgres for relations, Cassandra for feeds |
+| **Discord** | Messages | Cassandra → ScyllaDB | Write-heavy, time-series nature |
+
+**Pattern:** Most large systems are polyglot—multiple databases for different purposes.
+
+---
 
