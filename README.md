@@ -4333,3 +4333,31 @@ SELECT * FROM users WHERE id=1 CONSISTENCY ONE;
 | **When CP** | Financial data, locks, leader election, inventory |
 | **When AP** | Social feeds, carts, sessions, caches |
 
+---
+
+## Databases
+
+### Introduction to Databases
+
+A database is an organized collection of data stored and accessed electronically. In system design, database choice directly impacts scalability, consistency, performance, and development complexity.
+
+**Two fundamental questions in interviews:**
+1. What type of data are you storing? (structured vs. unstructured)
+2. What are your access patterns? (read-heavy, write-heavy, complex queries)
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Database Types                     │
+├─────────────────────┬───────────────────────────────┤
+│        SQL          │           NoSQL               │
+│   (Relational)      │      (Non-Relational)         │
+├─────────────────────┼───────────────────────────────┤
+│ MySQL, PostgreSQL   │ Document: MongoDB, CouchDB    │
+│ Oracle, SQL Server  │ Key-Value: Redis, DynamoDB    │
+│                     │ Column: Cassandra, HBase      │
+│                     │ Graph: Neo4j, Amazon Neptune  │
+└─────────────────────┴───────────────────────────────┘
+```
+
+---
+
