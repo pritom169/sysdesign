@@ -4361,3 +4361,276 @@ A database is an organized collection of data stored and accessed electronically
 
 ---
 
+### SQL Databases
+
+Relational databases store data in tables with predefined schemas. Tables relate to each other through foreign keys.
+
+#### Core Concepts
+
+**Schema:** Fixed structure defined before data insertion. Every row conforms to the schema.
+
+```
+Users Table
+┌────┬──────────┬─────────────────┬─────────┐
+│ id │   name   │      email      │  age    │
+├────┼──────────┼─────────────────┼─────────┤
+│ 1  │ Alice    │ alice@mail.com  │   28    │
+│ 2  │ Bob      │ bob@mail.com    │   34    │
+└────┴──────────┴─────────────────┴─────────┘
+
+Orders Table
+┌────┬─────────┬────────────┬────────┐
+│ id │ user_id │   product  │ amount │
+├────┼─────────┼────────────┼────────┤
+│ 1  │    1    │   Laptop   │  999   │
+│ 2  │    1    │   Mouse    │   25   │
+└────┴─────────┴────────────┴────────┘
+       ↑
+    Foreign Key → References Users.id
+```
+
+**JOINS:** Combine data from multiple tables in a single query.
+
+```sql
+SELECT users.name, orders.product, orders.amount
+FROM users
+JOIN orders ON users.id = orders.user_id
+WHERE users.id = 1;
+```
+
+#### Strengths
+
+| Strength | Why It Matters |
+|----------|----------------|
+| **ACID compliance** | Guaranteed data integrity for transactions |
+| **Complex queries** | JOINs, aggregations, subqueries natively supported |
+| **Data integrity** | Foreign keys, constraints, triggers enforce rules |
+| **Mature tooling** | Decades of optimization, monitoring, backup tools |
+
+#### Weaknesses
+
+| Weakness | Impact |
+|----------|--------|
+| **Rigid schema** | Schema changes require migrations, downtime risk |
+| **Horizontal scaling is hard** | Sharding breaks JOINs, requires application changes |
+| **Not ideal for hierarchical data** | Nested objects require multiple tables and JOINs |
+
+**When to use:** Financial systems, e-commerce orders, user management, any data with complex relationships and need for transactions.
+
+**Examples:** PostgreSQL, MySQL, Oracle, SQL Server, SQLite.
+
+---
+
+### NoSQL Databases
+
+NoSQL ("Not Only SQL") databases sacrifice some SQL guarantees for flexibility and scalability.
+
+#### Types of NoSQL Databases
+
+**1. Document Stores**
+
+Store data as JSON/BSON documents. Each document can have different structure.
+
+```json
+// User document in MongoDB
+{
+  "_id": "user_123",
+  "name": "Alice",
+  "email": "alice@mail.com",
+  "orders": [
+    {"product": "Laptop", "amount": 999},
+    {"product": "Mouse", "amount": 25}
+  ],
+  "preferences": {
+    "theme": "dark",
+    "notifications": true
+  }
+}
+```
+
+**Use case:** Content management, user profiles, catalogs with varying attributes.
+
+**Examples:** MongoDB, CouchDB, Amazon DocumentDB.
+
+**2. Key-Value Stores**
+
+Simplest model. Store values indexed by unique keys. No query by value—only by key.
+
+```
+┌─────────────────┬──────────────────────────┐
+│      Key        │         Value            │
+├─────────────────┼──────────────────────────┤
+│ session:abc123  │ {user_id: 1, expires:...}│
+│ user:1:cart     │ [item1, item2, item3]    │
+│ config:feature_x│ {"enabled": true}        │
+└─────────────────┴──────────────────────────┘
+```
+
+**Use case:** Session storage, caching, real-time leaderboards, shopping carts.
+
+**Examples:** Redis, Memcached, Amazon DynamoDB, etcd.
+
+**3. Column-Family Stores**
+
+Store data in columns rather than rows. Optimized for queries over large datasets with specific columns.
+
+```
+Row Key: user_123
+┌─────────────────────────────────────────────────┐
+│ Column Family: profile                          │
+│ ┌──────────┬──────────┬───────────────────────┐ │
+│ │   name   │   age    │        email          │ │
+│ │  Alice   │    28    │   alice@mail.com      │ │
+│ └──────────┴──────────┴───────────────────────┘ │
+│ Column Family: activity                         │
+│ ┌──────────────┬──────────────┬───────────────┐ │
+│ │  last_login  │  page_views  │   purchases   │ │
+│ │  2024-01-15  │     342      │      12       │ │
+│ └──────────────┴──────────────┴───────────────┘ │
+└─────────────────────────────────────────────────┘
+```
+
+**Use case:** Time-series data, analytics, write-heavy workloads, IoT sensor data.
+
+**Examples:** Cassandra, HBase, ScyllaDB, Google Bigtable.
+
+**4. Graph Databases**
+
+Store entities as nodes and relationships as edges. Optimized for traversing relationships.
+
+```
+       ┌───────┐
+       │ Alice │
+       └───┬───┘
+           │ FOLLOWS
+           ▼
+       ┌───────┐      LIKES      ┌─────────┐
+       │  Bob  │────────────────►│ Post #1 │
+       └───┬───┘                 └─────────┘
+           │ WORKS_AT
+           ▼
+       ┌─────────┐
+       │ Google  │
+       └─────────┘
+```
+
+**Use case:** Social networks, recommendation engines, fraud detection, knowledge graphs.
+
+**Examples:** Neo4j, Amazon Neptune, ArangoDB, JanusGraph.
+
+---
+
+### SQL vs NoSQL
+
+| Aspect | SQL | NoSQL |
+|--------|-----|-------|
+| **Schema** | Fixed, predefined | Flexible, dynamic |
+| **Scaling** | Vertical (bigger server) | Horizontal (more servers) |
+| **Transactions** | ACID guaranteed | BASE (eventual consistency) |
+| **Query language** | Standardized SQL | Database-specific APIs |
+| **Relationships** | JOINs across tables | Embedded or application-level |
+| **Data model** | Tables with rows | Documents, key-value, columns, graphs |
+| **Best for** | Complex queries, transactions | Scale, flexibility, specific access patterns |
+
+#### Decision Framework
+
+```
+Start
+  │
+  ▼
+Need ACID transactions? ──Yes──► SQL (PostgreSQL, MySQL)
+  │
+  No
+  │
+  ▼
+Data has complex relationships? ──Yes──► SQL or Graph DB
+  │
+  No
+  │
+  ▼
+Schema changes frequently? ──Yes──► Document DB (MongoDB)
+  │
+  No
+  │
+  ▼
+Simple key-based access? ──Yes──► Key-Value (Redis, DynamoDB)
+  │
+  No
+  │
+  ▼
+Write-heavy time-series? ──Yes──► Column Store (Cassandra)
+  │
+  No
+  │
+  ▼
+Traversing relationships? ──Yes──► Graph DB (Neo4j)
+```
+
+**Interview insight:** "Most production systems use multiple databases. SQL for transactions, Redis for caching, Elasticsearch for search. The skill is knowing which tool for which job."
+
+---
+
+### ACID vs BASE Properties
+
+Two opposing philosophies for database transactions.
+
+#### ACID (SQL Databases)
+
+| Property | Meaning | Example |
+|----------|---------|---------|
+| **Atomicity** | All operations succeed or all fail | Transfer $100: debit AND credit both happen or neither |
+| **Consistency** | Data moves from one valid state to another | Balance can't go negative if rules forbid it |
+| **Isolation** | Concurrent transactions don't interfere | Two transfers from same account don't overwrite each other |
+| **Durability** | Committed data survives crashes | Power loss after commit → data still there |
+
+```
+ACID Transaction Example:
+
+BEGIN TRANSACTION;
+  UPDATE accounts SET balance = balance - 100 WHERE id = 1;  -- Debit
+  UPDATE accounts SET balance = balance + 100 WHERE id = 2;  -- Credit
+COMMIT;
+
+If any statement fails → entire transaction rolls back
+Account 1 won't lose money without Account 2 receiving it
+```
+
+#### BASE (NoSQL Databases)
+
+| Property | Meaning | Trade-off |
+|----------|---------|-----------|
+| **Basically Available** | System always responds | May return stale data |
+| **Soft state** | State may change over time without input | Due to eventual consistency |
+| **Eventually consistent** | Given time, all replicas converge | Not immediately consistent |
+
+```
+BASE Example (Shopping Cart):
+
+User adds item on Node A
+  │
+  ▼
+Node A: cart = [item1, item2, item3]
+Node B: cart = [item1, item2]  ← hasn't received update yet
+  │
+  (milliseconds later)
+  │
+  ▼
+Node B: cart = [item1, item2, item3]  ← now consistent
+```
+
+#### When to Use Each
+
+| ACID | BASE |
+|------|------|
+| Banking transactions | Social media feeds |
+| Order processing | Shopping carts |
+| Inventory management | Analytics/metrics |
+| User authentication | Session storage |
+| Anything where "almost correct" = wrong | Anything where "eventually correct" = acceptable |
+
+**Interview insight:** "ACID costs performance and availability. BASE costs consistency. Choose based on business impact of inconsistency—financial data needs ACID, like counts can use BASE."
+
+---
+
+
+
