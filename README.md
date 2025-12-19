@@ -4647,3 +4647,76 @@ Node B: cart = [item1, item2, item3]  ← now consistent
 
 ---
 
+### SQL Normalization and Denormalization
+
+#### Normalization
+
+Organizing data to reduce redundancy. Split data into multiple related tables.
+
+**Normal Forms (simplified):**
+
+**1NF:** No repeating groups, atomic values only
+```
+Bad:  | id | phones           |
+      | 1  | 123-456, 789-012 |
+
+Good: | id | phone   |
+      | 1  | 123-456 |
+      | 1  | 789-012 |
+```
+
+**2NF:** 1NF + no partial dependencies (every non-key column depends on entire primary key)
+
+**3NF:** 2NF + no transitive dependencies (non-key columns don't depend on other non-key columns)
+
+```
+Normalized Design:
+┌─────────┐      ┌──────────┐      ┌──────────┐
+│  Users  │      │  Orders  │      │ Products │
+├─────────┤      ├──────────┤      ├──────────┤
+│ id (PK) │◄────►│ user_id  │      │ id (PK)  │
+│ name    │      │ prod_id  │◄────►│ name     │
+│ email   │      │ quantity │      │ price    │
+└─────────┘      └──────────┘      └──────────┘
+```
+
+**Pros:** No data duplication, easier updates, data integrity
+**Cons:** Complex queries (JOINs), slower reads
+
+#### Denormalization
+
+Intentionally adding redundancy for read performance.
+
+```
+Denormalized Design:
+┌─────────────────────────────────────────────┐
+│                   Orders                     │
+├─────────────────────────────────────────────┤
+│ id │ user_id │ user_name │ product │ price │
+├────┼─────────┼───────────┼─────────┼───────┤
+│ 1  │    1    │   Alice   │ Laptop  │  999  │
+│ 2  │    1    │   Alice   │ Mouse   │   25  │
+└────┴─────────┴───────────┴─────────┴───────┘
+         ↑           ↑
+    user_name and price duplicated for fast reads
+```
+
+**Pros:** Faster reads (no JOINs), simpler queries
+**Cons:** Data duplication, update anomalies, storage overhead
+
+#### When to Denormalize
+
+| Scenario | Action |
+|----------|--------|
+| Read-heavy workload (>90% reads) | Denormalize |
+| Write-heavy workload | Keep normalized |
+| Need fast dashboards/reports | Denormalize or use read replicas |
+| Data integrity critical | Keep normalized |
+| Scaling horizontally (sharding) | Denormalize (JOINs break across shards) |
+
+**Interview insight:** "Normalize for writes, denormalize for reads. Most systems start normalized and selectively denormalize hot paths based on profiling."
+
+---
+
+
+
