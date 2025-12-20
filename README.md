@@ -7365,3 +7365,45 @@ Cons: Latency, wasted requests, higher bandwidth
 | **Vendor lock-in** | Low | Higher |
 
 ---
+
+### Message Queues vs. Service Bus
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Message Queue                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+Simple point-to-point or pub/sub:
+
+Producer ────▶ [Queue] ────▶ Consumer
+
+Features: FIFO, persistence, basic routing
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Service Bus (ESB)                             │
+└─────────────────────────────────────────────────────────────────┘
+
+Enterprise features on top of messaging:
+
+┌──────────┐     ┌─────────────────────────────────────┐
+│ Service A│────▶│           Service Bus               │
+└──────────┘     │  ┌─────────────────────────────────┐│
+                 │  │ • Message transformation        ││
+┌──────────┐     │  │ • Routing rules                 ││     ┌──────────┐
+│ Service B│────▶│  │ • Protocol translation          ││────▶│ Service D│
+└──────────┘     │  │ • Transaction support           ││     └──────────┘
+                 │  │ • Dead-letter handling          ││
+┌──────────┐     │  │ • Sessions / ordering           ││     ┌──────────┐
+│ Service C│────▶│  └─────────────────────────────────┘│────▶│ Service E│
+└──────────┘     └─────────────────────────────────────┘     └──────────┘
+```
+
+| Aspect | Message Queue | Service Bus |
+|--------|---------------|-------------|
+| **Complexity** | Simple | Complex |
+| **Features** | Basic queuing | Transformation, routing, orchestration |
+| **Use case** | Decoupling, async tasks | Enterprise integration |
+| **Examples** | RabbitMQ, SQS, Redis | Azure Service Bus, MuleSoft, IBM MQ |
+
+---
