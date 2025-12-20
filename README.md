@@ -7407,3 +7407,55 @@ Enterprise features on top of messaging:
 | **Examples** | RabbitMQ, SQS, Redis | Azure Service Bus, MuleSoft, IBM MQ |
 
 ---
+
+### Stateful vs. Stateless Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Stateless                                     │
+└─────────────────────────────────────────────────────────────────┘
+
+Each request is independent. No server-side session.
+
+Request 1                Load Balancer               Servers
+    │                         │              ┌──▶ Server A (any can handle)
+    │── GET /user ──────────▶│──────────────┤
+    │   + JWT token           │              └──▶ Server B
+    │                         │                    Server C
+    
+Request contains all context needed to process it.
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Stateful                                      │
+└─────────────────────────────────────────────────────────────────┘
+
+Server stores client session state.
+
+                         Load Balancer
+Request 1                     │                    Server A
+    │                         │                   ┌──────────┐
+    │── Login ─────────────▶│──────────────────▶│ Session  │
+    │                         │ (sticky session)  │ UserA... │
+    │                         │                   └──────────┘
+Request 2                     │
+    │── Action ─────────────▶│───────┐
+    │   + Session ID          │       │ Must go to same server!
+    │                         │       ▼
+                                   Server A
+                                   (has session)
+```
+
+| Aspect | Stateless | Stateful |
+|--------|-----------|----------|
+| **Scalability** | Easy (add servers) | Hard (session affinity) |
+| **Failover** | Simple (any server) | Complex (session replication) |
+| **Performance** | May be slower (reconstruct state) | Faster (state cached) |
+| **Memory** | Low per-server | High (storing sessions) |
+| **Examples** | REST APIs, JWT auth | WebSocket servers, gaming |
+
+**Interview tip:** Prefer stateless for web services. If state needed, externalize it (Redis, database).
+
+---
+
+
