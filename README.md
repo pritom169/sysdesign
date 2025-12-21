@@ -7077,3 +7077,47 @@ Client View:                         Physical Reality:
 ```
 
 ---
+
+### Key Components of a DFS
+
+| Component | Role | Examples |
+|-----------|------|----------|
+| **Metadata Server** | Namespace, file→block mapping | HDFS NameNode, GFS Master |
+| **Data Servers** | Store actual data blocks | HDFS DataNodes, GFS Chunkservers |
+| **Client Library** | Translates file ops to DFS calls | HDFS client, S3 SDK |
+| **Replication Manager** | Ensures replicas exist | Background process |
+| **Block Manager** | Allocates, tracks blocks | Part of metadata server |
+
+**Block Storage:**
+```
+Large file split into fixed-size blocks:
+
+file.txt (640 MB)
+┌────────────────────────────────────────────────────────────────┐
+│                          Original File                          │
+└────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ Split into 128 MB blocks
+         ┌──────────────┬──────────────┬──────────────┬────────┐
+         │   Block 0    │   Block 1    │   Block 2    │Block 3 │
+         │   (128 MB)   │   (128 MB)   │   (128 MB)   │(256 MB)│
+         └──────────────┴──────────────┴──────────────┴────────┘
+                              │
+                              ▼ Replicated (3x default)
+         Block 0: DataNode 1, 4, 7
+         Block 1: DataNode 2, 5, 8
+         Block 2: DataNode 3, 6, 9
+         Block 3: DataNode 1, 5, 9
+```
+
+**Popular DFS:**
+
+| System | Use Case | Key Feature |
+|--------|----------|-------------|
+| **HDFS** | Big data (Hadoop) | Batch processing, high throughput |
+| **GFS** | Google internal | Inspired HDFS |
+| **Ceph** | Object/block/file storage | Unified, no single point of failure |
+| **Amazon S3** | Cloud object storage | Durability (11 9s), scalability |
+| **GlusterFS** | Scalable NAS | No metadata server (distributed) |
+
+---
