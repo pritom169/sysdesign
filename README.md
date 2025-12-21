@@ -7313,3 +7313,55 @@ Cons: Latency, wasted requests, higher bandwidth
 | **Use case** | Chat, real-time updates | Email check, RSS feeds |
 
 ---
+### Microservices vs. Serverless Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Microservices                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+│   User       │   │   Order      │   │  Inventory   │
+│   Service    │   │   Service    │   │   Service    │
+│              │   │              │   │              │
+│ ┌──────────┐ │   │ ┌──────────┐ │   │ ┌──────────┐ │
+│ │Container │ │   │ │Container │ │   │ │Container │ │
+│ │ (always  │ │   │ │ (always  │ │   │ │ (always  │ │
+│ │ running) │ │   │ │ running) │ │   │ │ running) │ │
+│ └──────────┘ │   │ └──────────┘ │   │ └──────────┘ │
+└──────────────┘   └──────────────┘   └──────────────┘
+       │                  │                  │
+       └──────── Kubernetes / Docker ────────┘
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Serverless                                    │
+└─────────────────────────────────────────────────────────────────┘
+
+        Event                Event                Event
+          │                    │                    │
+          ▼                    ▼                    ▼
+    ┌──────────┐         ┌──────────┐         ┌──────────┐
+    │ Function │         │ Function │         │ Function │
+    │ (spins   │         │ (spins   │         │ (spins   │
+    │  up)     │         │  up)     │         │  up)     │
+    └────┬─────┘         └────┬─────┘         └────┬─────┘
+         │                    │                    │
+         ▼                    ▼                    ▼
+    (terminates)         (terminates)         (terminates)
+
+    Pay only for execution time
+```
+
+| Aspect | Microservices | Serverless |
+|--------|---------------|------------|
+| **Deployment unit** | Service (container) | Function |
+| **Scaling** | Manual/auto per service | Automatic, per-request |
+| **State** | Can be stateful | Stateless |
+| **Cold start** | None (always running) | Yes (latency on first call) |
+| **Billing** | Per instance-hour | Per execution + duration |
+| **Control** | High (infra, runtime) | Low (managed) |
+| **Long-running** | Supported | Limited (timeouts) |
+| **Vendor lock-in** | Low | Higher |
+
+---
