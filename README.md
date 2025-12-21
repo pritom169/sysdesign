@@ -7258,3 +7258,58 @@ Service A           Queue           Service B
 | **Use case** | Read operations, simple CRUD | Heavy processing, notifications |
 
 ---
+
+### Push vs. Pull Notification Systems
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Push Notification                             │
+└─────────────────────────────────────────────────────────────────┘
+
+Server initiates delivery:
+
+      ┌──────────┐
+      │  Server  │
+      └────┬─────┘
+           │
+    ┌──────┴──────┐──────────┐
+    │             │          │
+    ▼             ▼          ▼
+┌───────┐   ┌───────┐   ┌───────┐
+│Client │   │Client │   │Client │
+│   A   │   │   B   │   │   C   │
+└───────┘   └───────┘   └───────┘
+
+Pros: Real-time, no wasted requests
+Cons: Requires persistent connection, complex server
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Pull Notification                             │
+└─────────────────────────────────────────────────────────────────┘
+
+Client requests updates:
+
+┌───────┐        ┌──────────┐
+│Client │──────▶ │  Server  │
+│       │  Poll  │          │
+│       │◀────── │          │
+└───────┘        └──────────┘
+    │
+    │ (repeat every N seconds)
+    ▼
+
+Pros: Simple, stateless server, works through firewalls
+Cons: Latency, wasted requests, higher bandwidth
+```
+
+| Aspect | Push | Pull |
+|--------|------|------|
+| **Latency** | Low (immediate) | High (poll interval) |
+| **Server load** | Manages connections | Handles repeated requests |
+| **Efficiency** | High (only when needed) | Low (many empty responses) |
+| **Implementation** | Complex (WebSocket, SSE) | Simple (HTTP) |
+| **Scalability** | Challenging | Easier |
+| **Use case** | Chat, real-time updates | Email check, RSS feeds |
+
+---
