@@ -7121,3 +7121,57 @@ file.txt (640 MB)
 | **GlusterFS** | Scalable NAS | No metadata server (distributed) |
 
 ---
+
+## Misc Concepts
+
+### Batch Processing vs. Stream Processing
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Batch Processing                              │
+└─────────────────────────────────────────────────────────────────┘
+
+Data arrives     Collected over time    Processed together
+    │                    │                      │
+    ▼                    ▼                      ▼
+┌───────┐            ┌───────┐              ┌───────┐
+│Event 1│ ────▶      │       │              │       │
+├───────┤            │ Batch │   Trigger    │ Job   │
+│Event 2│ ────▶      │       │ ─────────▶   │       │
+├───────┤            │       │ (scheduled)  │       │
+│Event 3│ ────▶      │       │              │       │
+└───────┘            └───────┘              └───────┘
+     ⏳                                    Results after
+   hours                                   hours/days
+
+Examples: Daily reports, ETL pipelines, ML training
+Tools: Hadoop MapReduce, Spark batch, AWS Batch
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Stream Processing                             │
+└─────────────────────────────────────────────────────────────────┘
+
+Data arrives     Processed immediately    Results in real-time
+    │                    │                      │
+    ▼                    ▼                      ▼
+┌───────┐            ┌───────┐              ┌───────┐
+│Event 1│ ─────────▶ │Process│ ─────────▶   │Result │
+└───────┘            │ Event │              │   1   │
+                     └───────┘              └───────┘
+  ⏱️ ms               instant               immediate
+
+Examples: Fraud detection, live dashboards, alerting
+Tools: Kafka Streams, Flink, Spark Streaming, Storm
+```
+
+| Aspect | Batch | Stream |
+|--------|-------|--------|
+| **Latency** | High (hours/days) | Low (ms/seconds) |
+| **Data scope** | Complete dataset | Unbounded, continuous |
+| **Processing** | Scheduled jobs | Continuous |
+| **State** | Stateless per job | Often stateful |
+| **Throughput** | Higher (optimized) | Lower (per-event overhead) |
+| **Use case** | Historical analysis | Real-time reactions |
+
+---
