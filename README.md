@@ -7175,3 +7175,40 @@ Tools: Kafka Streams, Flink, Spark Streaming, Storm
 | **Use case** | Historical analysis | Real-time reactions |
 
 ---
+
+### XML vs. JSON
+
+```
+XML:
+<?xml version="1.0"?>
+<user>
+    <id>123</id>
+    <name>John</name>
+    <roles>
+        <role>admin</role>
+        <role>user</role>
+    </roles>
+</user>
+
+JSON:
+{
+    "id": 123,
+    "name": "John",
+    "roles": ["admin", "user"]
+}
+```
+
+| Aspect | XML | JSON |
+|--------|-----|------|
+| **Verbosity** | High (closing tags) | Low |
+| **Readability** | Moderate | High |
+| **Parsing** | DOM/SAX parsers | Native in JS, simple libs |
+| **Schema** | XSD, DTD | JSON Schema (optional) |
+| **Data types** | String only | String, number, bool, null, array, object |
+| **Comments** | Supported | Not supported |
+| **Attributes** | Supported | Not supported |
+| **Use cases** | Enterprise, SOAP, config | REST APIs, web apps, config |
+
+**Interview tip:** JSON is preferred for REST APIs due to simplicity; XML still used in enterprise/legacy systems (SOAP, SAML).
+
+---
