@@ -7212,3 +7212,49 @@ JSON:
 **Interview tip:** JSON is preferred for REST APIs due to simplicity; XML still used in enterprise/legacy systems (SOAP, SAML).
 
 ---
+
+### Synchronous vs. Asynchronous Communication
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Synchronous                                   │
+└─────────────────────────────────────────────────────────────────┘
+
+Service A                              Service B
+    │                                      │
+    │────── Request ─────────────────────▶│
+    │                                      │ Processing...
+    │              BLOCKED                 │
+    │              waiting...              │
+    │                                      │
+    │◀───── Response ─────────────────────│
+    │                                      │
+    ▼ continues                            │
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Asynchronous                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+Service A           Queue           Service B
+    │                 │                 │
+    │── Message ────▶│                 │
+    │                 │                 │
+    ▼ continues       │                 │
+    │              (buffer)             │
+    │                 │───────────────▶│
+    │                 │                 │ Processing...
+    │                 │                 │
+    │◀─ Callback/Poll ─────────────────│ (optional)
+```
+
+| Aspect | Synchronous | Asynchronous |
+|--------|-------------|--------------|
+| **Coupling** | Tight | Loose |
+| **Latency** | Caller waits | Caller continues |
+| **Failure handling** | Immediate error | Retry, dead-letter queue |
+| **Complexity** | Simple | More complex (callbacks, queues) |
+| **Scalability** | Limited by slowest service | Better (buffering) |
+| **Use case** | Read operations, simple CRUD | Heavy processing, notifications |
+
+---
