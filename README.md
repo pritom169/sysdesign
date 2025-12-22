@@ -6560,3 +6560,82 @@ Decoded:
 **Common Pattern:** OAuth issues JWTs as access tokens.
 
 ---
+
+### What is Encryption?
+
+**Encryption** transforms data into unreadable format, reversible only with a key.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Symmetric Encryption                          │
+└─────────────────────────────────────────────────────────────────┘
+
+Same key for encryption and decryption:
+
+   Plaintext          Key              Ciphertext
+  ┌─────────┐     ┌─────────┐        ┌─────────────┐
+  │ "Hello" │ ──▶ │ AES-256 │ ────▶  │ "xK9#mP..." │
+  └─────────┘     └─────────┘        └─────────────┘
+                       │
+                  ┌────┴────┐
+                  │Same Key │
+                  └────┬────┘
+                       │
+  ┌─────────┐     ┌─────────┐        ┌─────────────┐
+  │ "Hello" │ ◀── │ AES-256 │ ◀────  │ "xK9#mP..." │
+  └─────────┘     └─────────┘        └─────────────┘
+   Plaintext          Key              Ciphertext
+
+Examples: AES, ChaCha20
+Use: Data at rest, fast bulk encryption
+```
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   Asymmetric Encryption                          │
+└─────────────────────────────────────────────────────────────────┘
+
+Key pair: Public key (encrypt) + Private key (decrypt)
+
+Sender                                          Receiver
+┌────────────────────┐                    ┌────────────────────┐
+│ Has: Bob's public  │                    │ Has: Private key   │
+│      key           │                    │      Public key    │
+└─────────┬──────────┘                    └─────────┬──────────┘
+          │                                         │
+          │ Encrypt with                           │
+          │ Bob's public key                       │
+          ▼                                         ▼
+   ┌─────────────┐                          ┌─────────────┐
+   │ Ciphertext  │ ────── Network ────────▶ │ Ciphertext  │
+   └─────────────┘                          └──────┬──────┘
+                                                   │
+                                            Decrypt with
+                                            private key
+                                                   │
+                                                   ▼
+                                            ┌───────────┐
+                                            │ Plaintext │
+                                            └───────────┘
+
+Examples: RSA, ECC
+Use: Key exchange, digital signatures
+```
+
+**Encryption Types:**
+
+| Type | Key | Speed | Use Case |
+|------|-----|-------|----------|
+| **Symmetric** | Same key both sides | Fast | Bulk data |
+| **Asymmetric** | Public/private pair | Slow | Key exchange, signatures |
+| **Hybrid** | Asymmetric for key, symmetric for data | Best of both | TLS/HTTPS |
+
+**Encryption Layers:**
+
+| Layer | Protects | Example |
+|-------|----------|---------|
+| **In transit** | Network traffic | TLS/HTTPS |
+| **At rest** | Stored data | AES disk encryption |
+| **End-to-end** | Data even from service provider | Signal, WhatsApp |
+
+---
