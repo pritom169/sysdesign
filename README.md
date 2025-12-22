@@ -6935,3 +6935,39 @@ Kafka: Dumb broker, smart consumers
 ```
 
 ---
+### Scalability and Performance
+
+**Kafka Scalability:**
+```
+Horizontal Scaling via Partitions:
+┌─────────────────────────────────────────────────────────────────┐
+│  Topic: orders (6 partitions)                                    │
+│                                                                  │
+│  Consumer Group (3 consumers)                                    │
+│                                                                  │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐                    │
+│  │Consumer A │  │Consumer B │  │Consumer C │                    │
+│  │ P0, P1    │  │ P2, P3    │  │ P4, P5    │                    │
+│  └───────────┘  └───────────┘  └───────────┘                    │
+│                                                                  │
+│  Add Consumer D:                                                 │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐                │
+│  │Consumer A│ │Consumer B│ │Consumer C│ │Consumer D│             │
+│  │ P0, P1   │ │ P2, P3   │ │ P4       │ │ P5       │             │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘                │
+│                                                                  │
+│  Max parallelism = number of partitions                          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Performance Tuning:**
+
+| Factor | Impact | Tuning |
+|--------|--------|--------|
+| **Batch size** | Throughput vs latency | Larger batch = higher throughput, higher latency |
+| **Partitions** | Parallelism | More partitions = more consumers possible |
+| **Replication factor** | Durability vs latency | Higher = more durable, more write latency |
+| **Acks** | Durability vs speed | `acks=all` durable; `acks=1` faster |
+| **Compression** | Network/storage vs CPU | gzip/snappy reduce size |
+
+---
