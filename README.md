@@ -6831,3 +6831,63 @@ Partition Detail:
 ```
 
 ---
+
+### Messaging Patterns
+
+**1. Point-to-Point (Queue):**
+```
+Each message consumed by exactly one consumer.
+
+Producer ──▶ [Queue] ──▶ Consumer A
+                     ├──▶ Consumer B  (competing consumers)
+                     └──▶ Consumer C
+
+Message 1 → Consumer A
+Message 2 → Consumer B
+Message 3 → Consumer C
+Message 4 → Consumer A
+...
+
+Use: Task distribution, work queues
+```
+
+**2. Publish-Subscribe (Pub/Sub):**
+```
+Each message delivered to all subscribers.
+
+              ┌──▶ Subscriber A (gets all messages)
+              │
+Producer ──▶ [Topic] ──▶ Subscriber B (gets all messages)
+              │
+              └──▶ Subscriber C (gets all messages)
+
+Message 1 → A, B, C (all get it)
+Message 2 → A, B, C (all get it)
+
+Use: Event broadcasting, notifications
+```
+
+**3. Fan-out:**
+```
+One message triggers multiple independent actions.
+
+                    ┌──▶ Email Service
+                    │
+Order Created ──▶ [Topic] ──▶ Inventory Service
+                    │
+                    └──▶ Analytics Service
+```
+
+**4. Request-Reply:**
+```
+┌──────────┐    Request Queue    ┌──────────┐
+│ Requester│───────────────────▶│ Responder│
+└──────────┘                     └──────────┘
+      ▲                                │
+      │         Reply Queue            │
+      └────────────────────────────────┘
+
+Correlation ID links request to reply.
+```
+
+---
