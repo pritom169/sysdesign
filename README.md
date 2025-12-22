@@ -6971,3 +6971,41 @@ Horizontal Scaling via Partitions:
 | **Compression** | Network/storage vs CPU | gzip/snappy reduce size |
 
 ---
+
+## Distributed File Systems
+
+### What is a Distributed File System?
+
+A **Distributed File System (DFS)** stores files across multiple servers, providing unified access as if on a single machine.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Distributed File System                       │
+└─────────────────────────────────────────────────────────────────┘
+
+Client View:                         Physical Reality:
+┌────────────────┐                   ┌──────────────────────────┐
+│   /data/       │                   │  Server 1    Server 2    │
+│   ├── file1    │ ◀── Appears ───▶ │  ┌───────┐  ┌───────┐    │
+│   ├── file2    │     as single    │  │file1.a│  │file1.b│    │
+│   └── file3    │     filesystem   │  │file2  │  │file3  │    │
+└────────────────┘                   │  └───────┘  └───────┘    │
+                                     │                          │
+                                     │  Server 3                │
+                                     │  ┌───────┐               │
+                                     │  │file1.c│ (replica)     │
+                                     │  └───────┘               │
+                                     └──────────────────────────┘
+```
+
+**Why DFS?**
+
+| Need | How DFS Addresses It |
+|------|---------------------|
+| **Scale beyond one machine** | Distribute data across nodes |
+| **Fault tolerance** | Replicate data; survive node failures |
+| **High availability** | No single point of failure |
+| **Throughput** | Parallel reads from multiple nodes |
+| **Geographic distribution** | Store data close to users |
+
+---
