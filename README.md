@@ -7009,3 +7009,71 @@ Client View:                         Physical Reality:
 | **Geographic distribution** | Store data close to users |
 
 ---
+
+### Architecture of a Distributed File System
+
+**Master-Worker Architecture (HDFS model):**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    HDFS Architecture                             │
+└─────────────────────────────────────────────────────────────────┘
+
+                      ┌─────────────────────┐
+                      │     NameNode        │  ← Metadata server
+                      │  (Master/Primary)   │
+                      │  - File → Block map │
+                      │  - Block → Node map │
+                      │  - Namespace        │
+                      └──────────┬──────────┘
+                                 │
+            ┌────────────────────┼────────────────────┐
+            │                    │                    │
+            ▼                    ▼                    ▼
+    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+    │  DataNode 1  │    │  DataNode 2  │    │  DataNode 3  │
+    │  ┌────┬────┐ │    │  ┌────┬────┐ │    │  ┌────┬────┐ │
+    │  │B1  │B4  │ │    │  │B1  │B2  │ │    │  │B2  │B3  │ │
+    │  ├────┼────┤ │    │  ├────┼────┤ │    │  ├────┼────┤ │
+    │  │B3  │B5  │ │    │  │B5  │B6  │ │    │  │B4  │B6  │ │
+    │  └────┴────┘ │    │  └────┴────┘ │    │  └────┴────┘ │
+    └──────────────┘    └──────────────┘    └──────────────┘
+          ↑                   ↑                   ↑
+          └───────────────────┴───────────────────┘
+                  Heartbeats + Block reports
+```
+
+**Read Flow:**
+```
+1. Client: "I want to read /data/file.txt"
+           │
+           ▼
+2. NameNode: "file.txt = blocks [B1, B2, B3]"
+             "B1 → DataNodes [1, 2]"
+             "B2 → DataNodes [2, 3]"
+             "B3 → DataNodes [1, 3]"
+           │
+           ▼
+3. Client reads blocks directly from DataNodes
+   (NameNode not in data path)
+```
+
+**Write Flow:**
+```
+1. Client: "Create /data/newfile.txt"
+           │
+           ▼
+2. NameNode: "OK, allocate blocks, replicate to 3 nodes"
+             Returns: DataNode pipeline [DN1 → DN2 → DN3]
+           │
+           ▼
+3. Client: Streams data to DN1
+   DN1: Writes locally, forwards to DN2
+   DN2: Writes locally, forwards to DN3
+   DN3: Writes locally, ACKs back up pipeline
+           │
+           ▼
+4. Client: Tells NameNode "write complete"
+```
+
+---
