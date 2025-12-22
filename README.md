@@ -6770,3 +6770,64 @@ Asynchronous (Message Queue):
 | **Async processing** | Producers don't wait for response |
 
 ---
+
+### Introduction to Kafka
+
+**Apache Kafka** is a distributed event streaming platform for high-throughput, fault-tolerant messaging.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Kafka Architecture                            │
+└─────────────────────────────────────────────────────────────────┘
+
+Producers              Kafka Cluster                    Consumers
+┌───────┐         ┌────────────────────────┐          ┌──────────┐
+│ App 1 │────────▶│   Topic: orders        │─────────▶│ Consumer │
+└───────┘         │  ┌─────────────────┐   │          │ Group A  │
+                  │  │ Partition 0     │   │          └──────────┘
+┌───────┐         │  │ [0][1][2][3]... │   │
+│ App 2 │────────▶│  └─────────────────┘   │          ┌──────────┐
+└───────┘         │  ┌─────────────────┐   │─────────▶│ Consumer │
+                  │  │ Partition 1     │   │          │ Group B  │
+┌───────┐         │  │ [0][1][2][3]... │   │          └──────────┘
+│ App 3 │────────▶│  └─────────────────┘   │
+└───────┘         │  ┌─────────────────┐   │
+                  │  │ Partition 2     │   │
+                  │  │ [0][1][2][3]... │   │
+                  │  └─────────────────┘   │
+                  └────────────────────────┘
+```
+
+**Key Concepts:**
+
+| Concept | Description |
+|---------|-------------|
+| **Topic** | Named feed/category of messages |
+| **Partition** | Ordered, immutable log; unit of parallelism |
+| **Offset** | Position of message in partition |
+| **Producer** | Publishes messages to topics |
+| **Consumer** | Reads messages from topics |
+| **Consumer Group** | Consumers sharing partition load |
+| **Broker** | Kafka server; cluster = multiple brokers |
+| **Replication** | Partitions replicated across brokers |
+
+```
+Partition Detail:
+┌─────────────────────────────────────────────────────────────────┐
+│  Partition 0 (immutable append-only log)                         │
+│                                                                  │
+│  Offset:  0    1    2    3    4    5    6    7                  │
+│         ┌────┬────┬────┬────┬────┬────┬────┬────┐               │
+│         │ A  │ B  │ C  │ D  │ E  │ F  │ G  │    │◀── New writes │
+│         └────┴────┴────┴────┴────┴────┴────┴────┘               │
+│                              ▲                                   │
+│                      Consumer position                           │
+│                      (committed offset)                          │
+└─────────────────────────────────────────────────────────────────┘
+
+- Messages immutable once written
+- Consumers track their own offset
+- Messages retained for configurable period (not deleted on consume)
+```
+
+---
