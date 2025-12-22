@@ -6732,3 +6732,41 @@ DDoS Mitigation Architecture:
 ```
 
 ---
+
+
+## Distributed Messaging System
+
+### Introduction to Messaging Systems
+
+A **messaging system** enables asynchronous communication between services by decoupling producers from consumers.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│               Synchronous vs Asynchronous                        │
+└─────────────────────────────────────────────────────────────────┘
+
+Synchronous (Direct):
+┌──────────┐         ┌──────────┐
+│ Service A│────────▶│ Service B│  ← A waits for B
+└──────────┘         └──────────┘    A fails if B down
+
+Asynchronous (Message Queue):
+┌──────────┐    ┌─────────────┐    ┌──────────┐
+│ Service A│───▶│   Message   │───▶│ Service B│
+└──────────┘    │    Queue    │    └──────────┘
+     │          └─────────────┘         │
+ Publishes,         Buffers         Consumes
+ continues          messages        when ready
+```
+
+**Why Messaging Systems?**
+
+| Benefit | Explanation |
+|---------|-------------|
+| **Decoupling** | Producers/consumers evolve independently |
+| **Buffering** | Handle traffic spikes; consumers process at own pace |
+| **Reliability** | Messages persist; survive consumer failures |
+| **Scalability** | Add more consumers to scale processing |
+| **Async processing** | Producers don't wait for response |
+
+---
