@@ -6904,3 +6904,34 @@ Correlation ID links request to reply.
 | **Apache Pulsar** | Distributed log | Multi-tenancy, tiered storage |
 
 ---
+
+### RabbitMQ vs. Kafka vs. ActiveMQ
+
+| Feature | RabbitMQ | Kafka | ActiveMQ |
+|---------|----------|-------|----------|
+| **Model** | Message broker | Distributed log | Message broker |
+| **Protocol** | AMQP, MQTT, STOMP | Custom (TCP) | JMS, AMQP, STOMP |
+| **Message ordering** | Per-queue | Per-partition | Per-queue |
+| **Throughput** | ~50K msg/sec | ~1M+ msg/sec | ~10K msg/sec |
+| **Message retention** | Until consumed | Time/size-based | Until consumed |
+| **Replay** | No (message deleted) | Yes (offset seek) | Limited |
+| **Routing** | Complex (exchanges) | Topic/partition | Flexible |
+| **Use case** | Task queues, RPC | Event streaming, logs | Enterprise integration |
+
+```
+RabbitMQ: Smart broker, dumb consumers
+┌──────────┐     ┌─────────────────────────┐     ┌──────────┐
+│ Producer │────▶│ Exchange ──▶ Queue      │────▶│ Consumer │
+└──────────┘     │   (routing logic)       │     └──────────┘
+                 └─────────────────────────┘
+                 Message deleted after ACK
+
+Kafka: Dumb broker, smart consumers
+┌──────────┐     ┌─────────────────────────┐     ┌──────────┐
+│ Producer │────▶│ Topic ──▶ Partitions    │────▶│ Consumer │
+└──────────┘     │   (append-only log)     │     │ (tracks  │
+                 └─────────────────────────┘     │  offset) │
+                 Message retained for period     └──────────┘
+```
+
+---
