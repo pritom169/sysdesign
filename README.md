@@ -6891,3 +6891,16 @@ Correlation ID links request to reply.
 ```
 
 ---
+
+### Popular Messaging Queue Systems
+
+| System | Type | Best For |
+|--------|------|----------|
+| **Kafka** | Distributed log | High-throughput streaming, event sourcing |
+| **RabbitMQ** | Message broker | Complex routing, traditional queuing |
+| **Amazon SQS** | Managed queue | Simple, serverless, AWS integration |
+| **Amazon SNS** | Managed pub/sub | Fan-out, push notifications |
+| **Redis Pub/Sub** | In-memory | Low-latency, ephemeral messaging |
+| **Apache Pulsar** | Distributed log | Multi-tenancy, tiered storage |
+
+---
