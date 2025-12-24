@@ -3872,7 +3872,97 @@ No leader. Any node accepts reads and writes. Uses quorums for consistency.
 
 ---
 
+### Data Backup vs. Disaster Recovery
 
+**Backup:** Point-in-time copy of data. Insurance against data loss.
+
+**Disaster Recovery (DR):** Comprehensive plan to restore entire business operations after catastrophic failure.
+
+| Aspect | Backup | Disaster Recovery |
+|--------|--------|-------------------|
+| **Purpose** | Restore lost/corrupted data | Resume business operations |
+| **Scope** | Data files, databases | Data + servers + network + applications + DNS |
+| **Protects Against** | Accidental deletion, corruption, ransomware | Data center fire, regional outage, natural disaster |
+| **Speed** | Hours to days acceptable | Minutes to hours required |
+| **Location** | Can be same site (local backup) | Must be geographically separate |
+| **Testing** | Restore individual files | Full failover drill |
+
+**Key Metrics:**
+
+**RPO (Recovery Point Objective):** Maximum tolerable data loss measured in time.
+
+```
+Last backup: 6:00 AM
+Disaster: 10:00 AM
+Data loss: 4 hours of transactions
+
+If RPO = 1 hour → VIOLATED (lost 4 hours)
+If RPO = 24 hours → MET (lost only 4 hours)
+```
+
+Lower RPO = more frequent backups/replication = higher cost.
+
+**RTO (Recovery Time Objective):** Maximum tolerable downtime.
+
+```
+Disaster: 10:00 AM
+Systems restored: 2:00 PM
+Downtime: 4 hours
+
+If RTO = 1 hour → VIOLATED
+If RTO = 8 hours → MET
+```
+
+Lower RTO = hot standby, automated failover = higher cost.
+
+**DR Strategies (Cold → Hot):**
+
+| Strategy | RTO | RPO | Cost | Description |
+|----------|-----|-----|------|-------------|
+| **Backup & Restore** | Days | Hours | $ | Restore from backups to new infrastructure |
+| **Pilot Light** | Hours | Minutes | $$ | Minimal core infrastructure running, scale up on disaster |
+| **Warm Standby** | Minutes | Seconds | $$$ | Scaled-down replica running, scale up on disaster |
+| **Hot Standby (Active-Active)** | Seconds | Zero | $$$$ | Full replica running, instant failover |
+
+**Interview insight:** "Always ask business stakeholders: what's 1 hour of downtime cost? What's losing 1 hour of data cost? That determines RTO/RPO targets, which determines architecture and budget."
+
+---
+
+### Redundancy vs. Replication vs. Backup
+
+| Concept | What | Purpose | Protects Against | Recovery Time |
+|---------|------|---------|------------------|---------------|
+| **Redundancy** | Duplicate components | Eliminate SPOF | Hardware failure | Instant (automatic failover) |
+| **Replication** | Live data copies | Availability + read scaling | Node failure, read load | Instant to seconds |
+| **Backup** | Point-in-time snapshots | Data recovery | Corruption, deletion, ransomware | Minutes to hours |
+
+**Why all three are needed:**
+
+```
+Scenario: Corrupted write propagates to all replicas
+
+Redundancy: ✗ Doesn't help (corruption isn't hardware failure)
+Replication: ✗ Corruption replicated to all nodes
+Backup: ✓ Restore from pre-corruption snapshot
+```
+
+```
+Scenario: Primary server catches fire
+
+Redundancy: ✓ Standby server takes over
+Replication: ✓ Replica promoted to primary
+Backup: Unnecessary (no data corruption, just hardware loss)
+```
+
+```
+Scenario: User accidentally deletes production database
+
+Redundancy: ✗ Deletion executed on primary
+Replication: ✗ DELETE replicated to all replicas instantly
+Backup: ✓ Restore from last backup
+```
+
+**Interview insight:** "Replication is not backup. If you `DROP TABLE users`, that command replicates to all replicas within milliseconds. You need backup for logical errors. You need replication for physical failures. You need redundancy for component failures. Defense in depth."
 
 ---
 
