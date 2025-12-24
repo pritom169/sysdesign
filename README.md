@@ -3736,3 +3736,28 @@ flowchart LR
 
 ---
 
+### VPN vs. Proxy Server
+
+| Aspect | Proxy | VPN |
+|--------|-------|-----|
+| **Scope** | Application-level (browser, app) | System-level (all traffic) |
+| **Encryption** | Usually none (except HTTPS proxy) | Always encrypted tunnel |
+| **Speed** | Faster (no encryption overhead) | Slower (encryption cost) |
+| **Anonymity** | Partial (only proxied apps) | Full (all traffic routed) |
+| **Use case** | Bypass restrictions, caching | Security on untrusted networks |
+
+**When to use which:**
+- **Proxy:** Route specific application traffic, caching, load balancing
+- **VPN:** Encryption for all traffic, secure remote access
+
+---
+
+### Proxy Interview Checklist
+
+| Topic | Key Points |
+|-------|------------|
+| **Forward vs Reverse** | Forward = client-side, Reverse = server-side |
+| **Reverse proxy examples** | Nginx, HAProxy, Envoy, Traefik |
+| **Common uses** | Load balancing, SSL termination, caching, rate limiting |
+| **API Gateway** | Reverse proxy + routing + auth + rate limiting |
+| **CDN as proxy** | Edge servers are reverse proxies with geographic distribution |
