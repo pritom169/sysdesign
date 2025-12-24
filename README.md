@@ -3639,5 +3639,20 @@ Foreign keys can't span shards.
 | **Hotspot mitigation** | Salting keys, consistent hashing, virtual nodes |
 | **Rebalancing strategy** | Consistent hashing or directory-based for flexibility |
 
+---
 
+## Proxy Servers
 
+### What is a Proxy Server?
+
+A proxy server is an intermediary between clients and servers. Clients connect to the proxy, which forwards requests to the destination server and returns responses.
+
+**Why proxies matter:** In distributed systems, direct client-to-server communication creates tight coupling. Proxies decouple clients from servers, enabling load balancing, caching, security, and protocol translation without changing either endpoint.
+
+```mermaid
+flowchart LR
+    C[Client] --> P[Proxy Server] --> S[Server]
+    S --> P --> C
+
+    style P fill:#FFD700,stroke:#333
+```
