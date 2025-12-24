@@ -3641,6 +3641,51 @@ Foreign keys can't span shards.
 
 ---
 
+## Redundancy and Replication
+
+### What is Redundancy?
+
+Redundancy is duplicating critical system components to eliminate single points of failure (SPOF). If Component A fails, Component A' takes over instantly or with minimal interruption.
+
+**Core Principle:** Any component whose failure brings down the system is a SPOF. Redundancy eliminates SPOFs by ensuring no single failure can cause total outage.
+
+**Types:**
+
+| Type | What's Duplicated | Example |
+|------|-------------------|---------|
+| **Hardware** | Physical components | RAID disks, dual power supplies, standby servers |
+| **Data** | Information copies | Database replicas, backup files |
+| **Network** | Connectivity paths | Multiple NICs, dual ISPs, redundant switches |
+| **Geographic** | Entire locations | Multi-region deployments, DR sites |
+
+**Redundancy Patterns:**
+
+**Active-Active:** All redundant components handle traffic simultaneously. Load is distributed. If one fails, others absorb its share.
+```
+[Load Balancer]
+     |
+  ┌──┴──┐
+  ▼     ▼
+[App1] [App2]  ← Both serving requests
+```
+
+**Active-Passive (Hot Standby):** Primary handles all traffic. Standby is running but idle, ready for instant failover.
+```
+[Primary] ──heartbeat──► [Standby]
+    ▲                        │
+    └── traffic              └── takes over on failure
+```
+
+**Active-Passive (Cold Standby):** Standby is powered off. Requires manual or automated boot on failure. Cheaper but slower recovery.
+
+**N+1 Redundancy:** For N required components, deploy N+1. Common in server clusters—if you need 4 servers for load, deploy 5.
+
+**2N Redundancy:** Full duplication. Critical for systems requiring zero downtime (e.g., hospital equipment, financial trading).
+
+**Interview insight:** "Redundancy level depends on failure cost. A blog can use N+1. A stock exchange uses 2N with geographic redundancy. Always ask: what's the cost of 1 hour downtime vs. cost of redundancy?"
+
+---
+
 ## Proxy Servers
 
 ### What is a Proxy Server?
