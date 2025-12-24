@@ -3797,6 +3797,81 @@ Client ◄───ACK───────┘
 
 ---
 
+### Replication Topologies
+
+#### 1. Single-Leader (Primary-Replica)
+
+One node accepts writes. All others are read-only replicas.
+
+```
+        [Primary]
+       /    |    \
+      ▼     ▼     ▼
+   [R1]   [R2]   [R3]
+
+Writes: Primary only
+Reads: Primary + all replicas
+```
+
+**Conflict handling:** None needed—only one writer.
+
+**Failover:** Promote one replica to primary. Other replicas must re-point to new primary.
+
+**Bottleneck:** Write throughput limited to single node.
+
+**Use case:** PostgreSQL streaming replication, MySQL replication, Redis Sentinel.
+
+#### 2. Multi-Leader (Active-Active)
+
+Multiple nodes accept writes. Each replicates to others.
+
+```
+[Leader1] ◄──────► [Leader2]
+    │                  │
+    ▼                  ▼
+  [R1]               [R2]
+```
+
+**Conflict handling:** Required. Same row updated on both leaders simultaneously.
+
+**Conflict resolution strategies:**
+- **Last-Write-Wins (LWW):** Timestamp determines winner. Simple but loses data.
+- **Custom merge:** Application logic merges conflicting values.
+- **CRDTs:** Data structures that mathematically guarantee conflict-free merges.
+
+**Use case:** Multi-datacenter writes (each DC has a leader), collaborative editing, CouchDB.
+
+**Interview insight:** "Multi-leader is complex. Only use when you truly need write availability in multiple regions. Most systems are fine with single-leader + async cross-region replicas."
+
+#### 3. Leaderless (Dynamo-style)
+
+No leader. Any node accepts reads and writes. Uses quorums for consistency.
+
+```
+     Client
+    /   |   \
+   ▼    ▼    ▼
+ [N1]  [N2]  [N3]
+```
+
+**Quorum formula:** `W + R > N`
+- N = total replicas
+- W = nodes that must ACK a write
+- R = nodes that must respond to a read
+
+**Example (N=3, W=2, R=2):**
+- Write succeeds if 2/3 nodes ACK
+- Read queries 2/3 nodes, returns latest version
+- Guarantees read sees latest write (overlap guaranteed)
+
+**Sloppy quorum:** During partition, write to any available nodes (not necessarily the designated replicas). "Hinted handoff" repairs later.
+
+**Use case:** Cassandra, DynamoDB, Riak. High availability, partition tolerance, eventual consistency.
+
+**Interview insight:** "Leaderless trades consistency complexity for availability. Great for use cases tolerating eventual consistency (shopping carts, session data). Avoid for transactions requiring strong consistency."
+
+---
+
 
 
 ---
