@@ -3686,6 +3686,121 @@ Redundancy is duplicating critical system components to eliminate single points 
 
 ---
 
+### What is Replication?
+
+Replication continuously copies data from one node (source/primary) to others (replicas/secondaries). Unlike backup, replicas are live and queryable.
+
+**Why Replicate:**
+
+1. **High Availability:** If primary dies, promote replica to primary. No data reconstruction needed.
+
+2. **Read Scaling:** Primary handles writes. Replicas handle reads. A single MySQL primary can support 10+ read replicas, multiplying read throughput.
+
+3. **Geographic Distribution:** Replica in Europe serves European users with low latency while primary sits in US.
+
+4. **Fault Isolation:** Analytical queries on replica don't impact production primary.
+
+**Replication Lag:**
+
+The delay between write on primary and visibility on replica. Critical concept.
+
+```
+Time 0ms: Write "balance=100" to Primary
+Time 0ms: Primary acknowledges write to client
+Time 50ms: Replica receives and applies write
+         ↑
+    50ms replication lag
+```
+
+**Consequences of lag:**
+- User writes, then reads from replica, sees stale data
+- Read-after-write inconsistency breaks user experience
+
+**Mitigation:** Read-your-writes consistency (route user's reads to primary after their writes), or use synchronous replication.
+
+---
+
+### Replication Methods
+
+#### 1. Synchronous Replication
+
+Primary waits for ALL replicas to acknowledge before confirming write to client.
+
+```
+Client ──write──► Primary ──replicate──► Replica1
+                     │                      │
+                     │◄────────ACK──────────┘
+                     │
+                     ├──replicate──► Replica2
+                     │                   │
+                     │◄───────ACK────────┘
+                     │
+                  commit
+                     │
+Client ◄───ACK───────┘
+```
+
+| Pros | Cons |
+|------|------|
+| Zero data loss (RPO = 0) | Write latency = slowest replica |
+| Strong consistency | One slow/dead replica blocks all writes |
+| Simple failover (any replica is up-to-date) | Doesn't scale geographically (cross-region latency kills performance) |
+
+**Use case:** Financial systems where losing a single transaction is unacceptable. Primary-standby within same data center.
+
+#### 2. Asynchronous Replication
+
+Primary confirms write immediately. Replication happens in background.
+
+```
+Client ──write──► Primary
+                     │
+Client ◄───ACK───────┘  (immediate)
+                     │
+                     └──replicate (background)──► Replicas
+```
+
+| Pros | Cons |
+|------|------|
+| Low write latency | Data loss window (RPO > 0) |
+| Primary unaffected by replica failures | Replicas can fall behind (lag) |
+| Works across regions | Failover may lose recent writes |
+
+**Data loss scenario:**
+```
+Time 0: Write W1 to Primary, ACK to client
+Time 1: Write W2 to Primary, ACK to client
+Time 2: Primary crashes (W1, W2 not yet replicated)
+Time 3: Promote Replica → W1, W2 lost forever
+```
+
+**Use case:** Read replicas, cross-region replication where latency matters more than zero data loss.
+
+#### 3. Semi-Synchronous Replication
+
+Primary waits for at least ONE replica to acknowledge. Others replicate asynchronously.
+
+```
+Client ──write──► Primary ──replicate──► Replica1 (sync)
+                     │                      │
+                     │◄────────ACK──────────┘
+                  commit
+                     │
+Client ◄───ACK───────┘
+                     │
+                     └──replicate (async)──► Replica2, Replica3
+```
+
+**Trade-off:** Guaranteed durability on at least 2 nodes (primary + 1 replica) without waiting for all replicas.
+
+**Use case:** MySQL semi-synchronous replication. PostgreSQL synchronous_commit with `remote_write`.
+
+---
+
+
+
+---
+
 ## Proxy Servers
 
 ### What is a Proxy Server?
