@@ -2874,3 +2874,145 @@ flowchart LR
 | **Failure Impact** | Critical—affects cache refills | Minimal—traffic reroutes |
 
 **Interview tip:** "The origin is like a warehouse storing all inventory, while edge servers are local stores. Customers shop at local stores for speed, but the warehouse restocks them and handles special orders."
+
+---
+
+## CDN Architecture
+
+A CDN's architecture determines how content flows from origin to users. Understanding this flow is critical for system design interviews.
+
+### How a CDN Request Works
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant DNS
+    participant Edge as Edge Server (PoP)
+    participant Origin as Origin Server
+
+    User->>DNS: 1. Resolve cdn.example.com
+    DNS->>User: 2. Return nearest Edge IP (Anycast/GeoDNS)
+    User->>Edge: 3. Request /images/logo.png
+
+    alt Cache HIT
+        Edge->>User: 4a. Return cached content (fast!)
+    else Cache MISS
+        Edge->>Origin: 4b. Fetch from origin
+        Origin->>Edge: 5. Return content
+        Edge->>Edge: 6. Cache for future requests
+        Edge->>User: 7. Return content to user
+    end
+```
+
+### Request Flow Explained
+
+1. **DNS Resolution:** User's browser resolves `cdn.example.com`. The CDN's DNS (using GeoDNS or Anycast) returns the IP of the nearest edge server.
+
+2. **Edge Selection:** The CDN automatically routes the user to the optimal PoP based on:
+   - Geographic proximity
+   - Network latency
+   - Server health and load
+   - ISP peering arrangements
+
+3. **Cache Check:** The edge server checks if the requested content exists in its cache and is still valid (not expired).
+
+4. **Cache HIT:** If cached, content is served immediately (~10-50ms latency).
+
+5. **Cache MISS:** If not cached, the edge fetches from origin, caches the response, then serves the user.
+
+### CDN Components Architecture
+
+```mermaid
+flowchart TB
+    subgraph Client_Layer [Client Layer]
+        Browser[Browser/App]
+    end
+
+    subgraph DNS_Layer [DNS Layer]
+        GeoDNS[GeoDNS / Anycast DNS]
+    end
+
+    subgraph Edge_Layer [Edge Layer - Global PoPs]
+        direction LR
+        subgraph PoP1 [PoP - Americas]
+            LB1[Load Balancer]
+            Cache1[(Edge Cache)]
+            Edge1[Edge Servers]
+        end
+        subgraph PoP2 [PoP - Europe]
+            LB2[Load Balancer]
+            Cache2[(Edge Cache)]
+            Edge2[Edge Servers]
+        end
+        subgraph PoP3 [PoP - Asia]
+            LB3[Load Balancer]
+            Cache3[(Edge Cache)]
+            Edge3[Edge Servers]
+        end
+    end
+
+    subgraph Mid_Tier [Mid-Tier / Shield Layer]
+        Shield[(Regional Cache Shield)]
+    end
+
+    subgraph Origin_Layer [Origin Layer]
+        Origin[(Origin Server)]
+        Storage[(Object Storage<br/>S3/GCS)]
+    end
+
+    Browser --> GeoDNS
+    GeoDNS --> LB1 & LB2 & LB3
+    LB1 --> Edge1 --> Cache1
+    LB2 --> Edge2 --> Cache2
+    LB3 --> Edge3 --> Cache3
+
+    Cache1 & Cache2 & Cache3 -.->|Cache MISS| Shield
+    Shield -.->|Cache MISS| Origin
+    Origin --- Storage
+
+    style Shield fill:#FFD700,stroke:#333
+    style Origin fill:#FFB6C1,stroke:#333
+```
+
+### Key Architectural Components
+
+| Component | Purpose | Example |
+|-----------|---------|---------|
+| **GeoDNS** | Routes users to nearest PoP based on IP geolocation | Route53, Cloudflare DNS |
+| **Anycast** | Single IP advertised from multiple locations; network routes to nearest | Used by Cloudflare, Google |
+| **Edge Cache** | Stores content at PoP level; first cache layer | SSD-based, in-memory |
+| **Cache Shield** | Mid-tier cache that protects origin from thundering herd | Reduces origin load by 90%+ |
+| **Origin** | Authoritative content source | Your servers, S3, GCS |
+
+### Cache Shield (Mid-Tier Caching)
+
+A **cache shield** is an intermediate caching layer between edge servers and the origin. Instead of every edge PoP hitting the origin on a cache miss, they first check a regional shield.
+
+**Why it matters:**
+- Without shield: 100 PoPs × 1 miss each = 100 origin requests
+- With shield: 100 PoPs hit 3 regional shields = 3 origin requests max
+
+```mermaid
+flowchart LR
+    subgraph Edges [Edge PoPs]
+        E1[Edge 1]
+        E2[Edge 2]
+        E3[Edge 3]
+        E4[Edge N...]
+    end
+
+    subgraph Shield [Cache Shield]
+        S1[(Shield)]
+    end
+
+    subgraph Origin [Origin]
+        O[(Origin)]
+    end
+
+    E1 & E2 & E3 & E4 -->|MISS| S1
+    S1 -->|MISS| O
+
+    style S1 fill:#FFD700,stroke:#333
+```
+
+**Interview insight:** "We added a cache shield layer, reducing origin requests from 50K/sec during cache expiration storms to under 100/sec—a 500x reduction."
