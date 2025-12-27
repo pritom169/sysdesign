@@ -3016,3 +3016,155 @@ flowchart LR
 ```
 
 **Interview insight:** "We added a cache shield layer, reducing origin requests from 50K/sec during cache expiration storms to under 100/sec—a 500x reduction."
+
+---
+
+## Push CDN vs. Pull CDN
+
+The two fundamental CDN models differ in **who initiates content distribution**: the origin (push) or the edge (pull). This is one of the most common CDN questions in system design interviews.
+
+### Pull CDN (Lazy Loading)
+
+In a **Pull CDN**, edge servers fetch content from the origin **on-demand** when a user requests it. The first user experiences a cache miss; subsequent users get cached content.
+
+```mermaid
+sequenceDiagram
+    participant U1 as User 1 (First)
+    participant U2 as User 2 (Second)
+    participant Edge as Edge Server
+    participant Origin as Origin Server
+
+    U1->>Edge: Request image.jpg
+    Edge->>Edge: Cache MISS
+    Edge->>Origin: Fetch image.jpg
+    Origin->>Edge: Return image.jpg
+    Edge->>Edge: Store in cache
+    Edge->>U1: Return image.jpg (slow)
+
+    Note over Edge: Content now cached
+
+    U2->>Edge: Request image.jpg
+    Edge->>Edge: Cache HIT
+    Edge->>U2: Return image.jpg (fast!)
+```
+
+**How it works:**
+1. User requests content from edge
+2. Edge checks cache → MISS on first request
+3. Edge fetches from origin, caches it, returns to user
+4. Subsequent requests served from cache until TTL expires
+
+**Pros:**
+- Simple setup—just point your domain to the CDN
+- Storage efficient—only caches content that's actually requested
+- Automatic—no manual content management needed
+
+**Cons:**
+- First user experiences higher latency (cache miss penalty)
+- Origin must always be available for cache misses
+- Can cause origin spikes when cache expires (thundering herd)
+
+**Best for:**
+- Websites with unpredictable traffic patterns
+- Large content libraries where not everything is accessed
+- Dynamic content with short TTLs
+- Most general-purpose web applications
+
+---
+
+### Push CDN (Proactive Loading)
+
+In a **Push CDN**, you explicitly upload content to the CDN **before** users request it. The CDN acts more like distributed storage than a cache.
+
+```mermaid
+sequenceDiagram
+    participant Admin as Admin/CI Pipeline
+    participant CDN as CDN Storage
+    participant Edge as Edge Servers
+    participant User as User
+
+    Admin->>CDN: Upload video.mp4 (proactive)
+    CDN->>Edge: Distribute to all PoPs
+    Note over Edge: Content pre-positioned
+
+    User->>Edge: Request video.mp4
+    Edge->>Edge: Cache HIT (always!)
+    Edge->>User: Return video.mp4 (fast!)
+```
+
+**How it works:**
+1. You upload content directly to CDN storage (API, CLI, or CI/CD)
+2. CDN distributes content to edge locations proactively
+3. Users always get cache hits (content is pre-positioned)
+4. You manage content lifecycle (upload, update, delete)
+
+**Pros:**
+- No cache miss penalty—content always available at edge
+- Origin can be offline—CDN serves independently
+- Predictable performance—no cold start latency
+- Full control over what's cached and where
+
+**Cons:**
+- Higher storage costs—pay for all content, not just popular items
+- Manual management—you must upload/update/delete content
+- Replication delay—takes time to propagate to all PoPs
+- Overkill for frequently changing content
+
+**Best for:**
+- Video streaming platforms (Netflix, YouTube)
+- Software distribution (game patches, app updates)
+- Static assets that rarely change (logos, fonts)
+- Scenarios where origin availability is uncertain
+
+---
+
+### Push vs. Pull Comparison
+
+| Aspect | Pull CDN | Push CDN |
+|--------|----------|----------|
+| **Content Loading** | On-demand (lazy) | Proactive (eager) |
+| **First Request** | Cache miss (slow) | Cache hit (fast) |
+| **Storage Cost** | Lower (only popular content) | Higher (all content) |
+| **Origin Dependency** | Required for misses | Can work offline |
+| **Management** | Automatic | Manual upload/delete |
+| **Best For** | Websites, APIs | Video, large files |
+| **TTL Control** | Cache headers | Explicit versioning |
+| **Invalidation** | Purge API + wait for TTL | Re-upload new version |
+
+### Decision Framework
+
+```mermaid
+flowchart TD
+    Start([Choose CDN Model]) --> Q1{Content size?}
+
+    Q1 -->|Small files<br/>< 10MB| Q2{Traffic pattern?}
+    Q1 -->|Large files<br/>> 100MB| Push[Push CDN]
+
+    Q2 -->|Unpredictable<br/>Long tail| Pull[Pull CDN]
+    Q2 -->|Predictable<br/>Known hot content| Q3{Origin always<br/>available?}
+
+    Q3 -->|Yes| Pull
+    Q3 -->|No/Uncertain| Push
+
+    Pull --> PullEx[Examples:<br/>Websites, APIs,<br/>User-generated content]
+    Push --> PushEx[Examples:<br/>Video streaming,<br/>Game downloads,<br/>OS updates]
+
+    style Pull fill:#90EE90,stroke:#333
+    style Push fill:#87CEEB,stroke:#333
+```
+
+### Hybrid Approach
+
+Most production systems use **both** models:
+
+- **Pull CDN** for HTML, CSS, JS, and user-uploaded images
+- **Push CDN** for video content, software binaries, and critical static assets
+
+**Example architecture:**
+```
+cdn.example.com/static/*     → Pull CDN (CloudFront)
+cdn.example.com/videos/*     → Push CDN (dedicated video CDN)
+cdn.example.com/downloads/*  → Push CDN (pre-positioned binaries)
+```
+
+**Interview tip:** "We use a hybrid approach: Pull CDN for our website assets since traffic is unpredictable and storage efficiency matters, but Push CDN for video content where eliminating cache misses is critical for user experience."
