@@ -2746,3 +2746,63 @@ Monitor these metrics to understand cache health:
 - Event bus for invalidation (Kafka, Redis Pub/Sub)
 - Accept eventual consistency with short TTL
 - Consider: who owns the data vs who caches it
+
+---
+
+# CDN (Content Delivery Network)
+
+## What is CDN?
+
+A Content Delivery Network (CDN) is a geographically distributed network of servers that delivers content to users from the server closest to them. Instead of every user fetching content from a single origin server (potentially thousands of miles away), a CDN caches content at multiple "edge" locations worldwide, dramatically reducing latency and load on the origin.
+
+```mermaid
+flowchart TB
+    subgraph Origin [Origin Data Center]
+        OS[(Origin Server)]
+    end
+
+    subgraph CDN_Network [CDN Edge Network]
+        direction LR
+        E1[Edge Server<br/>New York]
+        E2[Edge Server<br/>London]
+        E3[Edge Server<br/>Tokyo]
+        E4[Edge Server<br/>Sydney]
+    end
+
+    subgraph Users [Users Worldwide]
+        U1[User NY]
+        U2[User UK]
+        U3[User Japan]
+        U4[User Australia]
+    end
+
+    OS -.->|Content Distribution| E1
+    OS -.->|Content Distribution| E2
+    OS -.->|Content Distribution| E3
+    OS -.->|Content Distribution| E4
+
+    U1 -->|Low Latency| E1
+    U2 -->|Low Latency| E2
+    U3 -->|Low Latency| E3
+    U4 -->|Low Latency| E4
+
+    style OS fill:#FFB6C1,stroke:#333,stroke-width:2px
+    style E1 fill:#90EE90,stroke:#333
+    style E2 fill:#90EE90,stroke:#333
+    style E3 fill:#90EE90,stroke:#333
+    style E4 fill:#90EE90,stroke:#333
+```
+
+**The core value proposition:** A user in Tokyo requesting an image from a US-based website gets it from a Tokyo edge server (~20ms) instead of crossing the Pacific Ocean (~200ms). This 10x latency reduction is why CDNs are essential for any globally accessible application.
+
+### Why CDN Matters in System Design
+
+| Problem | How CDN Solves It |
+|---------|-------------------|
+| **High Latency** | Serves content from geographically nearest server |
+| **Origin Overload** | Offloads 80-95% of static content requests |
+| **Bandwidth Costs** | Reduces egress from expensive origin data centers |
+| **Availability** | If one edge fails, traffic routes to the next nearest |
+| **DDoS Protection** | Distributed network absorbs attack traffic across many nodes |
+
+**Interview insight:** "Our CDN handles 95% of static asset requests, reducing origin server load from 100K to 5K requests per second, and dropping global p50 latency from 180ms to 25ms."
