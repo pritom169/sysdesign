@@ -2806,3 +2806,71 @@ flowchart TB
 | **DDoS Protection** | Distributed network absorbs attack traffic across many nodes |
 
 **Interview insight:** "Our CDN handles 95% of static asset requests, reducing origin server load from 100K to 5K requests per second, and dropping global p50 latency from 180ms to 25ms."
+
+---
+
+## Origin Server vs. Edge Server
+
+Understanding the distinction between origin and edge servers is fundamental to CDN architecture.
+
+### Origin Server
+
+The **origin server** is the authoritative source of truth for your content. It hosts the original, canonical version of all files and data. When content isn't available at an edge location, the CDN fetches it from the origin.
+
+**Characteristics:**
+- Single location (or small number of replicated data centers)
+- Contains the master copy of all content
+- Handles cache misses from edge servers
+- Typically where your application logic runs
+- Higher latency for distant users if accessed directly
+
+### Edge Server
+
+**Edge servers** (also called PoPs - Points of Presence) are CDN nodes distributed globally. They cache copies of content and serve users from the nearest location.
+
+**Characteristics:**
+- Hundreds to thousands of locations worldwide
+- Store cached copies of popular content
+- No application logic—just content delivery
+- Optimized for fast reads and high throughput
+- Automatically route users to nearest healthy node
+
+```mermaid
+flowchart LR
+    subgraph Origin_Characteristics [Origin Server]
+        O1[Single Location]
+        O2[Master Data Copy]
+        O3[Application Logic]
+        O4[Handles Cache Misses]
+    end
+
+    subgraph Edge_Characteristics [Edge Server]
+        E1[Global Distribution]
+        E2[Cached Copies]
+        E3[No App Logic]
+        E4[Optimized for Speed]
+    end
+
+    User([User Request]) --> Decision{Content<br/>Cached?}
+    Decision -->|Yes - Cache HIT| Edge_Characteristics
+    Decision -->|No - Cache MISS| Origin_Characteristics
+    Origin_Characteristics -->|Populate Cache| Edge_Characteristics
+    Edge_Characteristics -->|Response| User
+
+    style Decision fill:#FFD700,stroke:#333
+    style Origin_Characteristics fill:#FFB6C1,stroke:#333
+    style Edge_Characteristics fill:#90EE90,stroke:#333
+```
+
+### Comparison Table
+
+| Aspect | Origin Server | Edge Server |
+|--------|---------------|-------------|
+| **Location** | Centralized (1-3 data centers) | Distributed (100s of PoPs) |
+| **Content** | Original, authoritative | Cached copies |
+| **Latency to User** | High (100-300ms globally) | Low (10-50ms) |
+| **Traffic Volume** | Low (only cache misses) | High (serves most requests) |
+| **Cost** | Higher compute costs | Higher bandwidth costs |
+| **Failure Impact** | Critical—affects cache refills | Minimal—traffic reroutes |
+
+**Interview tip:** "The origin is like a warehouse storing all inventory, while edge servers are local stores. Customers shop at local stores for speed, but the warehouse restocks them and handles special orders."
