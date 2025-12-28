@@ -2418,3 +2418,331 @@ Redis offers several eviction policies that combine these strategies:
 | `volatile-ttl` | Evict keys with shortest TTL |
 
 **Interview tip:** "We used `allkeys-lru` because our workload was general-purpose with no clear frequency pattern. If we had a stable hot set, we'd consider `allkeys-lfu`."
+
+---
+
+## Caching Challenges
+
+Caching introduces complexity. Understanding these challenges and their solutions is critical for system design interviews.
+
+### 1. Cache Stampede (Thundering Herd)
+
+When a popular cache entry expires, hundreds of concurrent requests simultaneously hit the database to regenerate it.
+
+```mermaid
+sequenceDiagram
+    participant R1 as Request 1
+    participant R2 as Request 2
+    participant R3 as Request N...
+    participant Cache as Cache
+    participant DB as Database
+
+    Note over Cache: Key "hot_item" expires
+    R1->>Cache: GET hot_item
+    R2->>Cache: GET hot_item
+    R3->>Cache: GET hot_item
+    Cache-->>R1: MISS
+    Cache-->>R2: MISS
+    Cache-->>R3: MISS
+    R1->>DB: Query (expensive)
+    R2->>DB: Query (expensive)
+    R3->>DB: Query (expensive)
+    Note over DB: Database overwhelmed!
+```
+
+**Solutions:**
+
+| Solution | How It Works | Trade-off |
+|----------|--------------|-----------|
+| **Locking** | First request acquires lock, others wait | Adds latency for waiting requests |
+| **Probabilistic Early Refresh** | Randomly refresh before TTL expires | May refresh unnecessarily |
+| **Stale-While-Revalidate** | Serve stale data while refreshing in background | Brief staleness |
+
+**Locking implementation:**
+```
+def get_with_lock(key):
+    data = cache.get(key)
+    if data is not None:
+        return data
+
+    # Try to acquire lock
+    if cache.set(f"lock:{key}", "1", nx=True, ttl=30):
+        # Won the lock, fetch from DB
+        data = db.query(key)
+        cache.set(key, data, ttl=3600)
+        cache.delete(f"lock:{key}")
+        return data
+    else:
+        # Another request is fetching, wait and retry
+        time.sleep(0.1)
+        return get_with_lock(key)
+```
+
+---
+
+### 2. Cache Penetration
+
+Queries for data that doesn't exist bypass the cache and always hit the database.
+
+```
+Request: GET user:999999 (doesn't exist)
+Cache: MISS
+DB: NULL
+Cache: Nothing to cache → Next request hits DB again
+```
+
+**Attack vector:** Malicious users can flood your system with requests for non-existent keys.
+
+**Solutions:**
+
+| Solution | How It Works |
+|----------|--------------|
+| **Cache Null Values** | Store `NULL` with short TTL: `cache.set("user:999", NULL, ttl=60)` |
+| **Bloom Filter** | Probabilistic filter that quickly rejects non-existent keys |
+
+**Bloom filter approach:**
+```mermaid
+flowchart LR
+    Request[Request] --> Bloom{Bloom Filter}
+    Bloom -->|Definitely NOT exists| Return[Return 404]
+    Bloom -->|Might exist| Cache{Cache}
+    Cache -->|HIT| Return2[Return data]
+    Cache -->|MISS| DB[(Database)]
+```
+
+---
+
+### 3. Cache Breakdown (Hot Key Problem)
+
+A single extremely popular key expires, causing massive load on one database shard.
+
+**Different from stampede:** Stampede affects many keys; breakdown is about one ultra-hot key.
+
+**Solutions:**
+
+| Solution | Description |
+|----------|-------------|
+| **Never expire hot keys** | Remove TTL for critical keys, invalidate manually |
+| **Mutex/Lock** | Same as stampede solution |
+| **Replicate hot keys** | Store copies across multiple cache nodes |
+
+---
+
+### 4. Cache Avalanche
+
+Many cache entries expire simultaneously, causing massive database load.
+
+**Common cause:** Server restart clears all cache, or all keys were set with the same TTL.
+
+**Solutions:**
+
+| Solution | Description |
+|----------|-------------|
+| **Jittered TTL** | Add random offset: `ttl = base_ttl + random(0, 300)` |
+| **Warm-up on restart** | Pre-populate cache before accepting traffic |
+| **Circuit breaker** | Fail fast if DB is overwhelmed |
+
+```
+# Add jitter to prevent synchronized expiration
+base_ttl = 3600
+jitter = random.randint(0, 300)
+cache.set(key, value, ttl=base_ttl + jitter)
+```
+
+---
+
+### 5. Data Inconsistency
+
+Cache and database can become out of sync due to failed updates, race conditions, or network partitions.
+
+**Classic race condition:**
+```
+Time 1: Thread A reads user (version 1) from DB
+Time 2: Thread B updates user to version 2 in DB
+Time 3: Thread B invalidates cache
+Time 4: Thread A writes version 1 to cache ← STALE!
+```
+
+**Solutions:**
+
+| Solution | Description |
+|----------|-------------|
+| **Delete, don't update** | Always invalidate instead of updating cache |
+| **Read-your-writes** | After write, read from DB (not cache) |
+| **Versioning** | Include version in cache key or value |
+| **Short TTL** | Limit staleness window |
+
+---
+
+### Challenge Summary Table
+
+| Challenge | Symptom | Primary Solution |
+|-----------|---------|------------------|
+| **Stampede** | DB spike when popular key expires | Locking or stale-while-revalidate |
+| **Penetration** | DB hit for non-existent data | Cache nulls + Bloom filter |
+| **Breakdown** | Single hot key overwhelms DB | Never-expire + replication |
+| **Avalanche** | Mass expiration crashes DB | Jittered TTL |
+| **Inconsistency** | Stale data served | Delete-based invalidation |
+
+---
+
+## Distributed Caching
+
+When a single cache server isn't enough, you need a distributed cache cluster. This introduces new challenges around data distribution and consistency.
+
+### Cache Topologies
+
+#### 1. Replicated Cache
+
+Every node holds a complete copy of all data.
+
+```mermaid
+flowchart TB
+    App[Application]
+    App --> Node1[Cache Node 1<br/>Full Copy]
+    App --> Node2[Cache Node 2<br/>Full Copy]
+    App --> Node3[Cache Node 3<br/>Full Copy]
+```
+
+| Pros | Cons |
+|------|------|
+| Any node can serve any request | Limited by smallest node's memory |
+| High availability | Write amplification (update all nodes) |
+| Simple reads | Consistency challenges |
+
+**Best for:** Small datasets that are read-heavy.
+
+---
+
+#### 2. Partitioned (Sharded) Cache
+
+Data is divided across nodes. Each key lives on one node.
+
+```mermaid
+flowchart TB
+    App[Application]
+    App --> Router{Hash Router}
+    Router -->|Keys A-M| Node1[Cache Node 1]
+    Router -->|Keys N-Z| Node2[Cache Node 2]
+```
+
+**How to route:** Use consistent hashing to determine which node owns a key.
+
+| Pros | Cons |
+|------|------|
+| Scales horizontally | Node failure loses that shard's data |
+| Large total capacity | Cross-shard operations expensive |
+| Write scales linearly | Hot keys can overload one node |
+
+**Best for:** Large datasets, write-heavy workloads.
+
+---
+
+### Consistent Hashing
+
+Traditional hashing (`hash(key) % num_nodes`) breaks when nodes are added/removed — nearly all keys remap.
+
+Consistent hashing minimizes key movement when the cluster changes.
+
+```mermaid
+flowchart LR
+    subgraph Ring [Hash Ring]
+        direction TB
+        N1((Node A<br/>pos: 90))
+        N2((Node B<br/>pos: 180))
+        N3((Node C<br/>pos: 270))
+    end
+
+    K1[Key X<br/>hash: 100] -.->|Maps to| N2
+    K2[Key Y<br/>hash: 200] -.->|Maps to| N3
+    K3[Key Z<br/>hash: 50] -.->|Maps to| N1
+```
+
+**Rule:** A key maps to the first node clockwise from its hash position.
+
+**When Node B fails:** Only keys between A and B remap to C. Other keys unchanged.
+
+| Operation | Keys Remapped |
+|-----------|---------------|
+| Add node | ~1/N of keys (N = total nodes) |
+| Remove node | ~1/N of keys |
+
+**Virtual nodes:** Each physical node gets multiple positions on the ring to ensure even distribution.
+
+---
+
+### Redis vs Memcached
+
+| Feature | Redis | Memcached |
+|---------|-------|-----------|
+| **Data Structures** | Strings, Lists, Sets, Hashes, Sorted Sets | Strings only |
+| **Persistence** | RDB snapshots, AOF logs | None (pure cache) |
+| **Replication** | Built-in master-replica | None |
+| **Clustering** | Redis Cluster (auto-sharding) | Client-side sharding |
+| **Memory Efficiency** | Higher overhead | More efficient for simple K/V |
+| **Pub/Sub** | Yes | No |
+| **Lua Scripting** | Yes | No |
+
+**When to use Redis:** Need data structures, persistence, or pub/sub.
+
+**When to use Memcached:** Simple key-value, maximum memory efficiency, multi-threaded performance.
+
+---
+
+## Cache Performance Metrics
+
+Monitor these metrics to understand cache health:
+
+| Metric | Formula | Target |
+|--------|---------|--------|
+| **Hit Rate** | Hits / (Hits + Misses) | > 90% for most workloads |
+| **Miss Rate** | Misses / (Hits + Misses) | < 10% |
+| **Latency (p50/p99)** | Time to serve request | p99 < 5ms for Redis |
+| **Eviction Rate** | Evictions per second | Low (if high, increase memory) |
+| **Memory Usage** | Used / Total | 70-85% (leave room for spikes) |
+
+**Hit rate interpretation:**
+- **< 50%:** Cache is ineffective. Check key design, TTL, or access patterns.
+- **50-80%:** Room for improvement. Tune TTL or increase capacity.
+- **> 90%:** Healthy cache. Monitor for changes.
+
+---
+
+## Interview Checklist
+
+| Topic | Key Points to Mention |
+|-------|----------------------|
+| **Why cache** | Reduce latency, offload DB, enable scale |
+| **Cache-aside vs read-through** | Application vs cache manages loading |
+| **Write strategies** | Write-through (consistent), write-behind (fast), write-around (write-heavy) |
+| **Invalidation** | TTL (simple), event-based (consistent), version-based (assets) |
+| **Eviction** | LRU (default), LFU (stable hot set), understand Redis policies |
+| **Challenges** | Stampede (locking), penetration (bloom filter), avalanche (jitter) |
+| **Distributed** | Consistent hashing, Redis Cluster vs Memcached |
+| **Metrics** | Hit rate > 90%, p99 latency, eviction rate |
+
+### Common Interview Questions
+
+**"How would you cache user sessions?"**
+- Use Redis with `allkeys-lru` eviction
+- Key: `session:{session_id}`, Value: user data (JSON)
+- TTL: 30 minutes, refresh on activity
+- Consider: sticky sessions vs distributed cache trade-off
+
+**"Design a cache for a news feed"**
+- Cache recent posts per user: `feed:{user_id}`
+- Cache individual posts: `post:{post_id}`
+- Invalidation: Event-driven when new post created
+- Challenge: Fan-out on write vs fan-out on read
+
+**"How do you handle cache warming after deployment?"**
+- Pre-populate cache before routing traffic
+- Gradual traffic shift (canary deployment)
+- Accept higher miss rate initially, monitor hit rate recovery
+- Consider: lazy loading vs eager loading trade-offs
+
+**"Cache consistency between microservices?"**
+- Shared Redis cluster vs per-service cache
+- Event bus for invalidation (Kafka, Redis Pub/Sub)
+- Accept eventual consistency with short TTL
+- Consider: who owns the data vs who caches it
