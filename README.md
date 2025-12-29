@@ -1912,13 +1912,6 @@ CDNs use DNS to direct users to the nearest edge server.
 - CDN for static assets (stateless, cache at edge)
 - Anycast for DNS resolution itself
 - Consider: data replication, consistency trade-offs
-| Reduced latency (users connect to nearby servers) | IP geolocation accuracy varies |
-| Improved performance and user experience | VPN/proxy users may get wrong region |
-| Data sovereignty compliance | DNS caching can cause stale routing |
-| Traffic localization | Complex configuration and testing |
-| Disaster recovery (route away from failed regions) | EDNS Client Subnet not universally supported |
-
-### Anycast Routing
 
 Anycast is a network addressing method where the same IP address is announced from multiple geographic locations. Traffic is automatically routed to the nearest (topologically) location.
 
