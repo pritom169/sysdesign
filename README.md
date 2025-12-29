@@ -1913,42 +1913,6 @@ CDNs use DNS to direct users to the nearest edge server.
 - Anycast for DNS resolution itself
 - Consider: data replication, consistency trade-offs
 
-Anycast is a network addressing method where the same IP address is announced from multiple geographic locations. Traffic is automatically routed to the nearest (topologically) location.
-
-#### Unicast vs Anycast
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    UNICAST Routing                              │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  IP 192.168.1.1 exists at ONE location only                     │
-│                                                                 │
-│  User (Tokyo) ──────────────────────────► Server (New York)     │
-│                    ~200ms latency                               │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                    ANYCAST Routing                              │
-├──────────────────��──────────────────────────────────────────────┤
-│                                                                 │
-│  IP 192.168.1.1 announced from MULTIPLE locations               │
-│                                                                 │
-│  User (Tokyo) ─────► Server (Tokyo)      ~10ms latency          │
-│                      192.168.1.1                                │
-│                                                                 │
-│  User (London) ────► Server (London)     ~5ms latency           │
-│                      192.168.1.1                                │
-│                                                                 │
-│  User (NYC) ───────► Server (New York)   ~3ms latency           │
-│                      192.168.1.1                                │
-│                                                                 │
-│  Same IP, different physical servers!                           │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
-
 ```mermaid
 flowchart TB
     subgraph Users [Users Worldwide]
