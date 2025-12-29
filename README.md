@@ -1810,149 +1810,16 @@ sequenceDiagram
 | **NS** | Authoritative nameservers | Delegation |
 | **MX** | Mail servers (with priority) | Email routing |
 
-### DNS Resolver Types
+### TTL (Time To Live)
 
-```mermaid
-flowchart LR
-    subgraph Client_Side [Client Side]
-        APP[Application]
-        STUB[Stub Resolver]
-    end
+TTL controls how long DNS records are cached. This is crucial for system design trade-offs.
 
-    subgraph Network [Network Infrastructure]
-        REC[Recursive Resolver<br/>ISP/Public DNS]
-        CACHE[Caching-Only<br/>Resolver]
-        FWD[Forwarder]
-    end
+| TTL | Trade-off | When to Use |
+|-----|-----------|-------------|
+| **Low (60-300s)** | More DNS queries, faster failover | During migrations, active incident response |
+| **High (1hr-1day)** | Fewer queries, slower propagation | Stable infrastructure |
 
-    subgraph DNS_Servers [DNS Servers]
-        ROOT[Root]
-        TLD[TLD]
-        AUTH[Authoritative]
-    end
-
-    APP --> STUB
-    STUB --> REC
-    REC --> CACHE
-    CACHE --> FWD
-    FWD --> ROOT
-    ROOT --> TLD
-    TLD --> AUTH
-
-    style STUB fill:#3498db,stroke:#333,color:white
-    style REC fill:#9b59b6,stroke:#333,color:white
-    style CACHE fill:#1abc9c,stroke:#333,color:white
-    style FWD fill:#e67e22,stroke:#333,color:white
-```
-
-| Resolver Type | Location | Function | Caching |
-|---------------|----------|----------|---------|
-| **Stub Resolver** | Client OS | Minimal resolver; forwards queries to recursive resolver | Local cache (OS-level) |
-| **Recursive Resolver** | ISP/Public DNS (8.8.8.8, 1.1.1.1) | Does full resolution on behalf of client; traverses hierarchy | Yes, respects TTL |
-| **Caching-Only Resolver** | Corporate network | Only caches results; no authoritative data | Primary function |
-| **Forwarder** | Enterprise network | Forwards queries to upstream resolver instead of iterating | Optional |
-| **Iterative (Non-Recursive) Resolver** | DNS servers | Returns best known answer or referral; doesn't chase referrals | Limited |
-
-### The DNS Lookup Process
-
-```mermaid
-sequenceDiagram
-    participant Browser
-    participant StubResolver as Stub Resolver<br/>(OS)
-    participant RecursiveResolver as Recursive Resolver<br/>(ISP/Public DNS)
-    participant RootServer as Root Server
-    participant TLDServer as TLD Server<br/>(.com)
-    participant AuthServer as Authoritative Server<br/>(example.com)
-
-    Browser->>StubResolver: 1. Resolve www.example.com
-    Note over StubResolver: Check local cache
-    StubResolver->>RecursiveResolver: 2. Query www.example.com
-    Note over RecursiveResolver: Check cache (miss)
-
-    RecursiveResolver->>RootServer: 3. Query www.example.com
-    RootServer-->>RecursiveResolver: 4. Referral: Ask .com TLD servers
-
-    RecursiveResolver->>TLDServer: 5. Query www.example.com
-    TLDServer-->>RecursiveResolver: 6. Referral: Ask ns1.example.com
-
-    RecursiveResolver->>AuthServer: 7. Query www.example.com
-    AuthServer-->>RecursiveResolver: 8. Answer: 93.184.216.34 (TTL: 300)
-
-    Note over RecursiveResolver: Cache result for 300s
-    RecursiveResolver-->>StubResolver: 9. Answer: 93.184.216.34
-    Note over StubResolver: Cache result
-    StubResolver-->>Browser: 10. IP: 93.184.216.34
-
-    Browser->>Browser: 11. Connect to 93.184.216.34
-```
-
-#### Step-by-Step Resolution
-
-| Step | Action | Actor |
-|------|--------|-------|
-| 1 | User types `www.example.com` in browser | User/Browser |
-| 2 | Browser checks its DNS cache | Browser |
-| 3 | OS stub resolver checks `/etc/hosts` and OS cache | Stub Resolver |
-| 4 | Query sent to configured recursive resolver | Stub Resolver |
-| 5 | Recursive resolver checks its cache | Recursive Resolver |
-| 6 | Query root server → receives TLD referral | Recursive Resolver |
-| 7 | Query TLD server → receives authoritative referral | Recursive Resolver |
-| 8 | Query authoritative server → receives IP address | Recursive Resolver |
-| 9 | Response cached and returned to client | Recursive Resolver |
-| 10 | Browser connects to IP address | Browser |
-
-### DNS Caching Layers
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Browser Cache                            │
-│                    (Chrome: chrome://net-internals/#dns)        │
-├─────────────────────────────────────────────────────────────────┤
-│                     Operating System Cache                      │
-│           (Linux: systemd-resolved, macOS: mDNSResponder)       │
-├─────────────────────────────────────────────────────────────────┤
-│                   Local Network (Router/Proxy)                  │
-├─────────────────────────────────────────────────────────────────┤
-│                    ISP Recursive Resolver                       │
-│                    (or Public: 8.8.8.8, 1.1.1.1)                │
-├─────────────────────────────────────────────────────────────────┤
-│              Authoritative Server (Source of Truth)             │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-| Cache Level | TTL Control | Flush Command |
-|-------------|-------------|---------------|
-| Browser | Respects DNS TTL | Chrome: `chrome://net-internals/#dns` → Clear |
-| OS (macOS) | Respects TTL | `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
-| OS (Linux) | Respects TTL | `sudo systemd-resolve --flush-caches` |
-| OS (Windows) | Respects TTL | `ipconfig /flushdns` |
-
-### Recursive vs Iterative DNS Queries
-
-```mermaid
-flowchart LR
-    subgraph Recursive_Query [Recursive Query]
-        direction TB
-        C1[Client] -->|"Query: example.com"| R1[Recursive Resolver]
-        R1 -->|"Does all the work"| R1
-        R1 -->|"Final Answer: 93.184.216.34"| C1
-    end
-
-    subgraph Iterative_Query [Iterative Query]
-        direction TB
-        R2[Recursive Resolver] -->|"Query"| ROOT2[Root Server]
-        ROOT2 -->|"Referral: Ask .com"| R2
-        R2 -->|"Query"| TLD2[TLD Server]
-        TLD2 -->|"Referral: Ask ns1.example.com"| R2
-        R2 -->|"Query"| AUTH2[Auth Server]
-        AUTH2 -->|"Answer: 93.184.216.34"| R2
-    end
-```
-
-| Query Type | Description | Who Does the Work | Flag in DNS |
-|------------|-------------|-------------------|-------------|
-| **Recursive** | Client asks resolver to provide the final answer; resolver must fully resolve or return an error | Resolver does all work on behalf of client | RD (Recursion Desired) = 1 |
-| **Iterative** | Each server returns the best answer it has (either the answer or a referral to another server) | Querying resolver follows referrals itself | RD = 0 |
+**Interview insight:** Before a migration, lower TTL days in advance. After stable, raise it back.
 
 #### How They Work Together
 
