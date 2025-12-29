@@ -1764,19 +1764,12 @@ Example: urn:isbn:978-0-123-45678-9 (This is the International Standard Book Num
 
 ## DNS (Domain Name System)
 
-### What is DNS?
+DNS is a hierarchical, distributed naming system that translates domain names (e.g., `www.google.com`) into IP addresses (e.g., `142.250.190.4`). It's the internet's phonebook.
 
-DNS is a hierarchical, distributed naming system that translates human-readable domain names (e.g., `www.google.com`) into machine-readable IP addresses (e.g., `142.250.190.4`). It functions as the internet's phonebook.
-
-### Purpose and Importance of DNS
-
-| Purpose | Description |
-|---------|-------------|
-| **Human Usability** | Allows users to access websites using memorable names instead of IP addresses |
-| **Abstraction** | Decouples domain names from underlying IP addresses, enabling server migrations without user impact |
-| **Load Distribution** | Returns multiple IP addresses for a single domain to distribute traffic |
-| **Redundancy** | Distributed architecture ensures no single point of failure |
-| **Scalability** | Hierarchical design handles billions of queries daily |
+**Why DNS matters in system design:**
+- Enables server migrations without user impact (abstraction layer)
+- First layer of load distribution and traffic management
+- Critical for global scale (CDNs, geo-routing, failover)
 
 ### DNS Components and Terminology
 
