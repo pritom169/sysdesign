@@ -1771,78 +1771,44 @@ DNS is a hierarchical, distributed naming system that translates domain names (e
 - First layer of load distribution and traffic management
 - Critical for global scale (CDNs, geo-routing, failover)
 
-### DNS Components and Terminology
-
-#### Domain Names Structure
-
-```
-        ┌─────────────────────────────────────────────────────────┐
-        │              mail.support.example.com                   │
-        └─────────────────────────────────────────────────────────┘
-                │         │          │         │
-                ▼         ▼          ▼         ▼
-        ┌───────────┬──────────┬──────────┬─────────┐
-        │ Subdomain │ Subdomain│  SLD     │  TLD    │
-        │  (mail)   │(support) │(example) │ (.com)  │
-        └───────────┴──────────┴──────────┴─────────┘
-                          │
-                          ▼
-              Second-Level Domain (SLD)
-```
-
-| Component | Description | Examples |
-|-----------|-------------|----------|
-| **TLD (Top-Level Domain)** | Rightmost label in domain name | `.com`, `.org`, `.net`, `.io`, `.gov` |
-| **SLD (Second-Level Domain)** | Directly left of TLD, typically the brand/organization | `google` in `google.com` |
-| **Subdomain** | Any label to the left of SLD | `www`, `mail`, `api`, `blog` |
-| **FQDN (Fully Qualified Domain Name)** | Complete domain path ending with root (.) | `www.example.com.` |
-
-#### TLD Types
-
-| Type | Description | Examples |
-|------|-------------|----------|
-| **gTLD** (Generic) | Open registration, general purpose | `.com`, `.org`, `.net`, `.info` |
-| **ccTLD** (Country Code) | Reserved for countries/territories | `.us`, `.uk`, `.de`, `.jp` |
-| **sTLD** (Sponsored) | Restricted to specific communities | `.edu`, `.gov`, `.mil` |
-| **Infrastructure** | Technical operations | `.arpa` |
-
-### DNS Server Types
+### DNS Hierarchy and Resolution
 
 ```mermaid
-flowchart TB
-    subgraph DNS_Hierarchy [DNS Server Hierarchy]
-        ROOT[("Root Name Servers<br/>13 logical servers (a-m)<br/>Know TLD server locations")]
-        TLD[("TLD Name Servers<br/>Manage .com, .org, .net, etc.<br/>Know authoritative server locations")]
-        AUTH[("Authoritative Name Servers<br/>Hold actual DNS records<br/>Final source of truth")]
-    end
+sequenceDiagram
+    participant Client
+    participant Resolver as Recursive Resolver<br/>(8.8.8.8)
+    participant Root as Root Server
+    participant TLD as TLD Server (.com)
+    participant Auth as Authoritative Server
 
-    ROOT --> TLD
-    TLD --> AUTH
-
-    style ROOT fill:#e74c3c,stroke:#333,stroke-width:2px,color:white
-    style TLD fill:#f39c12,stroke:#333,stroke-width:2px,color:white
-    style AUTH fill:#27ae60,stroke:#333,stroke-width:2px,color:white
+    Client->>Resolver: Resolve www.example.com
+    Note over Resolver: Cache miss
+    Resolver->>Root: Where is .com?
+    Root-->>Resolver: Ask TLD servers at X
+    Resolver->>TLD: Where is example.com?
+    TLD-->>Resolver: Ask ns1.example.com
+    Resolver->>Auth: What is www.example.com?
+    Auth-->>Resolver: 93.184.216.34 (TTL: 300)
+    Note over Resolver: Cache for 300s
+    Resolver-->>Client: 93.184.216.34
 ```
 
-| Server Type | Function | Count/Scale |
-|-------------|----------|-------------|
-| **Root Name Servers** | Entry point to DNS hierarchy; directs queries to appropriate TLD servers | 13 logical servers (A-M), ~1500+ physical instances globally via anycast |
-| **TLD Name Servers** | Manage domains under specific TLDs; point to authoritative servers | Operated by registries (Verisign for .com, PIR for .org) |
-| **Authoritative Name Servers** | Store actual DNS records for domains; provide definitive answers | Managed by domain owners or DNS providers |
+| Server Type | Role |
+|-------------|------|
+| **Root Servers** | 13 logical servers (A-M), ~1500+ instances via anycast. Entry point to hierarchy |
+| **TLD Servers** | Manage .com, .org, etc. Point to authoritative servers |
+| **Authoritative Servers** | Hold actual DNS records. Source of truth for a domain |
+| **Recursive Resolver** | Does the heavy lifting for clients. Caches results |
 
-### DNS Record Types
+### Essential DNS Records
 
-| Record | Purpose | Example |
-|--------|---------|---------|
-| **A** | Maps domain to IPv4 address | `example.com → 93.184.216.34` |
-| **AAAA** | Maps domain to IPv6 address | `example.com → 2606:2800:220:1:248:1893:25c8:1946` |
-| **CNAME** | Alias pointing to another domain | `www.example.com → example.com` |
-| **MX** | Mail server for domain (with priority) | `example.com → mail.example.com (priority: 10)` |
-| **NS** | Authoritative name servers for domain | `example.com → ns1.example.com` |
-| **TXT** | Arbitrary text (SPF, DKIM, verification) | `v=spf1 include:_spf.google.com ~all` |
-| **SOA** | Start of Authority; zone metadata | Serial number, refresh intervals, admin contact |
-| **PTR** | Reverse DNS; IP to domain mapping | `34.216.184.93.in-addr.arpa → example.com` |
-| **SRV** | Service location (port, priority, weight) | `_sip._tcp.example.com → sipserver.example.com:5060` |
+| Record | Purpose | System Design Use |
+|--------|---------|-------------------|
+| **A** | Domain → IPv4 | Basic mapping, multiple for load balancing |
+| **AAAA** | Domain → IPv6 | IPv6 support |
+| **CNAME** | Alias → another domain | CDN integration (`cdn.example.com → d123.cloudfront.net`) |
+| **NS** | Authoritative nameservers | Delegation |
+| **MX** | Mail servers (with priority) | Email routing |
 
 ### DNS Resolver Types
 
