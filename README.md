@@ -1821,197 +1821,97 @@ TTL controls how long DNS records are cached. This is crucial for system design 
 
 **Interview insight:** Before a migration, lower TTL days in advance. After stable, raise it back.
 
-#### How They Work Together
+### DNS-Based Load Balancing
+
+#### Round-Robin DNS
+
+Multiple A records for the same domain, rotated in responses.
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Client (Browser/App)                                                       │
-│     │                                                                       │
-│     │ ════════════════════════════════════════════════════════════════════  │
-│     │   RECURSIVE QUERY (RD=1)                                              │
-│     │   "Give me the final answer for example.com"                          │
-│     ▼                                                                       │
-│  Recursive Resolver (ISP/Public DNS)                                        │
-│     │                                                                       │
-│     │ ────────────────────────────────────────────────────────────────────  │
-│     │   ITERATIVE QUERIES (RD=0)                                            │
-│     │   "What do you know about example.com?"                               │
-│     │                                                                       │
-│     ├──────► Root Server ──────► "I don't know, ask .com TLD"               │
-│     │                                                                       │
-│     ├──────► .com TLD ──────► "I don't know, ask ns1.example.com"           │
-│     │                                                                       │
-│     └──────► ns1.example.com ──────► "Here's the IP: 93.184.216.34"         │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+example.com.  A  192.168.1.1
+example.com.  A  192.168.1.2
+example.com.  A  192.168.1.3
 ```
 
-| Aspect | Recursive | Iterative |
-|--------|-----------|-----------|
-| **Client complexity** | Simple (just wait for answer) | Complex (must follow referrals) |
-| **Server load** | High (does full resolution) | Low (just returns what it knows) |
-| **Typical usage** | Client → Recursive Resolver | Recursive Resolver → DNS Hierarchy |
-| **Caching benefit** | Resolver caches for all clients | Limited caching |
+| Pros | Cons |
+|------|------|
+| Zero infrastructure cost | No health checks |
+| Simple to implement | Client caching breaks distribution |
+| Works everywhere | No awareness of server load |
 
-### TTL (Time To Live)
+**When to use:** Basic redundancy for stateless services. Never as sole load balancing for production.
 
-TTL defines how long (in seconds) a DNS record can be cached before requiring re-query.
+#### Geo-DNS
 
-| TTL Value | Use Case |
-|-----------|----------|
-| **Low (60-300s)** | Frequently changing IPs, failover scenarios, during migrations |
-| **Medium (3600s/1hr)** | Standard websites, balanced freshness/performance |
-| **High (86400s/1day+)** | Stable infrastructure, reduce DNS load |
+Returns different IPs based on client location.
 
-#### TTL Mechanics
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    TTL Countdown Example                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Authoritative Server sets: example.com A 93.184.216.34 TTL=300 │
-│                                                                 │
-│  t=0s    Resolver receives record, caches with TTL=300          │
-│  t=100s  Client queries → Cache HIT, returns with TTL=200       │
-│  t=250s  Client queries → Cache HIT, returns with TTL=50        │
-│  t=300s  TTL expires → Cache entry removed                      │
-│  t=301s  Client queries → Cache MISS, must query upstream       │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    US[User USA] -->|Query| DNS[Geo-DNS]
+    EU[User Europe] -->|Query| DNS
+    DNS -->|192.168.1.1| DC_US[US Datacenter]
+    DNS -->|192.168.2.1| DC_EU[EU Datacenter]
 ```
 
-| TTL Consideration | Impact |
-|-------------------|--------|
-| **Lower TTL** | More DNS queries, higher load, faster propagation of changes |
-| **Higher TTL** | Fewer queries, lower load, slower propagation (stale data risk) |
-| **TTL during migration** | Lower TTL before migration, raise after stable |
-| **Minimum TTL** | Some resolvers enforce minimum (e.g., 30s) regardless of record TTL |
+| Routing Policy | Use Case |
+|----------------|----------|
+| **Geographic** | Compliance, data residency |
+| **Latency-based** | Performance optimization |
+| **Failover** | Primary + secondary with health checks |
+| **Weighted** | Gradual rollouts, A/B testing |
 
-### Negative Caching
+**Limitation:** Relies on IP geolocation (VPN users get wrong region). Failover speed limited by TTL.
 
-Negative caching stores the **non-existence** of a DNS record, preventing repeated queries for domains that don't exist.
+### Anycast vs Geo-DNS
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Negative Caching Flow                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Client queries: nonexistent.example.com                        │
-│           │                                                     │
-│           ▼                                                     │
-│  Recursive Resolver → Authoritative Server                      │
-│           │                                                     │
-│           ▼                                                     │
-│  Response: NXDOMAIN (Name Error) + SOA record                   │
-│           │                                                     │
-│           ▼                                                     │
-│  Resolver caches: "nonexistent.example.com does NOT exist"      │
-│  Cache TTL = minimum of (SOA MINIMUM field, SOA TTL)            │
-│           │                                                     │
-│           ▼                                                     │
-│  Next query for same name → Immediate NXDOMAIN from cache       │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Aspect | Anycast | Geo-DNS |
+|--------|---------|---------|
+| **How it works** | Same IP announced from multiple locations via BGP | Different IPs returned based on client location |
+| **Routing layer** | Network (BGP) | Application (DNS) |
+| **Failover speed** | Seconds (BGP convergence) | Minutes (DNS TTL) |
+| **Best for** | Stateless (DNS, CDN) | Stateful applications |
+| **TCP sessions** | Can break on route changes | Stable |
 
-#### Negative Response Types
+**Key insight:** Public DNS resolvers (8.8.8.8, 1.1.1.1) use anycast. CDNs use both.
 
-| Response Code | Meaning | Cached? |
-|---------------|---------|---------|
-| **NXDOMAIN (RCODE 3)** | Domain name does not exist | Yes, with negative TTL |
-| **NODATA (RCODE 0, empty answer)** | Domain exists but requested record type doesn't | Yes, with negative TTL |
-| **SERVFAIL (RCODE 2)** | Server failure | Sometimes (shorter TTL) |
-| **REFUSED (RCODE 5)** | Server refuses to answer | Generally not cached |
+### CDN and DNS Integration
 
-#### SOA Record and Negative TTL
-
-The SOA (Start of Authority) record controls negative caching:
+CDNs use DNS to direct users to the nearest edge server.
 
 ```
-example.com.  IN  SOA  ns1.example.com. admin.example.com. (
-                    2024011501  ; Serial
-                    3600        ; Refresh (1 hour)
-                    600         ; Retry (10 minutes)
-                    604800      ; Expire (1 week)
-                    300         ; Minimum TTL (negative cache TTL)
-                )
+1. User requests cdn.example.com/image.jpg
+2. DNS: cdn.example.com → CNAME → d123.cloudfront.net
+3. CDN DNS returns nearest edge IP (using geo/anycast)
+4. Edge: Cache HIT → serve | Cache MISS → fetch from origin
 ```
 
-| SOA Field | Purpose |
-|-----------|---------|
-| **Minimum (last field)** | Maximum TTL for negative responses (RFC 2308) |
-| **SOA TTL** | TTL of the SOA record itself |
-| **Negative cache TTL** | `min(SOA Minimum, SOA TTL)` |
+**CNAME limitation:** Can't use CNAME at zone apex (`example.com`). Use ALIAS/ANAME records or CDN's anycast IP.
 
-#### Why Negative Caching Matters
+### Interview Checklist
 
-| Benefit | Description |
-|---------|-------------|
-| **Reduces load** | Prevents repeated queries for typos, non-existent subdomains |
-| **Faster failure** | Immediate NXDOMAIN response from cache |
-| **DDoS mitigation** | Limits impact of random subdomain attacks |
-| **Resource efficiency** | Saves bandwidth and server resources |
+| Topic | Key Points to Mention |
+|-------|----------------------|
+| **Resolution flow** | Client → Recursive Resolver → Root → TLD → Authoritative |
+| **Caching** | Multiple layers (browser, OS, resolver). TTL controls freshness |
+| **Load balancing** | Round-robin (simple), Geo-DNS (location), Anycast (network-level) |
+| **TTL trade-offs** | Low = fast failover + more queries. High = fewer queries + stale data |
+| **CDN integration** | CNAME to CDN, CDN resolves to edge. Mention cache HIT/MISS |
+| **Failover** | Health checks + DNS updates. Anycast faster than DNS-based |
 
-| Risk | Mitigation |
-|------|------------|
-| **Newly created domains not resolving** | Keep negative TTL reasonable (300-3600s) |
-| **Cached NXDOMAIN after domain registration** | Wait for negative cache to expire |
+### Common Interview Scenarios
 
-### DNS Security
+**"How would you handle a datacenter failover?"**
+- Lower TTL beforehand
+- Health checks detect failure
+- DNS stops returning failed DC's IP
+- Traffic shifts to healthy DC (delay = TTL)
+- For faster: use anycast or L4 load balancer
 
-| Threat | Description | Mitigation |
-|--------|-------------|------------|
-| **DNS Spoofing/Cache Poisoning** | Injecting false records into cache | DNSSEC |
-| **DNS Hijacking** | Redirecting queries to malicious servers | DNSSEC, DNS over HTTPS/TLS |
-| **DNS Amplification (DDoS)** | Using DNS for volumetric attacks | Response Rate Limiting (RRL) |
-| **Man-in-the-Middle** | Intercepting DNS queries | DoH (DNS over HTTPS), DoT (DNS over TLS) |
-
-#### DNSSEC (DNS Security Extensions)
-
-Adds cryptographic signatures to DNS records to verify authenticity.
-
-| Record | Purpose |
-|--------|---------|
-| **RRSIG** | Contains signature for a record set |
-| **DNSKEY** | Public key used to verify signatures |
-| **DS** | Delegation Signer; links parent to child zone |
-| **NSEC/NSEC3** | Proves non-existence of a record |
-
-### Popular Public DNS Resolvers
-
-| Provider | Primary | Secondary | Features |
-|----------|---------|-----------|----------|
-| Google | `8.8.8.8` | `8.8.4.4` | Reliability, global anycast |
-| Cloudflare | `1.1.1.1` | `1.0.0.1` | Privacy-focused, fastest |
-| Quad9 | `9.9.9.9` | `149.112.112.112` | Malware blocking |
-| OpenDNS | `208.67.222.222` | `208.67.220.220` | Parental controls, filtering |
-
-### Round-Robin DNS
-
-Round-robin DNS is a simple load distribution technique where a single domain name maps to multiple IP addresses. The DNS server rotates through these addresses in each response, distributing traffic across multiple servers.
-
-#### How It Works
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Round-Robin DNS Example                      │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  DNS Record Configuration:                                      │
-│  example.com.  IN  A  192.168.1.1                               │
-│  example.com.  IN  A  192.168.1.2                               │
-│  example.com.  IN  A  192.168.1.3                               │
-│                                                                 │
-│  Query 1: example.com → [192.168.1.1, 192.168.1.2, 192.168.1.3] │
-│  Query 2: example.com → [192.168.1.2, 192.168.1.3, 192.168.1.1] │
-│  Query 3: example.com → [192.168.1.3, 192.168.1.1, 192.168.1.2] │
-│  Query 4: example.com → [192.168.1.1, 192.168.1.2, 192.168.1.3] │
-│                                                                 │
-│  Clients typically use the first IP in the response             │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+**"Design a globally distributed service"**
+- Geo-DNS for API servers (stateful, needs session affinity)
+- CDN for static assets (stateless, cache at edge)
+- Anycast for DNS resolution itself
+- Consider: data replication, consistency trade-offs
 
 ```mermaid
 flowchart LR
