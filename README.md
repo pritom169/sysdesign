@@ -2311,5 +2311,115 @@ flowchart TB
 | Traffic localization | Complex configuration and testing |
 | Disaster recovery (route away from failed regions) | EDNS Client Subnet not universally supported |
 
+### Anycast Routing
 
+Anycast is a network addressing method where the same IP address is announced from multiple geographic locations. Traffic is automatically routed to the nearest (topologically) location.
+
+#### Unicast vs Anycast
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    UNICAST Routing                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  IP 192.168.1.1 exists at ONE location only                     │
+│                                                                 │
+│  User (Tokyo) ──────────────────────────► Server (New York)     │
+│                    ~200ms latency                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    ANYCAST Routing                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  IP 192.168.1.1 announced from MULTIPLE locations               │
+│                                                                 │
+│  User (Tokyo) ─────► Server (Tokyo)      ~10ms latency          │
+│                      192.168.1.1                                │
+│                                                                 │
+│  User (London) ────► Server (London)     ~5ms latency           │
+│                      192.168.1.1                                │
+│                                                                 │
+│  User (NYC) ───────► Server (New York)   ~3ms latency           │
+│                      192.168.1.1                                │
+│                                                                 │
+│  Same IP, different physical servers!                           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+```mermaid
+flowchart TB
+    subgraph Users [Users Worldwide]
+        U1[User Tokyo]
+        U2[User London]
+        U3[User NYC]
+    end
+
+    subgraph Internet [Internet / BGP Routing]
+        BGP[BGP Routes to<br/>Nearest Anycast Node]
+    end
+
+    subgraph Anycast [Anycast Nodes - Same IP: 1.1.1.1]
+        N1[Node Tokyo<br/>1.1.1.1]
+        N2[Node London<br/>1.1.1.1]
+        N3[Node NYC<br/>1.1.1.1]
+    end
+
+    U1 --> BGP
+    U2 --> BGP
+    U3 --> BGP
+
+    BGP -->|Shortest path| N1
+    BGP -->|Shortest path| N2
+    BGP -->|Shortest path| N3
+
+    style BGP fill:#9b59b6,stroke:#333,color:white
+    style N1 fill:#e74c3c,stroke:#333,color:white
+    style N2 fill:#e74c3c,stroke:#333,color:white
+    style N3 fill:#e74c3c,stroke:#333,color:white
+```
+
+#### How Anycast Works
+
+| Component | Description |
+|-----------|-------------|
+| **BGP (Border Gateway Protocol)** | Routes traffic based on network topology, not geography |
+| **AS (Autonomous System)** | Each anycast location announces the same IP from its AS |
+| **Routing Decision** | Internet routers select the "shortest" path (fewest AS hops, or lowest latency policy) |
+| **Automatic Failover** | If a node fails, BGP withdraws the route; traffic reroutes to next nearest |
+
+#### Anycast Use Cases
+
+| Use Case | Why Anycast | Example |
+|----------|-------------|---------|
+| **DNS Resolution** | Stateless, latency-sensitive | Cloudflare (1.1.1.1), Google (8.8.8.8) |
+| **CDN Edge Nodes** | Static content, any node can serve | Akamai, Cloudflare, Fastly |
+| **DDoS Mitigation** | Distributes attack traffic globally | Anycast-based scrubbing centers |
+| **NTP Servers** | Stateless time sync | pool.ntp.org |
+
+#### Anycast Challenges
+
+| Challenge | Description | Mitigation |
+|-----------|-------------|------------|
+| **TCP Persistence** | BGP route changes mid-connection break TCP sessions | Use for UDP/stateless protocols, or ensure stable routing |
+| **Debugging** | Hard to know which node handled a request | Add node identifier in responses |
+| **Uneven Distribution** | Traffic follows BGP topology, not load | Combine with load balancing at each node |
+| **Route Flapping** | Unstable announcements cause oscillation | Proper BGP damping configuration |
+
+#### Anycast vs Geo-DNS
+
+| Aspect | Anycast | Geo-DNS |
+|--------|---------|---------|
+| **Routing layer** | Network (BGP) | Application (DNS) |
+| **IP address** | Same IP everywhere | Different IPs per region |
+| **Decision maker** | Internet routers | DNS server |
+| **Failover speed** | Seconds (BGP convergence) | Minutes (DNS TTL) |
+| **Best for** | Stateless protocols (DNS, CDN) | Stateful applications |
+| **Configuration** | Requires BGP/AS setup | DNS provider config |
+
+### Content Delivery Networks (CDNs) and DNS
+
+A CDN is a geographically distributed network of servers that caches and delivers content from locations close to users. DNS plays a critical role in directing users to the optimal CDN edge server.
 
