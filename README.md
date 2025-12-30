@@ -2161,3 +2161,155 @@ Adds cryptographic signatures to DNS records to verify authenticity.
 | Quad9 | `9.9.9.9` | `149.112.112.112` | Malware blocking |
 | OpenDNS | `208.67.222.222` | `208.67.220.220` | Parental controls, filtering |
 
+### Round-Robin DNS
+
+Round-robin DNS is a simple load distribution technique where a single domain name maps to multiple IP addresses. The DNS server rotates through these addresses in each response, distributing traffic across multiple servers.
+
+#### How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Round-Robin DNS Example                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  DNS Record Configuration:                                      │
+│  example.com.  IN  A  192.168.1.1                               │
+│  example.com.  IN  A  192.168.1.2                               │
+│  example.com.  IN  A  192.168.1.3                               │
+│                                                                 │
+│  Query 1: example.com → [192.168.1.1, 192.168.1.2, 192.168.1.3] │
+│  Query 2: example.com → [192.168.1.2, 192.168.1.3, 192.168.1.1] │
+│  Query 3: example.com → [192.168.1.3, 192.168.1.1, 192.168.1.2] │
+│  Query 4: example.com → [192.168.1.1, 192.168.1.2, 192.168.1.3] │
+│                                                                 │
+│  Clients typically use the first IP in the response             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+```mermaid
+flowchart LR
+    subgraph Clients
+        C1[Client 1]
+        C2[Client 2]
+        C3[Client 3]
+    end
+
+    DNS[DNS Server<br/>Round-Robin]
+
+    subgraph Servers [Backend Servers]
+        S1[Server 1<br/>192.168.1.1]
+        S2[Server 2<br/>192.168.1.2]
+        S3[Server 3<br/>192.168.1.3]
+    end
+
+    C1 -->|Query 1| DNS
+    C2 -->|Query 2| DNS
+    C3 -->|Query 3| DNS
+
+    DNS -->|Returns .1 first| S1
+    DNS -->|Returns .2 first| S2
+    DNS -->|Returns .3 first| S3
+
+    style DNS fill:#3498db,stroke:#333,color:white
+```
+
+#### Advantages vs Limitations
+
+| Advantages | Limitations |
+|------------|-------------|
+| Simple to implement (just add multiple A records) | No health checking (sends traffic to dead servers) |
+| No additional infrastructure required | Uneven distribution due to client caching |
+| Works with any DNS server | No awareness of server load or capacity |
+| Cost-effective basic load distribution | DNS caching breaks even distribution |
+| Provides basic redundancy | No session persistence/affinity |
+
+
+### Geographically Distributed DNS Servers
+
+Geo-DNS (Geographic DNS) directs users to the nearest or most appropriate server based on their geographic location. This reduces latency and improves user experience.
+
+#### How Geo-DNS Works
+
+```mermaid
+flowchart TB
+    subgraph Users [Users Worldwide]
+        US[User in USA]
+        EU[User in Europe]
+        AS[User in Asia]
+    end
+
+    DNS[Geo-DNS Server]
+
+    subgraph DataCenters [Regional Data Centers]
+        DC_US[US Data Center<br/>us.example.com<br/>192.168.1.1]
+        DC_EU[EU Data Center<br/>eu.example.com<br/>192.168.2.1]
+        DC_AS[Asia Data Center<br/>asia.example.com<br/>192.168.3.1]
+    end
+
+    US -->|Query: example.com| DNS
+    EU -->|Query: example.com| DNS
+    AS -->|Query: example.com| DNS
+
+    DNS -->|Returns 192.168.1.1| DC_US
+    DNS -->|Returns 192.168.2.1| DC_EU
+    DNS -->|Returns 192.168.3.1| DC_AS
+
+    style DNS fill:#e74c3c,stroke:#333,color:white
+    style DC_US fill:#3498db,stroke:#333,color:white
+    style DC_EU fill:#27ae60,stroke:#333,color:white
+    style DC_AS fill:#f39c12,stroke:#333,color:white
+```
+
+#### Location Detection Methods
+
+| Method | Description | Accuracy |
+|--------|-------------|----------|
+| **Client IP Geolocation** | Maps client's IP to geographic location using databases (MaxMind, IP2Location) | City-level (~90%) |
+| **EDNS Client Subnet (ECS)** | Resolver sends client's subnet to authoritative server | More accurate for users behind large resolvers |
+| **Resolver Location** | Uses resolver's IP as proxy for client location | Less accurate (ISP resolver may be distant) |
+| **Latency-based** | Measures actual latency to determine closest server | Most accurate for performance |
+
+#### Geo-DNS Configuration Example
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Geo-DNS Zone Configuration                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ; Default (fallback) record                                    │
+│  example.com.     IN  A  192.168.1.1    ; US (default)          │
+│                                                                 │
+│  ; Geo-specific responses (configured in DNS provider)          │
+│  ; If client from Europe → return 192.168.2.1                   │
+│  ; If client from Asia   → return 192.168.3.1                   │
+│  ; If client from US     → return 192.168.1.1                   │
+│  ; Otherwise             → return 192.168.1.1 (default)         │
+│                                                                 │
+│  Providers: Route 53, Cloudflare, NS1, Dyn                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Geo-DNS Routing Policies
+
+| Policy | Description | Use Case |
+|--------|-------------|----------|
+| **Geographic** | Route based on user's continent/country/region | Regional compliance, language |
+| **Latency-based** | Route to lowest latency endpoint | Performance optimization |
+| **Geoproximity** | Route based on distance with adjustable bias | Traffic shifting between regions |
+| **Failover** | Primary + secondary with health checks | Disaster recovery |
+| **Weighted** | Distribute traffic by percentage | A/B testing, gradual rollouts |
+
+#### Benefits and Challenges
+
+| Benefits | Challenges |
+|----------|------------|
+| Reduced latency (users connect to nearby servers) | IP geolocation accuracy varies |
+| Improved performance and user experience | VPN/proxy users may get wrong region |
+| Data sovereignty compliance | DNS caching can cause stale routing |
+| Traffic localization | Complex configuration and testing |
+| Disaster recovery (route away from failed regions) | EDNS Client Subnet not universally supported |
+
+
+
