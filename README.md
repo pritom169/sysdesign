@@ -2423,3 +2423,160 @@ flowchart TB
 
 A CDN is a geographically distributed network of servers that caches and delivers content from locations close to users. DNS plays a critical role in directing users to the optimal CDN edge server.
 
+#### CDN Architecture
+
+```mermaid
+flowchart TB
+    subgraph Users [End Users]
+        U1[User NYC]
+        U2[User Tokyo]
+        U3[User London]
+    end
+
+    subgraph CDN_DNS [CDN DNS Infrastructure]
+        DNS[CDN DNS<br/>Geo + Latency Aware]
+    end
+
+    subgraph Edge [CDN Edge Servers / PoPs]
+        E1[Edge NYC<br/>cdn.example.com]
+        E2[Edge Tokyo<br/>cdn.example.com]
+        E3[Edge London<br/>cdn.example.com]
+    end
+
+    ORIGIN[Origin Server<br/>origin.example.com]
+
+    U1 -->|1. DNS Query| DNS
+    U2 -->|1. DNS Query| DNS
+    U3 -->|1. DNS Query| DNS
+
+    DNS -->|2. Returns nearest edge| E1
+    DNS -->|2. Returns nearest edge| E2
+    DNS -->|2. Returns nearest edge| E3
+
+    U1 -->|3. Request content| E1
+    U2 -->|3. Request content| E2
+    U3 -->|3. Request content| E3
+
+    E1 -.->|4. Cache miss: fetch from origin| ORIGIN
+    E2 -.->|4. Cache miss: fetch from origin| ORIGIN
+    E3 -.->|4. Cache miss: fetch from origin| ORIGIN
+
+    style DNS fill:#3498db,stroke:#333,color:white
+    style ORIGIN fill:#e74c3c,stroke:#333,color:white
+    style E1 fill:#27ae60,stroke:#333,color:white
+    style E2 fill:#27ae60,stroke:#333,color:white
+    style E3 fill:#27ae60,stroke:#333,color:white
+```
+
+#### How CDN DNS Resolution Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              CDN DNS Resolution Flow                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1. User requests: https://cdn.example.com/image.jpg            │
+│                                                                 │
+│  2. DNS query for cdn.example.com                               │
+│     └─► Returns CNAME: cdn.example.com.cdn-provider.net         │
+│                                                                 │
+│  3. DNS query for cdn.example.com.cdn-provider.net              │
+│     └─► CDN's authoritative DNS (uses Geo/Anycast)              │
+│     └─► Returns IP of nearest edge: 104.16.123.96               │
+│                                                                 │
+│  4. User connects to 104.16.123.96 (edge server)                │
+│                                                                 │
+│  5. Edge server:                                                │
+│     ├─► Cache HIT: Serve content directly                       │
+│     └─► Cache MISS: Fetch from origin, cache, serve             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### CDN DNS Setup (CNAME Method)
+
+| Record Type | Example | Purpose |
+|-------------|---------|---------|
+| **CNAME** | `cdn.example.com → d1234.cloudfront.net` | Delegates resolution to CDN's DNS |
+| **CDN resolves** | `d1234.cloudfront.net → 104.16.123.96` | CDN returns optimal edge IP |
+
+**Note:** CNAME at zone apex (example.com) is not allowed per DNS spec. Solutions:
+- Use ALIAS/ANAME records (provider-specific)
+- Use CDN's anycast IP directly with A record
+
+#### CDN Request Flow
+
+| Step | Action | Component |
+|------|--------|-----------|
+| 1 | User requests `cdn.example.com/asset.js` | Browser |
+| 2 | DNS resolves to CDN edge IP | DNS + CDN DNS |
+| 3 | Request sent to edge server | Browser → Edge |
+| 4 | Edge checks cache | CDN Edge |
+| 5a | **Cache HIT**: Return cached content | CDN Edge |
+| 5b | **Cache MISS**: Fetch from origin, cache, return | CDN Edge → Origin |
+
+#### CDN Routing Strategies
+
+| Strategy | Description | When Used |
+|----------|-------------|-----------|
+| **Geo-DNS** | Route based on client geographic location | Default for most CDNs |
+| **Latency-based** | Route to lowest latency edge | Performance-critical applications |
+| **Anycast** | Same IP announced from all PoPs | Cloudflare, Fastly approach |
+| **Performance-based** | Consider edge load, health, capacity | Advanced CDN optimization |
+
+#### CDN Benefits via DNS
+
+| Benefit | How DNS Enables It |
+|---------|-------------------|
+| **Reduced latency** | DNS directs to nearest edge server |
+| **Global load distribution** | DNS spreads traffic across PoPs |
+| **Failover** | DNS health checks route away from failed edges |
+| **Traffic management** | DNS-based routing policies (geo, weight, latency) |
+
+#### Major CDN Providers
+
+| Provider | DNS Approach | Notable Features |
+|----------|--------------|------------------|
+| **Cloudflare** | Anycast | Integrated DNS + CDN, DDoS protection |
+| **Akamai** | Geo-DNS | Largest network, enterprise focus |
+| **AWS CloudFront** | Geo + Latency (Route 53) | AWS integration, Lambda@Edge |
+| **Fastly** | Anycast | Real-time purging, edge compute |
+| **Google Cloud CDN** | Anycast | Google network, Cloud integration |
+
+#### CDN + DNS Integration Patterns
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    DNS Configuration Patterns                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Pattern 1: Full CDN (all traffic through CDN)                  │
+│  example.com    CNAME  example.com.cdn-provider.net             │
+│  www.example.com CNAME example.com.cdn-provider.net             │
+│                                                                 │
+│  Pattern 2: Selective CDN (only static assets)                  │
+│  example.com    A      192.168.1.1  (origin)                    │
+│  cdn.example.com CNAME static.cdn-provider.net                  │
+│  images.example.com CNAME static.cdn-provider.net               │
+│                                                                 │
+│  Pattern 3: Multi-CDN (failover/load distribution)              │
+│  cdn.example.com CNAME multi-cdn-router.example.com             │
+│  └─► Multi-CDN router directs to CDN A or CDN B                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Key Takeaways: DNS-Based Traffic Management
+
+| Technique | Mechanism | Best For |
+|-----------|-----------|----------|
+| **Round-Robin DNS** | Multiple A records, rotating order | Simple load distribution, stateless apps |
+| **Geo-DNS** | Location-aware responses | Regional routing, compliance, latency reduction |
+| **Anycast** | Same IP from multiple locations via BGP | DNS services, CDNs, DDoS mitigation |
+| **CDN + DNS** | CNAME to CDN, CDN resolves to edge | Static content, global user base |
+
+**Combining Techniques:**
+- CDNs typically use **Anycast + Geo-DNS** internally
+- Large services use **Geo-DNS for API servers** + **CDN for static assets**
+- **Round-Robin** can work alongside Geo-DNS for redundancy within a region
+
