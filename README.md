@@ -126,3 +126,13 @@ flowchart LR
 **Session Persistence:** A technique used to ensure that subsequent requests from the same client are directed to the same backend server, maintaining session state and providing a consistent user experience.
 
 **SSL/TLS Termination:** The process of decrypting SSL/TLS-encrypted traffic at the load balancer level, offloading the decryption burden from backend servers and allowing for centralized SSL/TLS management.
+
+#### How Load Balancer works?
+
+Load balancers work by distributing incoming network traffic across multiple servers or resources to ensure efficient utilization of computing resources and prevent overload. Here are the general steps that a load balancer follows to distribute traffic:
+
+1. The load balancer receives a request from a client or user.
+2. The load balancer evaluates the incoming request and determines which server or resource should handle the request. This is done based on a predefined load-balancing algorithm that takes into account factors such as server capacity, server response time, number of active connections, and geographic location.
+3. The load balancer forwards the incoming traffic to the selected server or resource.
+4. The server or resource processes the request and sends a response back to the load balancer.
+5. The load balancer receives the response from the server or resource and sends it to the client or user who made the request.
