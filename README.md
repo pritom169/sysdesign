@@ -159,3 +159,8 @@ This algorithm distributes incoming requests to servers in a cyclic order. It as
 - **No Session Affinity:** Subsequent requests from the same client may be directed to different servers, which can be problematic for stateful applications.
 - **Performance Issues with Different Capacities:** May not perform optimally when servers have different capacities or varying workloads.
 - **Predictable Distribution Pattern:** Round Robin is predictable in its request distribution pattern, which could potentially be exploited by attackers who can observe traffic patterns and might find vulnerabilities in specific servers by predicting which server will handle their requests.
+
+#### Use cases
+
+- **Homogeneous Environments:** Suitable for environments where all servers have similar capacity and performance.
+- **Stateless Applications:** Works well for stateless applications where each request can be handled independently.
