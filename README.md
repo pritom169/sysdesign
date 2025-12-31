@@ -180,3 +180,8 @@ The Least Connections algorithm is a dynamic load balancing technique that assig
 - **Higher Complexity:** More complex to implement compared to simpler algorithms like Round Robin, as it requires real-time monitoring of active connections.
 - **State Maintenance:** Requires the load balancer to maintain the state of active connections, which can increase overhead.
 - **Potential for Connection Spikes:** In scenarios where connection duration is short, servers can experience rapid spikes in connection counts, leading to frequent rebalancing.
+
+#### Comparison to Round Robin
+
+- **Round Robin:** Distributes requests in a fixed, cyclic order without considering the current load on each server.
+- **Least Connections:** Distributes requests based on the current load, directing new requests to the server with the fewest active connections.
