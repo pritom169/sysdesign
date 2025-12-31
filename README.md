@@ -112,3 +112,17 @@ flowchart LR
     style App_Tier fill:none,stroke:none
     style DB_Tier fill:none,stroke:none
 ```
+
+#### Key terminology and concepts
+
+**Load Balancer:** A device or software that distributes network traffic across multiple servers based on predefined rules or algorithms.
+
+**Backend Servers:** The servers that receive and process requests forwarded by the load balancer. Also referred to as the server pool or server farm.
+
+**Load Balancing Algorithm:** The method used by the load balancer to determine how to distribute incoming traffic among the backend servers.
+
+**Health Checks:** Periodic tests performed by the load balancer to determine the availability and performance of backend servers. Unhealthy servers are removed from the server pool until they recover.
+
+**Session Persistence:** A technique used to ensure that subsequent requests from the same client are directed to the same backend server, maintaining session state and providing a consistent user experience.
+
+**SSL/TLS Termination:** The process of decrypting SSL/TLS-encrypted traffic at the load balancer level, offloading the decryption burden from backend servers and allowing for centralized SSL/TLS management.
