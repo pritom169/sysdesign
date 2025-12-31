@@ -168,3 +168,9 @@ This algorithm distributes incoming requests to servers in a cyclic order. It as
 ### 2. Least Connections
 
 The Least Connections algorithm is a dynamic load balancing technique that assigns incoming requests to the server with the fewest active connections at the time of the request. This method ensures a more balanced distribution of load across servers, especially in environments where traffic patterns are unpredictable and request processing times vary.
+
+#### Pros
+
+- **Load Awareness:** Takes into account the current load on each server by considering the number of active connections, leading to better utilization of server resources.
+- **Dynamic Distribution:** Adapts to changing traffic patterns and server loads, ensuring no single server becomes a bottleneck.
+- **Efficiency in Heterogeneous Environments:** Performs well when servers have varying capacities and workloads, as it dynamically allocates requests to less busy servers.
