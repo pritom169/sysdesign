@@ -45,3 +45,70 @@ flowchart LR
     style Client_Group fill:none,stroke:none
     style Server_Group fill:none,stroke:none
 ```
+
+To utilize full scalability and redundancy, we can try to balance the load at each layer of the system. We can add LBs at three places:
+
+- Between the user and the web server
+- Between web servers and an internal platform layer, like application servers or cache servers
+- Between internal platform layer and database.
+
+```mermaid
+flowchart LR
+    %% Define the Client node
+    Client([Client])
+
+    %% Define the first Load Balancer
+    LB1{Load Balancer}
+
+    %% Define the Web Server group
+    subgraph Web_Tier [Web Servers]
+        WS1[Web Server 1]
+        WS2[Web Server 2]
+    end
+
+    %% Define the second Load Balancer
+    LB2{Load Balancer}
+
+    %% Define the Application Server group
+    subgraph App_Tier [Application Servers]
+        AS1[Application Server 1]
+        AS2[Application Server 2]
+    end
+
+    %% Define the third Load Balancer
+    LB3{Load Balancer}
+
+    %% Define the Database Server group
+    subgraph DB_Tier [Database Servers]
+        DS1[(Database Server 1)]
+        DS2[(Database Server 2)]
+    end
+
+    %% Define the connections (flow)
+    Client --> LB1
+    LB1 --> WS1
+    LB1 --> WS2
+    WS1 --> LB2
+    WS2 --> LB2
+    LB2 --> AS1
+    LB2 --> AS2
+    AS1 --> LB3
+    AS2 --> LB3
+    LB3 --> DS1
+    LB3 --> DS2
+
+    %% Optional: Styling to match the image's colors and shapes
+    style Client fill:#87CEEB,stroke:#333,stroke-width:2px,color:white,shape:cloud
+    style LB1 fill:#F5B041,stroke:#333,stroke-width:2px
+    style LB2 fill:#82E0AA,stroke:#333,stroke-width:2px
+    style LB3 fill:#85C1E9,stroke:#333,stroke-width:2px
+    style WS1 fill:#C39BD3,stroke:#333,stroke-width:2px
+    style WS2 fill:#C39BD3,stroke:#333,stroke-width:2px
+    style AS1 fill:#8E44AD,stroke:#333,stroke-width:2px,color:white
+    style AS2 fill:#8E44AD,stroke:#333,stroke-width:2px,color:white
+    style DS1 fill:#7F8C8D,stroke:#333,stroke-width:2px,color:white
+    style DS2 fill:#7F8C8D,stroke:#333,stroke-width:2px,color:white
+    style Web_Tier fill:none,stroke:none
+    style App_Tier fill:none,stroke:none
+    style DB_Tier fill:none,stroke:none
+```
