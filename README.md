@@ -136,3 +136,26 @@ Load balancers work by distributing incoming network traffic across multiple ser
 3. The load balancer forwards the incoming traffic to the selected server or resource.
 4. The server or resource processes the request and sends a response back to the load balancer.
 5. The load balancer receives the response from the server or resource and sends it to the client or user who made the request.
+
+## Load Balancing Algorithms
+
+A load balancing algorithm is a method used by a load balancer to distribute incoming traffic and requests among multiple servers or resources. The primary purpose of a load balancing algorithm is to ensure efficient utilization of available resources, improve overall system performance, and maintain high availability and reliability.
+
+Here are the most famous load balancing algorithms:
+
+### Round Robin
+
+This algorithm distributes incoming requests to servers in a cyclic order. It assigns a request to the first server, then moves to the second, third, and so on, and after reaching the last server, it starts again at the first.
+
+#### Pros
+
+- Ensures an equal distribution of requests among the servers, as each server gets a turn in a fixed order.
+- Easy to implement and understand.
+- Works well when servers have similar capacities.
+
+#### Cons
+
+- **No Load Awareness:** Does not take into account the current load or capacity of each server. All servers are treated equally regardless of their current state.
+- **No Session Affinity:** Subsequent requests from the same client may be directed to different servers, which can be problematic for stateful applications.
+- **Performance Issues with Different Capacities:** May not perform optimally when servers have different capacities or varying workloads.
+- **Predictable Distribution Pattern:** Round Robin is predictable in its request distribution pattern, which could potentially be exploited by attackers who can observe traffic patterns and might find vulnerabilities in specific servers by predicting which server will handle their requests.
