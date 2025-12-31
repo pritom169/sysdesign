@@ -174,3 +174,9 @@ The Least Connections algorithm is a dynamic load balancing technique that assig
 - **Load Awareness:** Takes into account the current load on each server by considering the number of active connections, leading to better utilization of server resources.
 - **Dynamic Distribution:** Adapts to changing traffic patterns and server loads, ensuring no single server becomes a bottleneck.
 - **Efficiency in Heterogeneous Environments:** Performs well when servers have varying capacities and workloads, as it dynamically allocates requests to less busy servers.
+
+#### Cons
+
+- **Higher Complexity:** More complex to implement compared to simpler algorithms like Round Robin, as it requires real-time monitoring of active connections.
+- **State Maintenance:** Requires the load balancer to maintain the state of active connections, which can increase overhead.
+- **Potential for Connection Spikes:** In scenarios where connection duration is short, servers can experience rapid spikes in connection counts, leading to frequent rebalancing.
