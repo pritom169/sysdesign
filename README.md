@@ -143,7 +143,7 @@ A load balancing algorithm is a method used by a load balancer to distribute inc
 
 Here are the most famous load balancing algorithms:
 
-### Round Robin
+### 1. Round Robin
 
 This algorithm distributes incoming requests to servers in a cyclic order. It assigns a request to the first server, then moves to the second, third, and so on, and after reaching the last server, it starts again at the first.
 
@@ -164,3 +164,7 @@ This algorithm distributes incoming requests to servers in a cyclic order. It as
 
 - **Homogeneous Environments:** Suitable for environments where all servers have similar capacity and performance.
 - **Stateless Applications:** Works well for stateless applications where each request can be handled independently.
+
+### 2. Least Connections
+
+The Least Connections algorithm is a dynamic load balancing technique that assigns incoming requests to the server with the fewest active connections at the time of the request. This method ensures a more balanced distribution of load across servers, especially in environments where traffic patterns are unpredictable and request processing times vary.
