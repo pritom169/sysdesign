@@ -365,51 +365,49 @@ Custom Load load balancing is a flexible and highly configurable approach that a
 ```mermaid
 mindmap
   root((Load Balancing<br/>Algorithms))
-    Static Strategies<br/>(Predefined Rules)
-      Round Robin
-        **Concept**: Cyclic order (1->2->3->1)
+    %% STATIC ALGORITHMS BRANCH
+    Static Strategies:::static
+      Round Robin:::static
+        ::icon(fa fa-repeat)
+        **Concept**: Cyclic order (1-2-3-1)
         **Best For**: Stateless, Similar servers
-        **Pros**: Equal distribution, Simple
-        **Cons**: No load awareness, Predictable
-      Weighted Round Robin
-        **Concept**: Cyclic + Server Capacity Weights
-        **Best For**: Heterogeneous servers (Diff specs)
-        **Pros**: Respects server power
-        **Cons**: Manual weight management
-      Random
+      Weighted Round Robin:::static
+        **Concept**: Cyclic + Capacity Weights
+        **Best For**: Heterogeneous servers
+      Random:::static
+        ::icon(fa fa-dice)
         **Concept**: Random selection
-        **Best For**: Simple, Uniform environments
-        **Pros**: No state needed, Simple
-        **Cons**: Potential imbalance, Masking attack patterns
-      IP Hash
-        **Concept**: Client IP mapped to specific server
-        **Best For**: **Stateful apps**, Session persistence
-        **Pros**: Sticky Sessions
-        **Cons**: Uneven load if IPs not distributed
-    Dynamic Strategies<br/>(Real-time State)
-      Least Connections
-        **Concept**: Server with fewest active links
-        **Best For**: Varying traffic, Long sessions
-        **Pros**: Prevents overload
-        **Cons**: Counts connections, not actual load
-      Weighted Least Conn
-        **Concept**: Fewest connections + Capacity weights
+        **Best For**: Simple, Uniform setups
+      IP Hash:::static
+        ::icon(fa fa-hashtag)
+        **Concept**: Client IP mapped to server
+        **Best For**: **Stateful apps** (Sticky Sessions)
+
+    %% DYNAMIC ALGORITHMS BRANCH
+    Dynamic Strategies:::dynamic
+      Least Connections:::dynamic
+        ::icon(fa fa-network-wired)
+        **Concept**: Fewest active links
+        **Best For**: Long sessions (WebSocket/SQL)
+      Weighted Least Conn:::dynamic
+        **Concept**: Fewest links + Capacity
         **Best For**: Mixed servers + Variable traffic
-        **Pros**: Very balanced
-        **Cons**: High complexity
-      Least Response Time
-        **Concept**: Lowest latency / Fastest reply
-        **Best For**: **Real-time apps**, Gaming
-        **Pros**: Best User Experience (Speed)
-        **Cons**: Monitoring overhead
-      Least Bandwidth
-        **Concept**: Server with lowest Mbps usage
-        **Best For**: **Streaming**, Big Data, CDNs
-        **Pros**: Network efficiency
-        **Cons**: Traffic fluctuations
-      Custom Load
-        **Concept**: User-defined metrics (CPU, RAM, etc.)
-        **Best For**: Complex/Unique apps
-        **Pros**: Tailored fit
-        **Cons**: High maintenance & complexity
+      Least Response Time:::dynamic
+        ::icon(fa fa-stopwatch)
+        **Concept**: Lowest latency
+        **Best For**: **Gaming**, Finance (Speed)
+      Least Bandwidth:::dynamic
+        **Concept**: Lowest Mbps usage
+        **Best For**: **Streaming**, Big Data
+      Custom Load:::dynamic
+        ::icon(fa fa-wrench)
+        **Concept**: Custom metrics (CPU/RAM)
+        **Best For**: Specific bottlenecks
+
+%% DEFINING THE COLORS
+%% Orange/Red for Static (Fixed rules)
+classDef static fill:#FFDDC1,stroke:#FF9800,stroke-width:2px,color:#000;
+
+%% Blue/Cyan for Dynamic (Fluid/Changing rules)
+classDef dynamic fill:#C1E1FF,stroke:#03A9F4,stroke-width:2px,color:#000;
 ```
