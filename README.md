@@ -221,3 +221,9 @@ Weighted Least Connections is an advanced load balancing algorithm that combines
 - **Complexity:** More complex to implement compared to simpler algorithms like Round Robin and Least Connections.
 - **State Maintenance:** Requires the load balancer to keep track of both active connections and server weights, increasing overhead.
 - **Weight Assignment:** Determining appropriate weights for each server can be challenging and requires accurate performance metrics.
+
+#### Use Cases
+
+- **Heterogenous Server Environments:** Ideal for environments where servers have different processing capacities and workloads.
+- **High Traffic Web Applications:** Suitable for web applications with variable traffic patterns, ensuring no single server becomes a bottleneck.
+- **Database Clusters:** Useful in database clusters where nodes have varying performance capabilities and query loads.
