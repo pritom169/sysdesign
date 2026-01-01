@@ -247,3 +247,8 @@ Suppose you have three servers (Server A, Server B, and Server C) and a client w
 - **Uneven Distribution:** If client IP addresses are not evenly distributed, some servers may receive more requests than others, leading to an uneven load.
 - **Dynamic Changes:** Adding or removing servers can disrupt the hash mapping, causing some clients to be routed to different servers.
 - **Limited Flexibility:** Does not take into account the current load or capacity of servers, which can lead to inefficiencies.
+
+#### Use Cases
+
+- **Stateful Applications:** Ideal for applications where maintaining session persistence is important, such as online shopping carts or user sessions.
+- **Geographically Distributed Clients:** Useful when clients are distributed across different regions and consistent routing is required.
