@@ -195,3 +195,9 @@ Weighted Round Robin (WRR) is an enhanced version of the Round Robin load balanc
 - **Load Distribution According to Capacity:** Servers with higher capacities handle more requests, leading to better utilization of resources.
 - **Flexibility:** Easily adjustable to accommodate changes in server capacities or additions of new servers.
 - **Improved Performance:** Helps in optimizing overall system performance by preventing overloading of less powerful servers.
+
+#### Cons
+
+- **Complexity in Weight Assignment:** Determining appropriate weights for each server can be challenging and requires accurate performance metrics.
+- **Increased Overhead:** Managing and updating weights can introduce additional overhead, especially in dynamic environments where server performance fluctuates.
+- **Not Ideal for Highly Variable Loads:** In environments with highly variable load patterns, WRR may not always provide optimal load balancing as it doesn't consider real-time server load.
