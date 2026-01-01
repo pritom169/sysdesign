@@ -305,3 +305,13 @@ Suppose you have three servers: Server A, Server B, and Server C. When a new req
 - **Homogeneous Environments:** Suitable for environments where servers have similar capacity and performance.
 - **Stateless Applications:** Works well for stateless applications where each request can be handled independently.
 - **Simple Deployments:** Ideal for simple deployments where the complexity of other load balancing algorithms is not justified.
+
+### 8. Least Bandwidth
+
+The Least Bandwidth load balancing algorithm distributes incoming requests to servers based on the current bandwidth usage. It routes each new request to the server that is consuming the least amount of bandwidth at the time. This approach helps in balancing the network load more efficiently by ensuring that no single server gets overwhelmed with too much data traffic.
+
+#### Pros
+
+- **Dynamic Load Balancing:** Continuously adjusts to the current network load, ensuring optimal distribution of traffic.
+- **Prevents Overloading:** Helps in preventing any single server from being overwhelmed with too much data traffic, leading to better performance and stability.
+- **Efficient Resource Utilization:** Ensures that all servers are utilized more effectively by balancing the bandwidth usage.
