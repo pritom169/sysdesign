@@ -363,51 +363,35 @@ Custom Load load balancing is a flexible and highly configurable approach that a
 ### Mind Map
 
 ```mermaid
-mindmap
-  root((Load Balancing<br/>Algorithms))
-    %% STATIC ALGORITHMS BRANCH
-    Static Strategies:::static
-      Round Robin:::static
-        ::icon(fa fa-repeat)
-        **Concept**: Cyclic order (1-2-3-1)
-        **Best For**: Stateless, Similar servers
-      Weighted Round Robin:::static
-        **Concept**: Cyclic + Capacity Weights
-        **Best For**: Heterogeneous servers
-      Random:::static
-        ::icon(fa fa-dice)
-        **Concept**: Random selection
-        **Best For**: Simple, Uniform setups
-      IP Hash:::static
-        ::icon(fa fa-hashtag)
-        **Concept**: Client IP mapped to server
-        **Best For**: **Stateful apps** (Sticky Sessions)
+graph LR
+    %% ROOT NODE
+    root((Load Balancing<br/>Algorithms))
 
-    %% DYNAMIC ALGORITHMS BRANCH
-    Dynamic Strategies:::dynamic
-      Least Connections:::dynamic
-        ::icon(fa fa-network-wired)
-        **Concept**: Fewest active links
-        **Best For**: Long sessions (WebSocket/SQL)
-      Weighted Least Conn:::dynamic
-        **Concept**: Fewest links + Capacity
-        **Best For**: Mixed servers + Variable traffic
-      Least Response Time:::dynamic
-        ::icon(fa fa-stopwatch)
-        **Concept**: Lowest latency
-        **Best For**: **Gaming**, Finance (Speed)
-      Least Bandwidth:::dynamic
-        **Concept**: Lowest Mbps usage
-        **Best For**: **Streaming**, Big Data
-      Custom Load:::dynamic
-        ::icon(fa fa-wrench)
-        **Concept**: Custom metrics (CPU/RAM)
-        **Best For**: Specific bottlenecks
+    %% STATIC BRANCH (Warm Colors)
+    root --- Static(Static Strategies<br/><i>Predefined Rules</i>)
+    Static --- RR(<b>Round Robin</b><br/>Cyclic order<br/><i>Best: Stateless</i>)
+    Static --- WRR(<b>Weighted Round Robin</b><br/>Cyclic + Capacity<br/><i>Best: Mixed Specs</i>)
+    Static --- Rand(<b>Random</b><br/>Random selection<br/><i>Best: Simple/Uniform</i>)
+    Static --- IP(<b>IP Hash</b><br/>Client IP Map<br/><i>Best: Sticky Sessions</i>)
 
-%% DEFINING THE COLORS
-%% Orange/Red for Static (Fixed rules)
-classDef static fill:#FFDDC1,stroke:#FF9800,stroke-width:2px,color:#000;
+    %% DYNAMIC BRANCH (Cool Colors)
+    root --- Dynamic(Dynamic Strategies<br/><i>Real-time State</i>)
+    Dynamic --- LC(<b>Least Connections</b><br/>Fewest active links<br/><i>Best: Long Sessions</i>)
+    Dynamic --- WLC(<b>Weighted Least Conn</b><br/>Links + Capacity<br/><i>Best: Complex Traffic</i>)
+    Dynamic --- LRT(<b>Least Response Time</b><br/>Lowest Latency<br/><i>Best: Gaming/Finance</i>)
+    Dynamic --- LB(<b>Least Bandwidth</b><br/>Lowest Throughput<br/><i>Best: Streaming</i>)
+    Dynamic --- CL(<b>Custom Load</b><br/>Custom Metrics<br/><i>Best: Unique Needs</i>)
 
-%% Blue/Cyan for Dynamic (Fluid/Changing rules)
-classDef dynamic fill:#C1E1FF,stroke:#03A9F4,stroke-width:2px,color:#000;
+    %% STYLING DEFINITIONS
+    %% Orange for Static
+    classDef staticNode fill:#FFDDC1,stroke:#FF9800,stroke-width:2px,color:#000;
+    %% Blue for Dynamic
+    classDef dynamicNode fill:#C1E1FF,stroke:#03A9F4,stroke-width:2px,color:#000;
+    %% Root styling
+    classDef rootNode fill:#FFF,stroke:#333,stroke-width:4px,color:#000;
+
+    %% APPLY STYLES
+    class Static,RR,WRR,Rand,IP staticNode;
+    class Dynamic,LC,WLC,LRT,LB,CL dynamicNode;
+    class root rootNode;
 ```
