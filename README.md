@@ -362,7 +362,6 @@ Custom Load load balancing is a flexible and highly configurable approach that a
 
 ### Mind Map
 
-````mermaid
 ```mermaid
 graph LR
     %% ROOT NODE
@@ -435,4 +434,4 @@ graph LR
     class Dynamic,LC,WLC,LRT,LB,CL dynamicNode;
     class RR_D,WRR_D,Rand_D,IP_D,LC_D,WLC_D,LRT_D,LB_D,CL_D detailNode;
     class root rootNode;
-````
+```
