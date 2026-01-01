@@ -185,3 +185,7 @@ The Least Connections algorithm is a dynamic load balancing technique that assig
 
 - **Round Robin:** Distributes requests in a fixed, cyclic order without considering the current load on each server.
 - **Least Connections:** Distributes requests based on the current load, directing new requests to the server with the fewest active connections.
+
+### 3. Weighted Round Robin
+
+Weighted Round Robin (WRR) is an enhanced version of the Round Robin load balancing algorithm. It assigns weights to each server based on their capacity or performance, distributing incoming requests proportionally according to these weights. This ensures that more powerful servers handle a larger share of the load, while less powerful servers handle a smaller share.
