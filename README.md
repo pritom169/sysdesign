@@ -280,3 +280,15 @@ Least Response Time load balancing is a dynamic algorithm that assigns incoming 
 - **Real-Time Applications:** Ideal for applications where low latency and fast response times are critical, such as online gaming, video streaming, or financial trading platforms.
 - **Web Services:** Useful for web services and APIs that need to provide quick responses to user requests.
 - **Dynamic Environments:** Suitable for environments with fluctuating loads and varying server performance.
+
+### 7. Random
+
+Random load balancing is a simple algorithm that distributes incoming requests to servers randomly. Instead of following a fixed sequence or using performance metrics, the load balancer selects a server at random to handle each request. This method can be effective in scenarios where the load is relatively uniform and servers have similar capacities.
+
+Suppose you have three servers: Server A, Server B, and Server C. When a new request arrives, the load balancer randomly chooses one of these servers to handle the request. Over time, if the randomness is uniform, each server should receive approximately the same number of requests.
+
+#### Pros
+
+- **Simplicity:** Very easy to implement and understand, requiring minimal configuration.
+- **No State Maintenance:** The load balancer does not need to track the state or performance of servers, reducing overhead.
+- **Uniform Distribution Over Time:** If the random selection is uniform, the load will be evenly distributed across servers over a long period.
