@@ -256,3 +256,9 @@ Suppose you have three servers (Server A, Server B, and Server C) and a client w
 ### 6. Least Response Time
 
 Least Response Time load balancing is a dynamic algorithm that assigns incoming requests to the server with the lowest response time, ensuring efficient utilization of server resources and optimal client experience. This approach aims to direct traffic to the server that can handle the request the fastest, based on recent performance metrics.
+
+#### How Least Response Time Load Balancing Works
+
+1. **Monitor Response Times:** The load balancer continuously monitors the response times of each server. Response time is typically measured from when a request is sent to a server until a response is received.
+2. **Assign Requests:** When a new request arrives, the load balancer assigns it to the server with the lowest average response time.
+3. **Dynamic Adjustment:** The load balancer dynamically adjusts the assignment of requests based on real-time performance data, ensuring that the fastest server handles the next request.
