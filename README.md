@@ -252,3 +252,7 @@ Suppose you have three servers (Server A, Server B, and Server C) and a client w
 
 - **Stateful Applications:** Ideal for applications where maintaining session persistence is important, such as online shopping carts or user sessions.
 - **Geographically Distributed Clients:** Useful when clients are distributed across different regions and consistent routing is required.
+
+### 6. Least Response Time
+
+Least Response Time load balancing is a dynamic algorithm that assigns incoming requests to the server with the lowest response time, ensuring efficient utilization of server resources and optimal client experience. This approach aims to direct traffic to the server that can handle the request the fastest, based on recent performance metrics.
