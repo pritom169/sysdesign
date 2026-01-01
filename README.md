@@ -362,36 +362,77 @@ Custom Load load balancing is a flexible and highly configurable approach that a
 
 ### Mind Map
 
+````mermaid
 ```mermaid
 graph LR
     %% ROOT NODE
     root((Load Balancing<br/>Algorithms))
 
+    %% ==========================================
     %% STATIC BRANCH (Warm Colors)
+    %% ==========================================
     root --- Static(Static Strategies<br/><i>Predefined Rules</i>)
-    Static --- RR(<b>Round Robin</b><br/>Cyclic order<br/><i>Best: Stateless</i>)
-    Static --- WRR(<b>Weighted Round Robin</b><br/>Cyclic + Capacity<br/><i>Best: Mixed Specs</i>)
-    Static --- Rand(<b>Random</b><br/>Random selection<br/><i>Best: Simple/Uniform</i>)
-    Static --- IP(<b>IP Hash</b><br/>Client IP Map<br/><i>Best: Sticky Sessions</i>)
 
+    %% Round Robin
+    Static --- RR(<b>Round Robin</b>)
+    RR --- RR_D[<b>Mechanism:</b> Cyclic Order 1-2-3<br/><b>Pro:</b> Ensures equal distribution<br/><b>Con:</b> No load awareness]
+
+    %% Weighted Round Robin
+    Static --- WRR(<b>Weighted Round Robin</b>)
+    WRR --- WRR_D[<b>Mechanism:</b> Capacity-based weights<br/><b>Pro:</b> Respects server specs<br/><b>Con:</b> Manual weight management]
+
+    %% Random
+    Static --- Rand(<b>Random</b>)
+    Rand --- Rand_D[<b>Mechanism:</b> Random selection<br/><b>Pro:</b> Simple, no state needed<br/><b>Con:</b> Risk of imbalance]
+
+    %% IP Hash
+    Static --- IP(<b>IP Hash</b>)
+    IP --- IP_D[<b>Mechanism:</b> Hash Client IP<br/><b>Pro:</b> Sticky Sessions/Persistence<br/><b>Con:</b> Uneven if IPs concentrated]
+
+    %% ==========================================
     %% DYNAMIC BRANCH (Cool Colors)
+    %% ==========================================
     root --- Dynamic(Dynamic Strategies<br/><i>Real-time State</i>)
-    Dynamic --- LC(<b>Least Connections</b><br/>Fewest active links<br/><i>Best: Long Sessions</i>)
-    Dynamic --- WLC(<b>Weighted Least Conn</b><br/>Links + Capacity<br/><i>Best: Complex Traffic</i>)
-    Dynamic --- LRT(<b>Least Response Time</b><br/>Lowest Latency<br/><i>Best: Gaming/Finance</i>)
-    Dynamic --- LB(<b>Least Bandwidth</b><br/>Lowest Throughput<br/><i>Best: Streaming</i>)
-    Dynamic --- CL(<b>Custom Load</b><br/>Custom Metrics<br/><i>Best: Unique Needs</i>)
 
+    %% Least Connections
+    Dynamic --- LC(<b>Least Connections</b>)
+    LC --- LC_D[<b>Mechanism:</b> Count active links<br/><b>Pro:</b> Prevents overload<br/><b>Con:</b> Connection count != Actual load]
+
+    %% Weighted Least Connections
+    Dynamic --- WLC(<b>Weighted Least Conn</b>)
+    WLC --- WLC_D[<b>Mechanism:</b> Active links + Weights<br/><b>Pro:</b> Highly balanced<br/><b>Con:</b> High complexity & overhead]
+
+    %% Least Response Time
+    Dynamic --- LRT(<b>Least Response Time</b>)
+    LRT --- LRT_D[<b>Mechanism:</b> Monitor Latency/TTFB<br/><b>Pro:</b> Fastest user experience<br/><b>Con:</b> Heavy monitoring required]
+
+    %% Least Bandwidth
+    Dynamic --- LB(<b>Least Bandwidth</b>)
+    LB --- LB_D[<b>Mechanism:</b> Monitor Mbps usage<br/><b>Pro:</b> Traffic efficiency<br/><b>Con:</b> Short-term fluctuations]
+
+    %% Custom Load
+    Dynamic --- CL(<b>Custom Load</b>)
+    CL --- CL_D[<b>Mechanism:</b> CPU/RAM/IO Metrics<br/><b>Pro:</b> Tailored to application<br/><b>Con:</b> Complex setup & rules]
+
+    %% ==========================================
     %% STYLING DEFINITIONS
+    %% ==========================================
+
     %% Orange for Static
     classDef staticNode fill:#FFDDC1,stroke:#FF9800,stroke-width:2px,color:#000;
+
     %% Blue for Dynamic
     classDef dynamicNode fill:#C1E1FF,stroke:#03A9F4,stroke-width:2px,color:#000;
+
+    %% Grey for Details (The leaf nodes)
+    classDef detailNode fill:#F9F9F9,stroke:#999,stroke-width:1px,color:#333,stroke-dasharray: 5 5;
+
     %% Root styling
     classDef rootNode fill:#FFF,stroke:#333,stroke-width:4px,color:#000;
 
     %% APPLY STYLES
     class Static,RR,WRR,Rand,IP staticNode;
     class Dynamic,LC,WLC,LRT,LB,CL dynamicNode;
+    class RR_D,WRR_D,Rand_D,IP_D,LC_D,WLC_D,LRT_D,LB_D,CL_D detailNode;
     class root rootNode;
-```
+````
