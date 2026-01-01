@@ -292,3 +292,10 @@ Suppose you have three servers: Server A, Server B, and Server C. When a new req
 - **Simplicity:** Very easy to implement and understand, requiring minimal configuration.
 - **No State Maintenance:** The load balancer does not need to track the state or performance of servers, reducing overhead.
 - **Uniform Distribution Over Time:** If the random selection is uniform, the load will be evenly distributed across servers over a long period.
+
+#### Cons
+
+- **No Load Awareness:** Does not consider the current load or capacity of servers, which can lead to uneven distribution if server performance varies.
+- **Potential for Imbalance:** In the short term, random selection can lead to an uneven distribution of requests.
+- **No Session Affinity:** Requests from the same client may be directed to different servers, which can be problematic for stateful applications.
+- Security systems that rely on detecting anomalies (e.g., to mitigate DDoS attacks) might find it slightly more challenging to identify malicious patterns if a Random algorithm is used, due to the inherent unpredictability in request distribution. This could potentially dilute the visibility of attack patterns.
