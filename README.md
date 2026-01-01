@@ -327,3 +327,17 @@ The Least Bandwidth load balancing algorithm distributes incoming requests to se
 - **High Bandwidth Applications:** Ideal for applications with high bandwidth usage, such as video streaming, file downloads, and large data transfers.
 - **Content Delivery Networks (CDNs):** Useful for CDNs that need to balance traffic efficiently to deliver content quickly.
 - **Real-Time Applications:** Suitable for real-time applications where maintaining low latency is critical.
+
+### 9. Custom Load
+
+Custom Load load balancing is a flexible and highly configurable approach that allows you to define your own metrics and rules for distributing incoming traffic across a pool of servers. Unlike standard load balancing algorithms that use predefined criteria such as connection count or response time, Custom Load load balancing enables you to tailor the distribution strategy based on specific requirements and conditions unique to your application or infrastructure.
+
+#### How Custom Load Load Balancing Works
+
+- **Define Custom Metrics:** Determine the metrics that best represent the load or performance characteristics relevant to your application. These metrics can include CPU usage, memory usage, disk I/O, application-specific metrics, or a combination of several metrics.
+
+- **Implement Monitoring:** Continuously monitor the defined metrics on each server in the pool. This may involve integrating with monitoring tools or custom scripts that collect and report the necessary data.
+
+- **Create Load Balancing Rules:** Establish rules and algorithms that use the monitored metrics to make load balancing decisions. This can be a simple weighted sum of metrics or more complex logic that prioritizes certain metrics over others.
+
+- **Dynamic Adjustment:** Use the collected data and rules to dynamically adjust the distribution of incoming requests, ensuring that the traffic is balanced according to the custom load criteria.
