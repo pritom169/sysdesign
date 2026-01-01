@@ -299,3 +299,9 @@ Suppose you have three servers: Server A, Server B, and Server C. When a new req
 - **Potential for Imbalance:** In the short term, random selection can lead to an uneven distribution of requests.
 - **No Session Affinity:** Requests from the same client may be directed to different servers, which can be problematic for stateful applications.
 - Security systems that rely on detecting anomalies (e.g., to mitigate DDoS attacks) might find it slightly more challenging to identify malicious patterns if a Random algorithm is used, due to the inherent unpredictability in request distribution. This could potentially dilute the visibility of attack patterns.
+
+#### Use Cases
+
+- **Homogeneous Environments:** Suitable for environments where servers have similar capacity and performance.
+- **Stateless Applications:** Works well for stateless applications where each request can be handled independently.
+- **Simple Deployments:** Ideal for simple deployments where the complexity of other load balancing algorithms is not justified.
