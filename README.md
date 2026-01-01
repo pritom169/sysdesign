@@ -417,13 +417,13 @@ graph LR
     %% STYLING DEFINITIONS
     %% ==========================================
 
-    %% Orange for Static
+    %% Orange/Peach for Static
     classDef staticNode fill:#FFDDC1,stroke:#FF9800,stroke-width:2px,color:#000;
 
-    %% Blue for Dynamic
+    %% Blue/Cyan for Dynamic
     classDef dynamicNode fill:#C1E1FF,stroke:#03A9F4,stroke-width:2px,color:#000;
 
-    %% Grey for Details (The leaf nodes)
+    %% Grey/Dotted for Details (The leaf nodes)
     classDef detailNode fill:#F9F9F9,stroke:#999,stroke-width:1px,color:#333,stroke-dasharray: 5 5;
 
     %% Root styling
