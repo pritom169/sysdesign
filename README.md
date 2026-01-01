@@ -262,3 +262,15 @@ Least Response Time load balancing is a dynamic algorithm that assigns incoming 
 1. **Monitor Response Times:** The load balancer continuously monitors the response times of each server. Response time is typically measured from when a request is sent to a server until a response is received.
 2. **Assign Requests:** When a new request arrives, the load balancer assigns it to the server with the lowest average response time.
 3. **Dynamic Adjustment:** The load balancer dynamically adjusts the assignment of requests based on real-time performance data, ensuring that the fastest server handles the next request.
+
+#### Pros
+
+- **Optimized Performance:** Ensures that requests are handled by the fastest available server, leading to reduced latency and improved client experience.
+- **Dynamic Load Balancing:** Continuously adjusts to changing server performance, ensuring optimal distribution of load.
+- **Effective Resource Utilization:** Helps in better utilization of server resources by directing traffic to servers that can respond quickly.
+
+#### Cons
+
+- **Complexity:** More complex to implement compared to simpler algorithms like Round Robin, as it requires continuous monitoring of server performance.
+- **Overhead:** Monitoring response times and dynamically adjusting the load can introduce additional overhead.
+- **Short-Term Variability:** Response times can vary in the short term due to network fluctuations or transient server issues, potentially causing frequent rebalancing.
