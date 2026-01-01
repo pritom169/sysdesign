@@ -205,3 +205,7 @@ Weighted Round Robin (WRR) is an enhanced version of the Round Robin load balanc
 #### Use Cases
 
 - **Heterogeneous Server Environments:** Ideal for environments where servers have different processing capabilities, ensuring efficient use of resources.
+
+### 4. Weighted Least Connections
+
+Weighted Least Connections is an advanced load balancing algorithm that combines the principles of the Least Connections and Weighted Round Robin algorithms. It takes into account both the current load (number of active connections) on each server and the relative capacity of each server (weight). This approach ensures that more powerful servers handle a proportionally larger share of the load, while also dynamically adjusting to the real-time load on each server.
