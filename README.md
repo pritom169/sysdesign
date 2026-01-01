@@ -315,3 +315,9 @@ The Least Bandwidth load balancing algorithm distributes incoming requests to se
 - **Dynamic Load Balancing:** Continuously adjusts to the current network load, ensuring optimal distribution of traffic.
 - **Prevents Overloading:** Helps in preventing any single server from being overwhelmed with too much data traffic, leading to better performance and stability.
 - **Efficient Resource Utilization:** Ensures that all servers are utilized more effectively by balancing the bandwidth usage.
+
+#### Cons
+
+- **Complexity:** More complex to implement compared to simpler algorithms like Round Robin, as it requires continuous monitoring of bandwidth usage.
+- **Overhead:** Monitoring bandwidth and dynamically adjusting the load can introduce additional overhead.
+- **Short-Term Variability:** Bandwidth usage can fluctuate in the short term, potentially causing frequent rebalancing.
