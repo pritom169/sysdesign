@@ -215,3 +215,9 @@ Weighted Least Connections is an advanced load balancing algorithm that combines
 - **Dynamic Load Balancing:** Adjusts to the real-time load on each server, ensuring a more balanced distribution of requests.
 - **Capacity Awareness:** Takes into account the relative capacity of each server, leading to better utilization of resources.
 - **Flexibility:** Can handle environments with heterogeneous servers and variable load patterns effectively.
+
+#### Cons
+
+- **Complexity:** More complex to implement compared to simpler algorithms like Round Robin and Least Connections.
+- **State Maintenance:** Requires the load balancer to keep track of both active connections and server weights, increasing overhead.
+- **Weight Assignment:** Determining appropriate weights for each server can be challenging and requires accurate performance metrics.
