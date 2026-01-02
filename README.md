@@ -833,3 +833,15 @@ The Standby (Passive): sits idle, doing nothing but watching the Primary.
 ##### 2. Health checks and monitoring
 
 A load balancer is only useful if it sends traffic to servers that are actually working. "Health Checks" are the automated tests the load balancer runs to verify the status of backend servers.
+
+There are two distinct levels of health checks:
+
+- Layer 4 Checks (The "Ping"): The load balancer asks, "Is this server online?" It attempts to open a TCP connection. If the server accepts, it passes.
+
+  - Limitation: A server might accept a connection but be frozen or displaying a blank white page. The L4 check won't catch this.
+
+- Layer 7 Checks (The "Application Logic"): The load balancer makes a real HTTP request, usually to a specific endpoint like /health or /status. It expects a specific response (e.g., "200 OK").
+
+  - Benefit: This confirms the database is connected and the app is actually running.
+
+- The "Circuit Breaker" Pattern: If a server fails a health check 3 times in a row, the load balancer "trips the circuit" and stops sending it traffic. It will continue to secretly check that server in the background. Once the server passes health checks again, the load balancer slowly reintroduces traffic to it.
