@@ -788,7 +788,7 @@ Stateful load balancing (often called **Session Persistence** or **Sticky Sessio
 **A. Source IP Affinity (Client IP Persistence)**
 
 - **Mechanism:** The load balancer takes the client's IP address and runs it through a hashing algorithm (). The result dictates which server takes the traffic.
-- **The Flaw (Mobile Networks):** As you mentioned, mobile phones often switch IP addresses as they move between cell towers or when the carrier uses CGNAT (Carrier-Grade NAT). If your IP changes mid-session, the hash changes, and you are thrown to a new server, logging you out.
+- **The Flaw (Mobile Networks):** Mobile phones often switch IP addresses as they move between cell towers or when the carrier uses CGNAT (Carrier-Grade NAT). If your IP changes mid-session, the hash changes, and you are thrown to a new server, logging you out.
 - **The Flaw (Mega-Proxies):** If a large company (with 5,000 employees) sits behind a single corporate proxy IP, _Source IP Affinity_ will send **all 5,000 employees** to the _same_ backend server, overloading it while other servers sit idle.
 
 **B. Session Affinity (Cookie/Header Persistence)**
