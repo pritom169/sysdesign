@@ -800,3 +800,7 @@ Stateful load balancing (often called **Session Persistence** or **Sticky Sessio
 - **Advantage:** It works regardless of IP changes. As long as the browser retains the cookie, the user stays connected to the right server.
 
 ---
+
+### High Availability and Fault Tolerance
+
+In simple terms, High Availability (HA) is the art of keeping your website online 99.999% of the time, even when things break. Fault Tolerance is the specific ability of a system to continue operating without interruption when one of its components fails.
