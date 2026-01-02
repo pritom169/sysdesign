@@ -556,9 +556,9 @@ This is "Load Balancing as a Service." Major cloud providers (like AWS, Google C
 
 ## 4. DNS Load Balancing
 
-DNS (Domain Name System) is the phonebook of the internet. It translates "google.com" to an IP address (like 192.168.1.1). DNS load balancing works by giving different people different IP addresses for the same website name.
+DNS load balancing is a technique where the Domain Name System (DNS)—the system that translates human-readable domain names (like google.com) into machine-readable IP addresses (like 192.0.2.1)—is used to distribute incoming traffic across multiple servers.
 
-- **Think of it like:** A call center hotline. When you call, the phone company (DNS) routes you to Call Center A. The next person who calls gets routed to Call Center B.
+Instead of a single server handling all requests for a website, the DNS server has a list of IP addresses for that domain. When users look up the domain, the DNS server hands out different IP addresses to different users, effectively spreading the load.
 
 ### Pros
 
