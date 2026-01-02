@@ -732,3 +732,71 @@ flowchart TD
     style L7 fill:#fff9c4,stroke:#fbc02d
     style L4 fill:#ffebee,stroke:#c62828
 ```
+
+## Stateless vs. Stateful Load Balancing
+
+Here is a comprehensive breakdown of Stateless and Stateful Load Balancing, expanding on your text with technical details, architectural context, and real-world implications.
+
+### 1. Stateless Load Balancing: "The Forgetful Router"
+
+Stateless load balancing treats every single request as an isolated event. The load balancer has no memory of the user's previous requests. It looks at the incoming packet, applies a simple algorithm (like a coin toss or a list), and sends it to a backend server.
+
+#### How It Works
+
+- **Input Data:** Routing decisions are based strictly on the "packet headers" (static data). This includes the Source IP, Destination URL, or Protocol (TCP/UDP).
+- **Algorithms:** Common algorithms include:
+- **Round Robin:** Server A Server B Server C Server A.
+- **Random:** Pick a server at random.
+- **Least Connections:** Send to the server with the fewest current active requests.
+
+- **No "Context":** If you send a request to add an item to your cart, and the next request is to checkout, a stateless balancer might send the first request to **Server A** and the second to **Server B**. If Server B doesn't know about the cart created on Server A, the checkout fails (unless they share a database).
+
+#### Deep Dive into Your Example: "Product Search"
+
+- **Scenario:** A user searches for "Coffee Shops" in "Berlin."
+- **Why Stateless works here:** The server does not need to know who you are or what you searched for 5 minutes ago to answer this question. The request contains all necessary data (`query="coffee"`, `location="Berlin"`).
+- **Result:** The load balancer can send this query to _any_ available server. This maximizes speed because the balancer doesn't waste CPU cycles looking up session tables.
+
+#### Pros & Cons
+
+| Pros                                                                                        | Cons                                                                                                                                       |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **High Performance:** No overhead for looking up session tables.                            | **No Continuity:** Cannot handle complex transactions (like banking) without external databases.                                           |
+| **Resilience:** If a server dies, the next request just goes to a different one seamlessly. | **Redundant Caching:** If User A visits Server 1, then Server 2, both servers might have to fetch the same profile data from the database. |
+| **Easy Scaling:** You can add new servers instantly without configuring "clustering."       |                                                                                                                                            |
+
+---
+
+### 2. Stateful Load Balancing: "The Loyal Router"
+
+Stateful load balancing (often called **Session Persistence** or **Sticky Sessions**) creates a bond between a client and a specific backend server for the duration of a session.
+
+#### How It Works
+
+- **The Handshake:** When a client first connects, the load balancer assigns them to a server (e.g., Server A).
+- **The Memory:** The load balancer records this assignment in a look-up table or injects a tracking mechanism (cookie) into the browser.
+- **The Loyalty:** All future requests from that client are intercepted, identified, and routed specifically back to Server A.
+
+#### Deep Dive into Your Example: "User Login"
+
+- **Scenario:** You log in to your banking dashboard.
+- **The Problem:** Your login credentials (the "session token") are stored in the memory (RAM) of **Server A**. If the load balancer sends your next click ("View Balance") to **Server B**, Server B will say, "I don't know you, please log in again."
+- **The Stateful Solution:** The load balancer ensures you stay connected to Server A so your login state remains valid.
+
+#### Categories of Stateful Balancing
+
+**A. Source IP Affinity (Client IP Persistence)**
+
+- **Mechanism:** The load balancer takes the client's IP address and runs it through a hashing algorithm (). The result dictates which server takes the traffic.
+- **The Flaw (Mobile Networks):** As you mentioned, mobile phones often switch IP addresses as they move between cell towers or when the carrier uses CGNAT (Carrier-Grade NAT). If your IP changes mid-session, the hash changes, and you are thrown to a new server, logging you out.
+- **The Flaw (Mega-Proxies):** If a large company (with 5,000 employees) sits behind a single corporate proxy IP, _Source IP Affinity_ will send **all 5,000 employees** to the _same_ backend server, overloading it while other servers sit idle.
+
+**B. Session Affinity (Cookie/Header Persistence)**
+
+- **Mechanism:** This is the modern standard.
+- **Application Cookie:** The web app generates a session cookie (`JSESSIONID`, `PHPSESSID`). The load balancer reads this and maps it to a server.
+- **Load Balancer Cookie:** The load balancer _inserts_ its own cookie into the browser (e.g., `AWSALB` cookie). This cookie acts as a "nametag" that says "I belong to Server A."
+
+- **Advantage:** It works regardless of IP changes. As long as the browser retains the cookie, the user stays connected to the right server.
+
+---
