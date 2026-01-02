@@ -805,7 +805,7 @@ Stateful load balancing (often called **Session Persistence** or **Sticky Sessio
 
 In simple terms, High Availability (HA) is the art of keeping your website online 99.999% of the time, even when things break. Fault Tolerance is the specific ability of a system to continue operating without interruption when one of its components fails.
 
-#### Redundancy and failover strategies for load balancers
+#### 1. Redundancy and failover strategies for load balancers
 
 To ensure high availability and fault tolerance, load balancers should be designed and deployed with redundancy in mind. This means having multiple instances of load balancers that can take over if one fails. Redundancy can be achieved through several failover strategies:
 
@@ -829,3 +829,7 @@ The Standby (Passive): sits idle, doing nothing but watching the Primary.
 - Pros: 100% resource utilization (no wasted servers); higher total capacity.
 
 - Cons: More complex to configure; troubleshooting is harder (which LB caused the error?); you must ensure the remaining LB can handle the sudden double-load if one fails.
+
+##### 2. Health checks and monitoring
+
+A load balancer is only useful if it sends traffic to servers that are actually working. "Health Checks" are the automated tests the load balancer runs to verify the status of backend servers.
