@@ -816,7 +816,16 @@ The Primary (Active): Handles 100% of the traffic.
 
 The Standby (Passive): sits idle, doing nothing but watching the Primary.
 
-How it works technically: Both load balancers share a "Virtual IP Address" (VIP). The Active node holds this IP. The Passive node sends a "heartbeat" signal (a tiny data packet) to the Active node every second, asking, "Are you alive?" If the Active node crashes and the heartbeat stops, the Passive node immediately takes over the VIP and starts accepting traffic. This process is often managed by a protocol called VRRP (Virtual Router Redundancy Protocol).
+**How it works technically:** Both load balancers share a "Virtual IP Address" (VIP). The Active node holds this IP. The Passive node sends a "heartbeat" signal (a tiny data packet) to the Active node every second, asking, "Are you alive?" If the Active node crashes and the heartbeat stops, the Passive node immediately takes over the VIP and starts accepting traffic. This process is often managed by a protocol called VRRP (Virtual Router Redundancy Protocol).
 
 - Pros: Simplest to configure; debugging is easy (you know exactly which machine is doing the work).
 - Cons: "Waste" of money/resources because the Passive server sits idle 99% of the time.
+
+- **Active-active configuration:**
+  Here, both load balancers are working simultaneously. If you have two load balancers, each handles roughly 50% of the traffic.
+
+**How it works technically:** You need a mechanism in front of the load balancers to split the traffic between them. This is usually done via DNS Load Balancing (giving one domain name two IP addresses) or Anycast routing (where the network routes you to the nearest open node). If one load balancer fails, the DNS or network simply stops sending traffic to that IP, and the remaining load balancer takes on 100% of the load.
+
+- Pros: 100% resource utilization (no wasted servers); higher total capacity.
+
+- Cons: More complex to configure; troubleshooting is harder (which LB caused the error?); you must ensure the remaining LB can handle the sudden double-load if one fails.
