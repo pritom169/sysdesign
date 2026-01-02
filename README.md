@@ -751,7 +751,7 @@ Stateless load balancing treats every single request as an isolated event. The l
 
 - **No "Context":** If you send a request to add an item to your cart, and the next request is to checkout, a stateless balancer might send the first request to **Server A** and the second to **Server B**. If Server B doesn't know about the cart created on Server A, the checkout fails (unless they share a database).
 
-#### Deep Dive into Your Example: "Product Search"
+#### Deep Dive into the Example: "Product Search"
 
 - **Scenario:** A user searches for "Coffee Shops" in "Berlin."
 - **Why Stateless works here:** The server does not need to know who you are or what you searched for 5 minutes ago to answer this question. The request contains all necessary data (`query="coffee"`, `location="Berlin"`).
@@ -777,7 +777,7 @@ Stateful load balancing (often called **Session Persistence** or **Sticky Sessio
 - **The Memory:** The load balancer records this assignment in a look-up table or injects a tracking mechanism (cookie) into the browser.
 - **The Loyalty:** All future requests from that client are intercepted, identified, and routed specifically back to Server A.
 
-#### Deep Dive into Your Example: "User Login"
+#### Deep Dive into the Example: "User Login"
 
 - **Scenario:** You log in to your banking dashboard.
 - **The Problem:** Your login credentials (the "session token") are stored in the memory (RAM) of **Server A**. If the load balancer sends your next click ("View Balance") to **Server B**, Server B will say, "I don't know you, please log in again."
