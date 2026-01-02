@@ -804,3 +804,19 @@ Stateful load balancing (often called **Session Persistence** or **Sticky Sessio
 ### High Availability and Fault Tolerance
 
 In simple terms, High Availability (HA) is the art of keeping your website online 99.999% of the time, even when things break. Fault Tolerance is the specific ability of a system to continue operating without interruption when one of its components fails.
+
+#### Redundancy and failover strategies for load balancers
+
+To ensure high availability and fault tolerance, load balancers should be designed and deployed with redundancy in mind. This means having multiple instances of load balancers that can take over if one fails. Redundancy can be achieved through several failover strategies:
+
+- **Active-passive configuration:**
+  In this setup, you have two load balancers, but only one works at a time.
+
+The Primary (Active): Handles 100% of the traffic.
+
+The Standby (Passive): sits idle, doing nothing but watching the Primary.
+
+How it works technically: Both load balancers share a "Virtual IP Address" (VIP). The Active node holds this IP. The Passive node sends a "heartbeat" signal (a tiny data packet) to the Active node every second, asking, "Are you alive?" If the Active node crashes and the heartbeat stops, the Passive node immediately takes over the VIP and starts accepting traffic. This process is often managed by a protocol called VRRP (Virtual Router Redundancy Protocol).
+
+- Pros: Simplest to configure; debugging is easy (you know exactly which machine is doing the work).
+- Cons: "Waste" of money/resources because the Passive server sits idle 99% of the time.
