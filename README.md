@@ -689,3 +689,46 @@ It fully terminates the network connection, decrypts the request, inspects the d
 > - If you click "Search," the request goes to a **Search Index Server**.
 > - If you update your billing, the request goes to a **PCI-Secure Payment Server**.
 >   All of this happens behind a single domain name, managed by Layer 7 routing.
+
+```mermaid
+flowchart TD
+    Start([Start: Choose Your Load Balancer]) --> Q1{Where are your<br/>users located?}
+
+    %% Branch: Global Traffic
+    Q1 -- "Distributed Globally<br/>(Multiple Countries)" --> GSLB[<b>GSLB / DNS LB</b><br/><i>Routes based on user location<br/>& data center health</i>]
+
+    %% Branch: Single Region
+    Q1 -- "Single Region / Local" --> Q2{Where is your<br/>infrastructure?}
+
+    %% Cloud Branch
+    Q2 -- "Public Cloud<br/>(AWS, Azure, GCP)" --> Cloud[<b>Cloud Load Balancer</b><br/><i>Auto-scaling, Zero Maintenance,<br/>Pay-as-you-go</i>]
+
+    %% On-Premise Branch
+    Q2 -- "On-Premise / Data Center" --> Q3{What is your<br/>Budget & Scale?}
+
+    %% Hardware vs Software
+    Q3 -- "Massive Scale & Budget<br/>(e.g., Amazon Black Friday)" --> HW[<b>Hardware LB</b><br/><i>Dedicated Appliance,<br/>Max Performance & Security</i>]
+    Q3 -- "Standard Budget / Flexibility<br/>(e.g., Startup / Dev)" --> SW[<b>Software LB</b><br/><i>NGINX / HAProxy,<br/>Cost-effective & Flexible</i>]
+
+    %% Layer Decision Subgraph
+    subgraph Layer_Strategy [Configuration Strategy]
+        direction TB
+        Logic{How should traffic<br/>be routed?}
+
+        Logic -- "By Content (URL/Cookies)<br/>Need Caching" --> L7[<b>Layer 7 (Application)</b><br/><i>Smart, CPU Intensive</i>]
+        Logic -- "By IP/Port (Raw Speed)<br/>Non-HTTP Traffic" --> L4[<b>Layer 4 (Transport)</b><br/><i>Fast, Protocol Agnostic</i>]
+    end
+
+    %% Linking Types to Layers
+    Cloud -.-> Logic
+    HW -.-> Logic
+    SW -.-> Logic
+
+    style Start fill:#f9f,stroke:#333,stroke-width:2px
+    style GSLB fill:#e1f5fe,stroke:#0277bd
+    style Cloud fill:#e0f2f1,stroke:#00695c
+    style HW fill:#fff3e0,stroke:#ef6c00
+    style SW fill:#f3e5f5,stroke:#7b1fa2
+    style L7 fill:#fff9c4,stroke:#fbc02d
+    style L4 fill:#ffebee,stroke:#c62828
+```
