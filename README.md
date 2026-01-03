@@ -927,3 +927,27 @@ This limits the number of HTTP requests over a specific time window (e.g., "100 
 - **By Path:** Limits expensive endpoints (e.g., /search might have a lower limit than /home).
 
 - **By API Key:** Ensures "Gold Tier" customers get more throughput than "Free Tier" users.
+
+#### 3. Caching and Content Optimization
+
+A load balancer is the perfect place to optimize content because it sits at the edge of your network, closest to the user.
+
+##### A. Static Content Caching
+
+Instead of asking the backend web server for logo.png every single time, the load balancer stores a copy in its memory.
+
+- The "Hit" vs. "Miss": When a request comes in, the LB checks its cache. If the file is there (Cache Hit), it serves it instantly without touching the backend. This drastically lowers the CPU load on backend servers.
+
+- Cache-Control Headers: The LB respects headers like max-age or ETag to know when the content is stale and needs to be refreshed from the backend.
+
+##### B. Compression (Gzip/Brotli)
+
+Sending large text files (HTML, CSS, JSON) is slow. Compression shrinks these files by up to 70%.
+
+- Offloading: Compressing data requires CPU power. By performing compression on the load balancer (often using specialized hardware), you free up the backend application servers to focus on business logic rather than compressing bits.
+
+##### C. SSL/TLS Termination
+
+Decrypting HTTPS traffic is mathematically expensive.
+
+- Termination: The load balancer decrypts the incoming traffic, inspects it, and passes it to the backend (often over unencrypted HTTP within the secure private network). This is called "SSL Offloading," saving the backend servers significant CPU cycles.
