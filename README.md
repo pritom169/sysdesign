@@ -1065,3 +1065,17 @@ The confusion often arises because **API Gateways can do load balancing**, but L
 | **Routing Logic** | "Route `/billing` to Service A and `/profile` to Service B."                                 | "Route the next 10 packets to Server #3 because it's free."                                     |
 
 ---
+
+### Key Usage of API Gateways
+
+- Centralized Security: It provides a single point to enforce security policies. Instead of every microservice handling authentication (who you are) and authorization (what you are allowed to do), the gateway handles this once, verifying tokens or keys before passing the request further.
+
+- Rate Limiting and Throttling: It protects backend services from being overwhelmed by traffic spikes or malicious attacks (DDoS). The gateway can limit how many requests a user or service can make per second.
+
+- Protocol Translation: It allows clients to communicate via one protocol (e.g., HTTP/REST) while backend services might use another (e.g., gRPC or AMQP), ensuring seamless communication without the client needing to know backend details.
+
+- Load Balancing: The gateway distributes incoming network traffic across multiple servers to ensure no single server bears too much load, improving application responsiveness and availability.
+
+- Request/Response Transformation: It can modify requests and responses on the fly. For example, it might aggregate data from multiple services into a single response for the client, reducing the number of round trips the client needs to make.
+
+- Analytics and Monitoring: Because all traffic flows through the gateway, it is the perfect place to log usage data, monitor response times, and track errors, providing a unified view of system health.
