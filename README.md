@@ -901,3 +901,11 @@ This is the standard for high-availability enterprise systems. Instead of one gi
 #### Connection and Request Rate Limits
 
 Unchecked traffic can crash even the most robust systems. Load balancers act as the "bouncer" for your application, enforcing strict entry rules.
+
+##### A. Connection Limiting (Layer 4 Protection)
+
+This limits the number of open TCP connections a single client (or the total global traffic) can establish.
+
+    - Why it matters: Every open connection consumes a file descriptor and memory on the server. If a hacker opens 100,000 connections but sends no data (a Slowloris attack), they can starve the server of resources.
+
+    - Mechanism: The load balancer monitors the counter of active connections. If the limit is reached, new SYN packets (connection requests) are dropped or rejected immediately, protecting the backend servers from ever seeing the traffic.
