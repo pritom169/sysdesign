@@ -1041,3 +1041,13 @@ If an LB is too sensitive, it might mark a struggling server as "Dead," then "He
 ### Introduction to API Gateway
 
 An API Gateway acts as a single entry point for all client requests. It takes a request, understands what the user wants (the business intent), and routes it to the correct service. Crucially, it performs tasks that the backend services shouldn't have to worry about.
+
+Key Responsibilities:
+
+- Authentication & Security: "Do you have an ID badge?" It checks if the user is logged in (OAuth, JWT) before the request ever reaches your servers.
+
+- Protocol Translation: "I speak English, but the engineering team speaks German." It can take a REST request from a phone and convert it to gRPC or SOAP for an old legacy system.
+
+- Rate Limiting: "You can only visit 5 times a minute." It prevents users from spamming the system.
+
+- Response Aggregation: If a user's profile page needs data from the User Service, Billing Service, and Shipping Service, the Gateway calls all three and combines the answers into one neat JSON response for the phone.
