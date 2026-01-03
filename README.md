@@ -1079,3 +1079,12 @@ The confusion often arises because **API Gateways can do load balancing**, but L
 - Request/Response Transformation: It can modify requests and responses on the fly. For example, it might aggregate data from multiple services into a single response for the client, reducing the number of round trips the client needs to make.
 
 - Analytics and Monitoring: Because all traffic flows through the gateway, it is the perfect place to log usage data, monitor response times, and track errors, providing a unified view of system health.
+
+### Disadvantages of API Gateways
+
+However, the very features that make an API Gateway powerful also create its downsides. By centralizing logic, you create a potential bottleneck and a critical dependency.
+
+- **Single Point of Failure (SPOF):** This is the most critical risk. If the Product Service fails, only the product page breaks. **If the API Gateway fails, the entire application goes offline.** This necessitates expensive, high-availability setups with redundancy to ensure the Gateway never crashes.
+- **Increased Latency:** Physics is unavoidable; the Gateway adds an extra "hop" in the network journey. Every request must go from Client Gateway Service, rather than Client Service. While usually measured in milliseconds, this additional step can be problematic for high-frequency trading or real-time gaming applications where every microsecond counts.
+- **Operational Complexity:** Managing a Gateway is not free. It requires its own infrastructure, monitoring, and scaling rules. It can also become a **development bottleneck**; if a team adds a new microservice but has to wait for the "Gateway Team" to update the routing configuration before they can go live, agility is lost.
+- **Risk of the "Monolithic Gateway":** There is a temptation to put too much business logic (like complex code or data processing) into the Gateway. If this happens, the Gateway essentially becomes a new monolith—bloated, hard to update, and difficult to test—recreating the exact problem microservices were meant to solve.
