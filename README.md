@@ -845,3 +845,7 @@ There are two distinct levels of health checks:
   - Benefit: This confirms the database is connected and the app is actually running.
 
 - The "Circuit Breaker" Pattern: If a server fails a health check 3 times in a row, the load balancer "trips the circuit" and stops sending it traffic. It will continue to secretly check that server in the background. Once the server passes health checks again, the load balancer slowly reintroduces traffic to it.
+
+### Synchronization and State Sharing
+
+The biggest challenge in High Availability is State. If you are logged into Load Balancer A, and it crashes, Load Balancer B needs to know who you are. If it doesn't, you will be logged out. This is why synchronization is vital.
