@@ -1051,3 +1051,17 @@ Key Responsibilities:
 - Rate Limiting: "You can only visit 5 times a minute." It prevents users from spamming the system.
 
 - Response Aggregation: If a user's profile page needs data from the User Service, Billing Service, and Shipping Service, the Gateway calls all three and combines the answers into one neat JSON response for the phone.
+
+#### API Gateways and Load Balancer: How are they different?
+
+The confusion often arises because **API Gateways can do load balancing**, but Load Balancers cannot do API management.
+
+| Feature           | API Gateway                                                                                  | Load Balancer                                                                                   |
+| ----------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Primary Goal**  | Expose, secure, and manage APIs as a product.                                                | Distribute traffic to ensure uptime and speed.                                                  |
+| **OSI Layer**     | **Layer 7 (Application):** It reads the actual data/content of the message.                  | **Layer 4 (Transport):** Mostly looks at IP/Port. (Some L7 LBs exist but are less logic-heavy). |
+| **Intelligence**  | **High:** Can read a user's ID, route based on specific headers, or rewrite URLs.            | **Low/Medium:** Cares mostly about server health and traffic volume.                            |
+| **Security**      | **Deep Security:** Authentication (OAuth), SQL Injection blocking, Rate limiting by user ID. | **Infrastructure Security:** DDoS protection, Firewalling IPs, SSL Offloading.                  |
+| **Routing Logic** | "Route `/billing` to Service A and `/profile` to Service B."                                 | "Route the next 10 packets to Server #3 because it's free."                                     |
+
+---
