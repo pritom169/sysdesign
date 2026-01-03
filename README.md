@@ -871,3 +871,15 @@ This is a nightmare scenario in Active-Passive setups. Suppose the network cable
 #### Horizontal and vertical scaling of load balancers
 
 When a single load balancer becomes the bottleneck, you must scale the load balancing layer itself. This is distinct from scaling the backend application servers.
+
+##### **A. Vertical Scaling (Scaling Up)**
+
+This strategy involves beefing up the single load balancer instance with more hardware power—adding more CPU cores, increasing RAM, or upgrading network interfaces (e.g., moving from 10Gbps to 40Gbps NICs).
+
+How it works: You replace the existing machine with a bigger one.
+
+- **The Ceiling:** Vertical scaling has a "hard limit." Eventually, you hit the physical limits of current hardware technology.
+
+- **The Software Bottleneck:** Even with infinite RAM, you are limited by software constraints, such as the maximum number of ephemeral ports (approx 65k) available for opening connections.
+
+- **Use Case:** Best for small to medium workloads where simplicity is key. Managing one giant machine is easier than managing a cluster.
