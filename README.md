@@ -733,15 +733,15 @@ flowchart TD
     style L4 fill:#ffebee,stroke:#c62828
 ```
 
-## Stateless vs. Stateful Load Balancing
+### Stateless vs. Stateful Load Balancing
 
 Here is a comprehensive breakdown of Stateless and Stateful Load Balancing, expanding on your text with technical details, architectural context, and real-world implications.
 
-### 1. Stateless Load Balancing: "The Forgetful Router"
+#### 1. Stateless Load Balancing: "The Forgetful Router"
 
 Stateless load balancing treats every single request as an isolated event. The load balancer has no memory of the user's previous requests. It looks at the incoming packet, applies a simple algorithm (like a coin toss or a list), and sends it to a backend server.
 
-#### How It Works
+##### How It Works
 
 - **Input Data:** Routing decisions are based strictly on the "packet headers" (static data). This includes the Source IP, Destination URL, or Protocol (TCP/UDP).
 - **Algorithms:** Common algorithms include:
@@ -1037,3 +1037,7 @@ If an LB is too sensitive, it might mark a struggling server as "Dead," then "He
 - Configure distinct thresholds for status changes. For example, require **3 consecutive failures** to mark a server down, but **5 consecutive successes** to mark it back up. This buffer ensures a server is truly stable before it receives traffic again.
 
 ---
+
+### Introduction to API Gateway
+
+An API Gateway acts as a single entry point for all client requests. It takes a request, understands what the user wants (the business intent), and routes it to the correct service. Crucially, it performs tasks that the backend services shouldn't have to worry about.
