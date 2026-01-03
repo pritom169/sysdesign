@@ -909,3 +909,21 @@ This limits the number of open TCP connections a single client (or the total glo
     - Why it matters: Every open connection consumes a file descriptor and memory on the server. If a hacker opens 100,000 connections but sends no data (a Slowloris attack), they can starve the server of resources.
 
     - Mechanism: The load balancer monitors the counter of active connections. If the limit is reached, new SYN packets (connection requests) are dropped or rejected immediately, protecting the backend servers from ever seeing the traffic.
+
+##### B. Request Rate Limiting (Layer 7 Protection)
+
+This limits the number of HTTP requests over a specific time window (e.g., "100 requests per minute").
+
+**Algorithms:**
+
+- **Token Bucket:** The user is given "tokens" at a steady rate. Every request costs a token. If the bucket is empty, the request is denied. This allows for short "bursts" of traffic.
+
+- **Leaky Bucket:** Requests are processed at a constant, steady rate, regardless of how fast they come in. Good for smoothing out traffic spikes.
+
+**Granularity:**
+
+- **By IP:** Limits a specific user.
+
+- **By Path:** Limits expensive endpoints (e.g., /search might have a lower limit than /home).
+
+- **By API Key:** Ensures "Gold Tier" customers get more throughput than "Free Tier" users.
