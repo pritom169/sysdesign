@@ -849,3 +849,13 @@ There are two distinct levels of health checks:
 ### Synchronization and State Sharing
 
 The biggest challenge in High Availability is State. If you are logged into Load Balancer A, and it crashes, Load Balancer B needs to know who you are. If it doesn't, you will be logged out. This is why synchronization is vital.
+
+#### The "Split-Brain" Scenario
+
+This is a nightmare scenario in Active-Passive setups. Suppose the network cable connecting the two load balancers breaks, but both are actually still running.
+
+- The Passive node thinks the Active node is dead (because the heartbeat stopped), so it tries to take over the IP.
+
+- The Active node is still alive and holding the IP.
+
+- Now both claim to be the "boss." This causes IP conflicts and data corruption.
