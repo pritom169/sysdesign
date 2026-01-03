@@ -883,3 +883,17 @@ How it works: You replace the existing machine with a bigger one.
 - **The Software Bottleneck:** Even with infinite RAM, you are limited by software constraints, such as the maximum number of ephemeral ports (approx 65k) available for opening connections.
 
 - **Use Case:** Best for small to medium workloads where simplicity is key. Managing one giant machine is easier than managing a cluster.
+
+##### B. Horizontal Scaling (Scaling Out)
+
+This is the standard for high-availability enterprise systems. Instead of one giant load balancer, you deploy a cluster of multiple load balancers that work in parallel.
+
+- The "Bootstrap" Problem: If you have 5 load balancers, how does the client know which one to visit? You need a mechanism to distribute traffic to the load balancers.
+
+  - DNS Load Balancing (Round Robin): The simplest method. You associate a single domain name (e.g., api.example.com) with multiple IP addresses (one for each load balancer) in your DNS records. The DNS server rotates the order of IPs it returns to clients.
+
+    - Drawback: DNS propagation is slow. If one load balancer dies, clients might keep trying to hit it until their local DNS cache expires.
+
+  - Anycast VIP: The advanced method. You assign the same IP address to multiple load balancers located in different places. The core network routers (using BGP - Border Gateway Protocol) automatically route the user's packet to the geographically nearest load balancer advertising that IP.
+
+  - ECMP (Equal-Cost Multi-Path): Used within data centers. The network router spreads packets across multiple load balancers based on a hash of the packet headers, treating them as equal paths to the destination.
