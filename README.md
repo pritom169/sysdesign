@@ -951,3 +951,31 @@ Sending large text files (HTML, CSS, JSON) is slow. Compression shrinks these fi
 Decrypting HTTPS traffic is mathematically expensive.
 
 - Termination: The load balancer decrypts the incoming traffic, inspects it, and passes it to the backend (often over unencrypted HTTP within the secure private network). This is called "SSL Offloading," saving the backend servers significant CPU cycles.
+
+#### 4. Impact of load balancers on latency
+
+Placing a load balancer in the middle inherently adds a small amount of latency (the time it takes to process and forward the packet). However, smart optimizations can actually make the total request time faster than if the load balancer weren't there.
+
+##### A. Connection Multiplexing (Keep-Alive)
+
+Establishing a TCP connection requires a "3-Way Handshake" (SYN, SYN-ACK, ACK), which takes time.
+
+- The Optimization: The load balancer maintains a pool of "warm," already-established connections to the backend servers.
+
+- The Flow: When a client request arrives, the LB doesn't open a new connection to the backend. It grabs an existing open connection from the pool. This eliminates the handshake latency for the backend leg of the journey.
+
+##### B. Geographical Distribution (GSLB)
+
+If your user is in London but your server is in New York, latency is governed by the speed of light.
+
+- Global Server Load Balancing (GSLB): You deploy load balancers in multiple regions (e.g., US-East, EU-West, Asia-Pacific).
+
+- DNS Routing: The GSLB system detects the user's location (via their IP) and updates DNS to point them to the physically closest load balancer (e.g., the London user is routed to the EU-West VIP).
+
+##### C. Protocol Upgrades (HTTP/2 & HTTP/3)
+
+Modern load balancers can translate protocols to improve speed.
+
+- HTTP/2: Supports Multiplexing, allowing multiple requests (images, scripts, CSS) to be sent over a single TCP connection simultaneously, rather than waiting for one to finish before starting the next.
+
+- HTTP/3 (QUIC): Uses UDP instead of TCP. It solves "Head-of-Line Blocking," meaning if one packet is lost, it doesn't pause the entire stream of data. This is crucial for users on unstable mobile networks.
