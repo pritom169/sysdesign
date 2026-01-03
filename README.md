@@ -859,3 +859,9 @@ This is a nightmare scenario in Active-Passive setups. Suppose the network cable
 - The Active node is still alive and holding the IP.
 
 - Now both claim to be the "boss." This causes IP conflicts and data corruption.
+
+#### Solution
+
+- **External State Stores:** Instead of keeping session data in the load balancer's memory, we store it in a high-speed external database like Redis. If LB 1 dies, LB 2 just looks up the user's session in Redis.
+
+- **Distributed Configuration (Consul/Etcd):** These are specialized tools that ensure every load balancer has the exact same settings. If you update a rule on one, these tools instantly replicate that rule to all others.
