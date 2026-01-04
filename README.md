@@ -1254,3 +1254,7 @@ While Concurrency Control handles access, Synchronization handles timing and ord
 - **Semaphores:** Semaphores are signaling mechanisms that control access to shared resources and maintain synchronization among multiple processes or threads.
 
 - **Condition variables:** Condition variables allow processes or threads to wait for specific conditions to be met before proceeding with their execution.
+
+### C. Coordination Services
+
+Coordination services are specialized components or tools that help manage distributed systems' complexity by providing a set of abstractions and primitives for tasks like configuration management, service discovery, leader election, and distributed locking. Examples of coordination services include Apache ZooKeeper, etcd, and Consul.
