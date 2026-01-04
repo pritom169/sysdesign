@@ -1214,3 +1214,11 @@ Health monitoring involves continuously monitoring system performance, resource 
 #### 6. Availability through Regular System Maintenance and Updates
 
 Regular system maintenance and updates are crucial for achieving high availability. By keeping systems up to date with the latest patches, security enhancements, and bug fixes, organizations can mitigate the risk of failures and vulnerabilities that could compromise system availability.
+
+## Latency and Performance
+
+Latency and performance are critical aspects of distributed systems, as they directly impact the user experience and the system's ability to handle large amounts of data and traffic.
+
+### A. Data Locality
+
+Data locality refers to the organization and distribution of data within a distributed system to minimize the amount of data that needs to be transferred between nodes. By storing related data close together or near the nodes that access it most frequently, you can reduce the latency associated with data retrieval and improve overall performance. Techniques to achieve data locality include data partitioning, sharding, and data replication.
