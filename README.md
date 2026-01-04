@@ -1235,8 +1235,22 @@ Caching is a technique used to store frequently accessed data or computed result
 
 In distributed systems, Concurrency and Coordination are the mechanisms used to tame non-determinism. Unlike a single computer where the OS controls the clock and memory, distributed systems consist of independent nodes connected by an unreliable network, each with its own clock.
 
+### A. Concurrency Control
+
+Concurrency control is the process of managing simultaneous access to shared resources or data in a distributed system.
+
 - **Locking:** Locks are used to restrict access to shared resources or data, ensuring that only one process can access them at a time.
 
 - **Optimistic concurrency control:** This approach assumes that conflicts are rare and allows multiple processes to work simultaneously. Conflicts are detected and resolved later, usually through a validation and rollback mechanism.
 
 - **Transactional memory:** This technique uses transactions to group together multiple operations that should be executed atomically, ensuring data consistency and isolation.
+
+### B. Synchronization
+
+While Concurrency Control handles access, Synchronization handles timing and ordering. In distributed systems, "time" is relative because physical clocks drift.
+
+- **Barriers:** Barriers are used to synchronize the execution of multiple processes or threads, ensuring that they all reach a specific point before proceeding.
+
+- **Semaphores:** Semaphores are signaling mechanisms that control access to shared resources and maintain synchronization among multiple processes or threads.
+
+- **Condition variables:** Condition variables allow processes or threads to wait for specific conditions to be met before proceeding with their execution.
