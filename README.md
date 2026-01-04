@@ -1233,4 +1233,10 @@ Caching is a technique used to store frequently accessed data or computed result
 
 ## Concurrency and Coordination
 
-In distributed systems, multiple processes or components often need to work together concurrently, which can introduce challenges related to coordination, synchronization, and data consistency.
+In distributed systems, Concurrency and Coordination are the mechanisms used to tame non-determinism. Unlike a single computer where the OS controls the clock and memory, distributed systems consist of independent nodes connected by an unreliable network, each with its own clock.
+
+- **Locking:** Locks are used to restrict access to shared resources or data, ensuring that only one process can access them at a time.
+
+- **Optimistic concurrency control:** This approach assumes that conflicts are rare and allows multiple processes to work simultaneously. Conflicts are detected and resolved later, usually through a validation and rollback mechanism.
+
+- **Transactional memory:** This technique uses transactions to group together multiple operations that should be executed atomically, ensuring data consistency and isolation.
