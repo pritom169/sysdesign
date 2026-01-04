@@ -1108,3 +1108,65 @@ Vertical scaling, or scaling up, refers to increasing the capacity of individual
 With horizontal-scaling it is often easier to scale dynamically by adding more machines into the existing pool; Vertical-scaling is usually limited to the capacity of a single server and scaling beyond that capacity often involves downtime and comes with an upper limit.
 
 Good examples of horizontal scaling are Cassandra and MongoDB as they both provide an easy way to scale horizontally by adding more machines to meet growing needs. Similarly, a good example of vertical scaling is MySQL as it allows for an easy way to scale vertically by switching from smaller to bigger machines. However, this process often involves downtime.
+
+```mermaid
+graph TD
+    subgraph " "
+        style VS_Box fill:#FFFACD,stroke:#FFD700,stroke-width:2px
+        VS_Box["<div style='text-align: center;'><b>Vertical Scaling</b><br>Add more resources to the same server</div>"]
+
+        subgraph VS_Nodes [ ]
+            direction TB
+            V1(<i class="fa fa-server"></i><br>Server) --> V2(<i class="fa fa-server" style="font-size: 2em;"></i><br>Bigger Server)
+            V2 --> V3(<i class="fa fa-server" style="font-size: 3em;"></i><br>Largest Server)
+        end
+
+        style V1 fill:#f9f,stroke:#333,stroke-width:2px
+        style V2 fill:#f9f,stroke:#333,stroke-width:2px,width:120px,height:120px
+        style V3 fill:#f9f,stroke:#333,stroke-width:2px,width:160px,height:160px
+    end
+
+    VS["<div style='font-size: 2em; font-weight: bold;'>vs.</div>"]
+
+    subgraph " "
+        style HS_Box fill:#FFFACD,stroke:#FFD700,stroke-width:2px
+        HS_Box["<div style='text-align: center;'><b>Horizontal Scaling</b><br>Add more servers</div>"]
+
+        subgraph HS_Nodes [ ]
+            direction TB
+            H1(<i class="fa fa-server"></i><br>Server) --> H2_Group
+            H2_Group --> H3_Group
+            H3_Group --> H4_Group
+        end
+
+        subgraph H2_Group [ ]
+            direction LR
+            H2a(<i class="fa fa-server"></i><br>Server) --- H2b(<i class="fa fa-server"></i><br>Server)
+        end
+
+        subgraph H3_Group [ ]
+            direction LR
+            H3a(<i class="fa fa-server"></i><br>Server) --- H3b(<i class="fa fa-server"></i><br>Server) --- H3c(<i class="fa fa-server"></i><br>Server)
+        end
+
+        subgraph H4_Group [ ]
+            direction LR
+            H4a(<i class="fa fa-server"></i><br>Server) --- H4b(<i class="fa fa-server"></i><br>Server) --- H4c(<i class="fa fa-server"></i><br>Server) --- H4d(<i class="fa fa-server"></i><br>Server)
+        end
+
+        style H1 fill:#f9f,stroke:#333,stroke-width:2px
+        style H2a fill:#f9f,stroke:#333,stroke-width:2px
+        style H2b fill:#f9f,stroke:#333,stroke-width:2px
+        style H3a fill:#f9f,stroke:#333,stroke-width:2px
+        style H3b fill:#f9f,stroke:#333,stroke-width:2px
+        style H3c fill:#f9f,stroke:#333,stroke-width:2px
+        style H4a fill:#f9f,stroke:#333,stroke-width:2px
+        style H4b fill:#f9f,stroke:#333,stroke-width:2px
+        style H4c fill:#f9f,stroke:#333,stroke-width:2px
+        style H4d fill:#f9f,stroke:#333,stroke-width:2px
+    end
+
+    VS_Nodes --- VS --- HS_Nodes
+
+    linkStyle 0,1,2,3,4,5,6,7,8,9,10,11 stroke-width:2px,fill:none,stroke:black;
+```
