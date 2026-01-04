@@ -1088,3 +1088,9 @@ However, the very features that make an API Gateway powerful also create its dow
 - **Increased Latency:** Physics is unavoidable; the Gateway adds an extra "hop" in the network journey. Every request must go from Client Gateway Service, rather than Client Service. While usually measured in milliseconds, this additional step can be problematic for high-frequency trading or real-time gaming applications where every microsecond counts.
 - **Operational Complexity:** Managing a Gateway is not free. It requires its own infrastructure, monitoring, and scaling rules. It can also become a **development bottleneck**; if a team adds a new microservice but has to wait for the "Gateway Team" to update the routing configuration before they can go live, agility is lost.
 - **Risk of the "Monolithic Gateway":** There is a temptation to put too much business logic (like complex code or data processing) into the Gateway. If this happens, the Gateway essentially becomes a new monolith—bloated, hard to update, and difficult to test—recreating the exact problem microservices were meant to solve.
+
+# Key Characteristics of Distributed Systems
+
+## Scalability
+
+Scalability is the ability of a system to handle an increasing workload, either by adding more resources (scaling out) or by upgrading the capacity of existing resources (scaling up).
