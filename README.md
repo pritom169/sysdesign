@@ -1196,3 +1196,13 @@ Load balancing involves distributing workloads across multiple servers, ensuring
 #### 3. Availability through Distributed Data Storage
 
 Storing data across multiple locations or data centers enhances high availability by reducing the risk of data loss or corruption. Distributed data storage systems replicate data across geographically diverse locations, ensuring that even if one site experiences an outage, data remains accessible from other locations.
+
+#### 4. Availability and Consistency Models (Strong, Weak, Eventual)
+
+Consistency models define how a distributed system maintains a coherent and up-to-date view of its data across all replicas. Different consistency models provide different trade-offs between availability, performance, and data correctness.
+
+Strong consistency ensures that all replicas have the same data at all times, at the cost of reduced availability and performance.
+
+Weak consistency allows for temporary inconsistencies between replicas, with the advantage of improved availability and performance.
+
+Eventual consistency guarantees that all replicas will eventually converge to the same data, providing a balance between consistency, availability, and performance.
