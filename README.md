@@ -1206,3 +1206,11 @@ Strong consistency ensures that all replicas have the same data at all times, at
 Weak consistency allows for temporary inconsistencies between replicas, with the advantage of improved availability and performance.
 
 Eventual consistency guarantees that all replicas will eventually converge to the same data, providing a balance between consistency, availability, and performance.
+
+#### 5. Availability through Health Monitoring and Alerts
+
+Health monitoring involves continuously monitoring system performance, resource utilization, and various metrics to detect any anomalies or potential issues. Alerts are triggered when predefined thresholds are exceeded, allowing IT teams to take immediate action and prevent service disruptions.
+
+#### 6. Availability through Regular System Maintenance and Updates
+
+Regular system maintenance and updates are crucial for achieving high availability. By keeping systems up to date with the latest patches, security enhancements, and bug fixes, organizations can mitigate the risk of failures and vulnerabilities that could compromise system availability.
