@@ -1381,3 +1381,7 @@ This is the "Single Pane of Glass" where all three pillars converge.
 2. **Traffic:** Demand placed on your system (req/sec).
 3. **Errors:** Rate of requests that fail.
 4. **Saturation:** How "full" your most constrained resource is (e.g., Memory).
+
+## Resilience and Error Handling
+
+Resilience and error handling help minimize the impact of failures and ensure that the system can recover gracefully from unexpected events.
