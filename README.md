@@ -1407,3 +1407,7 @@ Before implementing retries, operations must be idempotent, meaning performing t
 ### D. Error Handling and Reporting
 
 Resilience requires visibility. It is not enough to handle errors; the system must communicate the context of the error to engineers to facilitate Root Cause Analysis (RCA).
+
+### E. Chaos Engineering
+
+Chaos engineering is the practice of intentionally injecting failures into a distributed system to test its resilience and identify weaknesses. By simulating real-world failure scenarios, you can evaluate the system's ability to recover and adapt
