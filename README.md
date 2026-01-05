@@ -1397,3 +1397,9 @@ Designing a fault-tolerant system involves incorporating redundancy at various l
 When a system faces extreme load or component failure, it must prioritize the "Critical User Journey." Graceful degradation ensures that the system fails progressively rather than catastrophically.
 
 System health is not a boolean (up/down). If a recommendation engine fails on an e-commerce site, the "Buy" button (core functionality) must still work, perhaps displaying a generic list of items instead of personalized ones.
+
+### C. Retry and Backoff Strategies
+
+Distributed systems frequently encounter "transient faults"—temporary glitches like network jitter or momentary service unavailability. Handling these requires a balance between persistence and resource conservation.
+
+Before implementing retries, operations must be idempotent, meaning performing the same operation multiple times yields the same result (e.g., charging a credit card only once despite three retry attempts).
