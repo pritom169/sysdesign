@@ -1391,3 +1391,9 @@ Resilience and error handling help minimize the impact of failures and ensure th
 Fault tolerance is the architectural capacity of a system to continue delivering its intended service, possibly at a reduced level, rather than failing completely when some part of the system fails.
 
 Designing a fault-tolerant system involves incorporating redundancy at various levels (data, services, nodes) and implementing strategies like replication, sharding, and load balancing to ensure that the system can withstand failures
+
+### B. Graceful Degradation
+
+When a system faces extreme load or component failure, it must prioritize the "Critical User Journey." Graceful degradation ensures that the system fails progressively rather than catastrophically.
+
+System health is not a boolean (up/down). If a recommendation engine fails on an e-commerce site, the "Buy" button (core functionality) must still work, perhaps displaying a generic list of items instead of personalized ones.
