@@ -1403,3 +1403,7 @@ System health is not a boolean (up/down). If a recommendation engine fails on an
 Distributed systems frequently encounter "transient faults"—temporary glitches like network jitter or momentary service unavailability. Handling these requires a balance between persistence and resource conservation.
 
 Before implementing retries, operations must be idempotent, meaning performing the same operation multiple times yields the same result (e.g., charging a credit card only once despite three retry attempts).
+
+### D. Error Handling and Reporting
+
+Resilience requires visibility. It is not enough to handle errors; the system must communicate the context of the error to engineers to facilitate Root Cause Analysis (RCA).
