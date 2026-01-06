@@ -1609,3 +1609,63 @@ sequenceDiagram
     Note left of S: Server uses same Session Key to decrypt,<br/>process request, and encrypt response.
     end
 ```
+
+## TCP vs. UDP
+
+Think of the internet as a massive system of mail delivery. **TCP (Transmission Control Protocol)** and **UDP (User Datagram Protocol)** are the two primary methods used to transport data packets between computers. They both run on top of the IP (Internet Protocol) layer, but they have completely different philosophies.
+
+- **TCP** is like a **Certified Mail** service: It guarantees your letter arrives, in order, and sends you a receipt.
+- **UDP** is like sending a **Postcard**: You drop it in the mailbox and hope it gets there. It's fast and cheap, but there is no tracking number.
+
+Here is a detailed breakdown of how each works.
+
+---
+
+### 1. TCP (Transmission Control Protocol)
+
+TCP is designed for **reliability**. It ensures that no matter how chaotic the network is, the data received is exactly the same as the data sent.
+
+#### **Phase A: The Connection (The 3-Way Handshake)**
+
+Before any data is transferred, TCP establishes a "virtual circuit" between two devices. This is known as the **3-way handshake**.
+
+1. **SYN (Synchronize):** The client sends a packet with the `SYN` flag on. This is effectively asking, "Hello, I want to connect. My sequence number is ."
+2. **SYN-ACK (Synchronize-Acknowledge):** The server receives it and replies with `SYN-ACK`. It says, "I received your request (). I am ready too. My sequence number is ."
+3. **ACK (Acknowledge):** The client replies with `ACK`. It says, "I received your reply (). Let's start."
+
+- _Result:_ A stateful connection is established.
+
+#### **Phase B: Reliable Data Transfer**
+
+Once connected, TCP manages the data flow using three sophisticated mechanisms:
+
+- **Sequencing:** TCP chops data into segments and assigns a **Sequence Number** to each. If packets arrive out of order (e.g., packet 2 arrives after packet 3), the receiver uses these numbers to reassemble them correctly.
+- **Acknowledgments (ACKs) & Retransmission:** When the receiver gets a packet, it sends an ACK back to the sender.
+- _The "What if" scenario:_ If the sender does not receive an ACK within a specific timeframe (timeout), it assumes the packet was lost and **retransmits** it automatically.
+
+- **Flow Control (Windowing):** The receiver tells the sender how much buffer space it has left (called the "Window Size"). If the receiver is overwhelmed, the sender slows down. This prevents the sender from drowning the receiver in data.
+
+#### **Phase C: Connection Termination**
+
+When the data transfer is done, TCP politely closes the connection using a **4-way handshake**:
+
+1. **FIN:** Sender says "I'm done."
+2. **ACK:** Receiver says "Received."
+3. **FIN:** Receiver says "I'm done too."
+4. **ACK:** Sender says "Goodbye."
+
+---
+
+### 2. UDP (User Datagram Protocol)
+
+UDP is designed for **speed**. It strips away all the "safety checks" of TCP to reduce latency (delay).
+
+#### **How It Works (Fire-and-Forget)**
+
+UDP does **not** establish a connection (no handshake). It simply takes the application data, adds a tiny header, and throws it onto the network.
+
+- **No Guarantees:** UDP does not care if the packet arrives. It does not check for errors (mostly) and does not ask for acknowledgments.
+- **No Ordering:** If you send packets A, B, and C, they might arrive as C, A, B. The application layer must figure out what to do with them.
+- **Header Simplicity:** Because it lacks these features, the UDP header is incredibly small—only **8 bytes**. In contrast, the TCP header is **20-60 bytes**.
+
+---
