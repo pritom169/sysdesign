@@ -1465,3 +1465,64 @@ HTTPS stands for HyperText Transfer Protocol Secure. It's an extension of HTTP w
 **Data Integrity:** Ensures that data isn't tampered with during transmission.
 
 **Port 443:** HTTPS operates over port 443.
+
+### How TLS handshake works
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Client (Browser)
+    participant S as Server (Website)
+
+    %% PHASE 1 %%
+    rect rgb(240, 248, 255)
+    Note over C,S: 🤝 PHASE 1: NEGOTIATION (The "Hello")
+
+    C->>S: Client Hello
+    Note right of C: Sends:<br/>1. TLS Ver supported (e.g., 1.2, 1.3)<br/>2. Cipher Suites (Algorithms it knows)<br/>3. Client Random (Random String #1)
+
+    S->>C: Server Hello
+    Note left of S: Replies with:<br/>1. Selected TLS Ver & Cipher<br/>2. Server Random (Random String #2)
+    end
+
+    %% PHASE 2 %%
+    rect rgb(255, 250, 240)
+    Note over C,S: 🛡️ PHASE 2: AUTHENTICATION (The "ID Check")
+
+    S->>C: Server Certificate & Key Exchange
+    Note left of S: Sends:<br/>1. Digital Certificate (Public Key inside)<br/>2. Server Key Exchange Params (if using DH)
+
+    S->>C: Server Hello Done
+
+    Note over C: Browser Validates Certificate:<br/>1. Is it expired?<br/>2. Is the Authority (CA) trusted?<br/>3. Does the domain match?<br/>⚠️ If Fails: "Not Secure" Warning
+    end
+
+    %% PHASE 3 %%
+    rect rgb(240, 255, 240)
+    Note over C,S: 🔑 PHASE 3: KEY EXCHANGE (The "Secret")
+
+    C->>S: Client Key Exchange
+    Note right of C: Sends:<br/>Pre-Master Secret (Encrypted with Server's Public Key)<br/>OR Client Diffie-Hellman Params
+
+    C->>S: Change Cipher Spec
+    Note right of C: Signal: "I am switching to encryption now"
+
+    Note over C,S: 🧮 MATH MAGIC<br/>Both sides independently calculate the<br/>"Session Key" (Symmetric Key)<br/>using: Client Random + Server Random + Pre-Master Secret
+
+    C->>S: Finished (Encrypted)
+    Note right of C: First message encrypted with new Session Key.<br/>Contains hash of previous steps to verify integrity.
+    end
+
+    %% PHASE 4 %%
+    rect rgb(255, 245, 255)
+    Note over C,S: 🔒 PHASE 4: SECURE CONNECTION
+
+    S->>C: Change Cipher Spec
+    S->>C: Finished (Encrypted)
+
+    Note over C,S: Handshake Complete. Secure Tunnel Established.
+
+    C<->S: HTTP Data Transfer
+    Note over C,S: All web pages, passwords, and images<br/>are now encrypted with the Session Key.
+    end
+```
