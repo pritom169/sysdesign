@@ -1522,7 +1522,8 @@ sequenceDiagram
 
     Note over C,S: Handshake Complete. Secure Tunnel Established.
 
-    C<->S: HTTP Data Transfer
+    C->>S: HTTP Request (Encrypted)
+    S->>C: HTTP Response (Encrypted)
     Note over C,S: All web pages, passwords, and images<br/>are now encrypted with the Session Key.
     end
 ```
