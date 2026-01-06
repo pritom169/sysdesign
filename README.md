@@ -715,8 +715,8 @@ flowchart TD
         direction TB
         Logic{How should traffic<br/>be routed?}
 
-        Logic -- "By Content (URL/Cookies)<br/>Need Caching" --> L7[<b>Layer 7 (Application)</b><br/><i>Smart, CPU Intensive</i>]
-        Logic -- "By IP/Port (Raw Speed)<br/>Non-HTTP Traffic" --> L4[<b>Layer 4 (Transport)</b><br/><i>Fast, Protocol Agnostic</i>]
+        Logic -- "By Content (URL/Cookies)<br/>Need Caching" --> L7["<b>Layer 7 (Application)</b><br/><i>Smart, CPU Intensive</i>"]
+        Logic -- "By IP/Port (Raw Speed)<br/>Non-HTTP Traffic" --> L4["<b>Layer 4 (Transport)</b><br/><i>Fast, Protocol Agnostic</i>"]
     end
 
     %% Linking Types to Layers
