@@ -1468,6 +1468,78 @@ HTTPS stands for HyperText Transfer Protocol Secure. It's an extension of HTTP w
 
 ### How TLS handshake works
 
+#### 1. The Core Concepts
+
+Before the handshake begins, you must understand the two tools being used:
+
+Asymmetric Encryption (The Handshake): Uses a Key Pair.
+
+Public Key: Available to everyone. Used to encrypt data.
+
+Private Key: Kept secret by the server. Used to decrypt data.
+
+Mechanism: If you lock a box with the Public Key, only the Private Key can open it.
+
+Symmetric Encryption (The Data Transfer): Uses a single "Session Key."
+
+Both sides have the same key. It is used to lock and unlock the data.
+
+Why switch? Asymmetric encryption is mathematically complex and slow. Symmetric encryption is incredibly fast.
+
+#### 2. The Process: Step-by-Step
+
+When you type https://google.com, your browser (Client) and the Google Server perform a TLS Handshake. This happens in milliseconds.
+
+#### Phase 1: Negotiation (The "Hello")
+
+Client Hello: Your browser sends a message listing the TLS versions and encryption algorithms (Cipher Suites) it supports. It also sends a random string of numbers (Client Random).
+
+Server Hello: The server picks the best encryption algorithm from your list. It sends back its own random string (Server Random) and its Digital Certificate.
+
+#### Phase 2: Authentication (Checking the ID)
+
+The browser must prove the server is who it claims to be.
+
+Certificate Check: The browser inspects the server's Digital Certificate. It looks at the Digital Signature on the certificate.
+
+Chain of Trust: The browser asks: "Who signed this?" (e.g., DigiCert, Let's Encrypt). The browser has a pre-installed list of trusted authorities. If the signature matches a trusted authority, the identity is verified.
+
+Public Key Extraction: The browser pulls the server's Public Key out of that verified certificate.
+
+Phase 3: Key Exchange (The Secret Handoff)
+Now they need to agree on a Session Key (Symmetric key) to encrypt the actual browsing data. There are two main ways this happens:
+
+Option A: The RSA Key Exchange (Older, less common now)
+
+The Client generates a random code called the Pre-Master Secret.
+
+The Client encrypts this secret using the server's Public Key (extracted in Phase 2).
+
+The Client sends this encrypted package to the Server.
+
+The Server uses its Private Key to decrypt it. Now both sides have the Pre-Master Secret without anyone seeing it.
+
+Option B: The Diffie-Hellman Exchange (Modern Standard, TLS 1.3)
+
+Instead of sending a key across the wire, the two sides generate the key together mathematically.
+
+The Math: Both sides share public variables (let's call them Paint Colors).
+
+The Secret: Each side mixes their own secret color into the public paint.
+
+The Swap: They exchange the mixed paints.
+
+The Final Mix: Each side adds their secret color to the mix they just received.
+
+Result: Both sides end up with the exact same final color (the Session Key), but a hacker seeing the exchanged paints cannot "un-mix" them to find the secret.
+
+Phase 4: Encrypted Transmission
+Both the Client and Server use the random numbers exchanged in Phase 1 + the Secret generated in Phase 3 to create the final Session Key.
+
+The Handshake is complete.
+
+Symmetric Encryption Begins: When you load the webpage, the data is encrypted using this Session Key. If a hacker intercepts the data, they see random characters (ciphertext).
+
 ```mermaid
 sequenceDiagram
     autonumber
