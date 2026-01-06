@@ -1452,3 +1452,16 @@ HTTP stands for HyperText Transfer Protocol. It's the foundational protocol used
 **Text-Based:** Data is transmitted in plain text, making it readable by both humans and machines.
 
 **Port 80:** By default, HTTP uses port 80 for communication.
+
+### 2. What is HTTPs?
+
+HTTPS stands for HyperText Transfer Protocol Secure. It's an extension of HTTP with added security measures to protect data during transmission.
+
+**Key Features of HTTPs**
+**Encryption:** Uses protocols like SSL/TLS to encrypt data, ensuring that any intercepted information remains unreadable.
+
+**Authentication:** Verifies that the website you're connecting to is legitimate, preventing man-in-the-middle attacks.
+
+**Data Integrity:** Ensures that data isn't tampered with during transmission.
+
+**Port 443:** HTTPS operates over port 443.
