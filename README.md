@@ -1669,3 +1669,11 @@ UDP does **not** establish a connection (no handshake). It simply takes the appl
 - **Header Simplicity:** Because it lacks these features, the UDP header is incredibly small—only **8 bytes**. In contrast, the TCP header is **20-60 bytes**.
 
 ---
+
+### HTTP: 1.0 vs 1.1 vs 2.0 vs 3.0
+
+#### HTTP 1.0
+
+**How it worked:** It introduced Headers, allowing the transfer of images, video, and scripts, not just HTML. It also added status codes (like 404 Not Found).
+
+**Limitation:** It still required opening a new TCP connection for every single file. If a website had 10 images, your browser had to set up and tear down 10 separate connections, which was incredibly slow.
