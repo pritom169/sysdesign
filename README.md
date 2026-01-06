@@ -1685,3 +1685,17 @@ Released in 1997, this version powered the web for over 15 years and is still wi
 **Key Innovation:** Persistent Connections ("Keep-Alive") Instead of opening a new connection for every file, HTTP/1.1 keeps the TCP connection open to reuse it for multiple requests (e.g., HTML, CSS, and images all travel over one wire).
 
 **The Critical Flaw:** Head-of-Line Blocking HTTP/1.1 processes requests sequentially. If your browser requests a large image followed by a small script, the small script has to wait for the large image to finish downloading completely. It is like a single checkout lane at a grocery store; if the person in front of you has a full cart, you have to wait, even if you only have one item.
+
+#### HTTP 2.0
+
+Released in 2015, HTTP/2 was a massive redesign intended to fix the "checkout lane" problem of HTTP/1.1.
+
+How it works:
+
+- **Binary Framing:** It creates a binary layer separate from the visible text headers. It breaks data down into tiny binary "frames" of 1s and 0s, making it easier for machines to parse.
+
+- **Multiplexing:** This is the game-changer. It allows multiple requests and responses to be sent at the same time over a single connection. The browser can request the HTML, CSS, and JS simultaneously, and the server sends them back in mixed chunks.
+
+- **Analogy:** Instead of one checkout lane where customers wait in line (HTTP/1.1), HTTP/2 is like a conveyor belt where everyone puts their items on at once, and they get sorted out at the end.
+
+- **The Remaining Flaw:** HTTP/2 still relies on TCP (Transmission Control Protocol). If a single packet of data gets lost in the network, TCP forces all streams to stop and wait until that packet is re-transmitted. This is called TCP Head-of-Line Blocking.
