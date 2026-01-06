@@ -1474,56 +1474,66 @@ sequenceDiagram
     participant C as Client (Browser)
     participant S as Server (Website)
 
+    %% CONCEPT DEFINITIONS %%
+    Note over C,S: 📚 CORE CONCEPTS (Prerequisites)<br/>1. Asymmetric Encryption: Uses Key Pair (Public locks, Private unlocks). Slow & Secure.<br/>2. Symmetric Encryption: Uses one "Session Key". Fast.<br/>3. Goal: Use Asymmetric to safely share the Symmetric Key.
+
     %% PHASE 1 %%
     rect rgb(240, 248, 255)
     Note over C,S: 🤝 PHASE 1: NEGOTIATION (The "Hello")
 
     C->>S: Client Hello
-    Note right of C: Sends:<br/>1. TLS Ver supported (e.g., 1.2, 1.3)<br/>2. Cipher Suites (Algorithms it knows)<br/>3. Client Random (Random String #1)
+    Note right of C: Sends:<br/>• TLS Versions (1.2, 1.3)<br/>• Cipher Suites (Algorithms)<br/>• 🎲 Client Random (String #1)
 
     S->>C: Server Hello
-    Note left of S: Replies with:<br/>1. Selected TLS Ver & Cipher<br/>2. Server Random (Random String #2)
+    Note left of S: Selects Best Algorithm.<br/>Sends:<br/>• 🎲 Server Random (String #2)<br/>• 📜 Digital Certificate
+
+    Note over C,S: ⏱️ TLS 1.3 Note: In newer versions, the math starts HERE (1 Round Trip).<br/>TLS 1.2 requires the full back-and-forth below (2 Round Trips).
     end
 
     %% PHASE 2 %%
     rect rgb(255, 250, 240)
     Note over C,S: 🛡️ PHASE 2: AUTHENTICATION (The "ID Check")
 
-    S->>C: Server Certificate & Key Exchange
-    Note left of S: Sends:<br/>1. Digital Certificate (Public Key inside)<br/>2. Server Key Exchange Params (if using DH)
-
-    S->>C: Server Hello Done
-
-    Note over C: Browser Validates Certificate:<br/>1. Is it expired?<br/>2. Is the Authority (CA) trusted?<br/>3. Does the domain match?<br/>⚠️ If Fails: "Not Secure" Warning
+    Note over C: 🧐 Browser Inspects Certificate:<br/>1. Validates Digital Signature.<br/>2. Checks "Chain of Trust" (DigiCert, Let's Encrypt).<br/>3. IF TRUSTED: Extracts Server's Public Key (🔓).
     end
 
     %% PHASE 3 %%
     rect rgb(240, 255, 240)
-    Note over C,S: 🔑 PHASE 3: KEY EXCHANGE (The "Secret")
+    Note over C,S: 🔑 PHASE 3: KEY EXCHANGE (Choosing the Path)
 
-    C->>S: Client Key Exchange
-    Note right of C: Sends:<br/>Pre-Master Secret (Encrypted with Server's Public Key)<br/>OR Client Diffie-Hellman Params
-
-    C->>S: Change Cipher Spec
-    Note right of C: Signal: "I am switching to encryption now"
-
-    Note over C,S: 🧮 MATH MAGIC<br/>Both sides independently calculate the<br/>"Session Key" (Symmetric Key)<br/>using: Client Random + Server Random + Pre-Master Secret
-
-    C->>S: Finished (Encrypted)
-    Note right of C: First message encrypted with new Session Key.<br/>Contains hash of previous steps to verify integrity.
+    alt Option A: RSA Exchange (Older)
+        C->>C: Generates "Pre-Master Secret"
+        C->>S: Sends Secret (Encrypted with Server's 🔓 Public Key)
+        Note left of S: Server decrypts with 🔐 Private Key.<br/>(Only Server can do this).
+        Note over C,S: Result: Both have the Pre-Master Secret.
+    else Option B: Diffie-Hellman (Modern/TLS 1.3)
+        Note over C,S: 🎨 "The Paint Mixer" Analogy
+        C->>S: Share Public Variables ("Paint Colors")
+        S->>C: Share Public Variables
+        C->>C: Mixes Secret Color + Public Paint
+        S->>S: Mixes Secret Color + Public Paint
+        C->>S: Swap Mixed Paints
+        S->>C: Swap Mixed Paints
+        Note over C,S: 🧮 Final Math: Each adds their secret to the mix.<br/>Result: Both derive exact same "Session Key" mathematically.<br/>(Hacker cannot "un-mix" the paint).
+    end
     end
 
     %% PHASE 4 %%
-    rect rgb(255, 245, 255)
-    Note over C,S: 🔒 PHASE 4: SECURE CONNECTION
+    rect rgb(230, 230, 250)
+    Note over C,S: 🔒 PHASE 4: ENCRYPTED TRANSMISSION
 
-    S->>C: Change Cipher Spec
-    S->>C: Finished (Encrypted)
+    Note over C,S: 🏗️ BUILD THE SESSION KEY<br/>Recipe: Client Random + Server Random + The Secret (from Phase 3).
 
-    Note over C,S: Handshake Complete. Secure Tunnel Established.
+    C->>S: Finished (Encrypted Hash)
+    S->>C: Finished (Encrypted Hash)
+    Note right of S: Integrity Check: Verifies handshake wasn't tampered with.
+
+    Note over C,S: 🚀 SYMMETRIC ENCRYPTION BEGINS (The "Armored Truck")
 
     C->>S: HTTP Request (Encrypted)
+    Note right of C: 🔐 THE LOCK MECHANISM (AES-256)<br/>Input: "Get /home" + Session Key<br/>Output: "Xy7#b9@z" (Ciphertext)<br/>Security: 2^256 combinations (Universe Age to crack).
+
     S->>C: HTTP Response (Encrypted)
-    Note over C,S: All web pages, passwords, and images<br/>are now encrypted with the Session Key.
+    Note left of S: Server uses same Session Key to decrypt,<br/>process request, and encrypt response.
     end
 ```
