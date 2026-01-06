@@ -1677,3 +1677,11 @@ UDP does **not** establish a connection (no handshake). It simply takes the appl
 **How it worked:** It introduced Headers, allowing the transfer of images, video, and scripts, not just HTML. It also added status codes (like 404 Not Found).
 
 **Limitation:** It still required opening a new TCP connection for every single file. If a website had 10 images, your browser had to set up and tear down 10 separate connections, which was incredibly slow.
+
+#### HTTP 1.1
+
+Released in 1997, this version powered the web for over 15 years and is still widely used.
+
+**Key Innovation:** Persistent Connections ("Keep-Alive") Instead of opening a new connection for every file, HTTP/1.1 keeps the TCP connection open to reuse it for multiple requests (e.g., HTML, CSS, and images all travel over one wire).
+
+**The Critical Flaw:** Head-of-Line Blocking HTTP/1.1 processes requests sequentially. If your browser requests a large image followed by a small script, the small script has to wait for the large image to finish downloading completely. It is like a single checkout lane at a grocery store; if the person in front of you has a full cart, you have to wait, even if you only have one item.
