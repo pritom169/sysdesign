@@ -1442,3 +1442,13 @@ Rapid Recovery: Focuses on quickly restoring service after a failure, though a b
 ## HTTP vs HTTPs
 
 HTTP (Hypertext Transfer Protocol) and HTTPS (Hypertext Transfer Protocol Secure) are both protocols used for transmitting data over the internet, primarily used for loading webpages. While they are similar in many ways, the key difference lies in the security aspect provided by HTTPS.
+
+### 1. What is HTTP?
+
+HTTP stands for HyperText Transfer Protocol. It's the foundational protocol used for transmitting data on the World Wide Web. When you enter a website address in your browser, HTTP is responsible for fetching and displaying that site.
+
+**Stateless Protocol:** Each request from a client to a server is independent. The server doesn't retain any session information between requests.
+
+**Text-Based:** Data is transmitted in plain text, making it readable by both humans and machines.
+
+**Port 80:** By default, HTTP uses port 80 for communication.
