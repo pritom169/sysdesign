@@ -1699,3 +1699,13 @@ How it works:
 - **Analogy:** Instead of one checkout lane where customers wait in line (HTTP/1.1), HTTP/2 is like a conveyor belt where everyone puts their items on at once, and they get sorted out at the end.
 
 - **The Remaining Flaw:** HTTP/2 still relies on TCP (Transmission Control Protocol). If a single packet of data gets lost in the network, TCP forces all streams to stop and wait until that packet is re-transmitted. This is called TCP Head-of-Line Blocking.
+
+#### HTTP 3.0
+
+Standardized recently (2022), HTTP/3 abandons TCP entirely to solve the packet-loss issue.
+
+- **How it works (QUIC Protocol):** Instead of TCP, HTTP/3 uses a new protocol called QUIC, which is built on top of UDP (User Datagram Protocol).
+
+- **Independent Streams:** Because it uses UDP, packet loss only affects the specific stream it belongs to. If a packet for an image is lost, the CSS and JavaScript streams continue loading without pause.
+
+- **Faster Handshakes:** It combines the connection setup and encryption (TLS) handshake into one step (or even zero steps for repeat visitors), making connections establish much faster.
