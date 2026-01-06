@@ -1436,3 +1436,9 @@ Uptime Guarantee: Designed to ensure a high level of operational performance and
 Load Balancing and Redundancy: Achieved through techniques like load balancing, redundant systems, and clustering.
 
 Rapid Recovery: Focuses on quickly restoring service after a failure, though a brief disruption is acceptable.
+
+# Network Essentials
+
+## HTTP vs HTTPs
+
+HTTP (Hypertext Transfer Protocol) and HTTPS (Hypertext Transfer Protocol Secure) are both protocols used for transmitting data over the internet, primarily used for loading webpages. While they are similar in many ways, the key difference lies in the security aspect provided by HTTPS.
