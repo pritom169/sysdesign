@@ -1851,3 +1851,46 @@ flowchart TB
 | **PTR** | Reverse DNS; IP to domain mapping | `34.216.184.93.in-addr.arpa → example.com` |
 | **SRV** | Service location (port, priority, weight) | `_sip._tcp.example.com → sipserver.example.com:5060` |
 
+### DNS Resolver Types
+
+```mermaid
+flowchart LR
+    subgraph Client_Side [Client Side]
+        APP[Application]
+        STUB[Stub Resolver]
+    end
+
+    subgraph Network [Network Infrastructure]
+        REC[Recursive Resolver<br/>ISP/Public DNS]
+        CACHE[Caching-Only<br/>Resolver]
+        FWD[Forwarder]
+    end
+
+    subgraph DNS_Servers [DNS Servers]
+        ROOT[Root]
+        TLD[TLD]
+        AUTH[Authoritative]
+    end
+
+    APP --> STUB
+    STUB --> REC
+    REC --> CACHE
+    CACHE --> FWD
+    FWD --> ROOT
+    ROOT --> TLD
+    TLD --> AUTH
+
+    style STUB fill:#3498db,stroke:#333,color:white
+    style REC fill:#9b59b6,stroke:#333,color:white
+    style CACHE fill:#1abc9c,stroke:#333,color:white
+    style FWD fill:#e67e22,stroke:#333,color:white
+```
+
+| Resolver Type | Location | Function | Caching |
+|---------------|----------|----------|---------|
+| **Stub Resolver** | Client OS | Minimal resolver; forwards queries to recursive resolver | Local cache (OS-level) |
+| **Recursive Resolver** | ISP/Public DNS (8.8.8.8, 1.1.1.1) | Does full resolution on behalf of client; traverses hierarchy | Yes, respects TTL |
+| **Caching-Only Resolver** | Corporate network | Only caches results; no authoritative data | Primary function |
+| **Forwarder** | Enterprise network | Forwards queries to upstream resolver instead of iterating | Optional |
+| **Iterative (Non-Recursive) Resolver** | DNS servers | Returns best known answer or referral; doesn't chase referrals | Limited |
+
