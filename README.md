@@ -1942,3 +1942,29 @@ sequenceDiagram
 | 9 | Response cached and returned to client | Recursive Resolver |
 | 10 | Browser connects to IP address | Browser |
 
+### DNS Caching Layers
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Browser Cache                            │
+│                    (Chrome: chrome://net-internals/#dns)        │
+├─────────────────────────────────────────────────────────────────┤
+│                     Operating System Cache                      │
+│           (Linux: systemd-resolved, macOS: mDNSResponder)       │
+├─────────────────────────────────────────────────────────────────┤
+│                   Local Network (Router/Proxy)                  │
+├─────────────────────────────────────────────────────────────────┤
+│                    ISP Recursive Resolver                       │
+│                    (or Public: 8.8.8.8, 1.1.1.1)                │
+├─────────────────────────────────────────────────────────────────┤
+│              Authoritative Server (Source of Truth)             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Cache Level | TTL Control | Flush Command |
+|-------------|-------------|---------------|
+| Browser | Respects DNS TTL | Chrome: `chrome://net-internals/#dns` → Clear |
+| OS (macOS) | Respects TTL | `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
+| OS (Linux) | Respects TTL | `sudo systemd-resolve --flush-caches` |
+| OS (Windows) | Respects TTL | `ipconfig /flushdns` |
+
