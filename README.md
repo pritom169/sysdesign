@@ -1894,3 +1894,37 @@ flowchart LR
 | **Forwarder** | Enterprise network | Forwards queries to upstream resolver instead of iterating | Optional |
 | **Iterative (Non-Recursive) Resolver** | DNS servers | Returns best known answer or referral; doesn't chase referrals | Limited |
 
+### The DNS Lookup Process
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant StubResolver as Stub Resolver<br/>(OS)
+    participant RecursiveResolver as Recursive Resolver<br/>(ISP/Public DNS)
+    participant RootServer as Root Server
+    participant TLDServer as TLD Server<br/>(.com)
+    participant AuthServer as Authoritative Server<br/>(example.com)
+
+    Browser->>StubResolver: 1. Resolve www.example.com
+    Note over StubResolver: Check local cache
+    StubResolver->>RecursiveResolver: 2. Query www.example.com
+    Note over RecursiveResolver: Check cache (miss)
+
+    RecursiveResolver->>RootServer: 3. Query www.example.com
+    RootServer-->>RecursiveResolver: 4. Referral: Ask .com TLD servers
+
+    RecursiveResolver->>TLDServer: 5. Query www.example.com
+    TLDServer-->>RecursiveResolver: 6. Referral: Ask ns1.example.com
+
+    RecursiveResolver->>AuthServer: 7. Query www.example.com
+    AuthServer-->>RecursiveResolver: 8. Answer: 93.184.216.34 (TTL: 300)
+
+    Note over RecursiveResolver: Cache result for 300s
+    RecursiveResolver-->>StubResolver: 9. Answer: 93.184.216.34
+    Note over StubResolver: Cache result
+    StubResolver-->>Browser: 10. IP: 93.184.216.34
+
+    Browser->>Browser: 11. Connect to 93.184.216.34
+```
+
+
