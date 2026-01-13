@@ -1998,4 +1998,12 @@ Adds cryptographic signatures to DNS records to verify authenticity.
 | **DS** | Delegation Signer; links parent to child zone |
 | **NSEC/NSEC3** | Proves non-existence of a record |
 
+### Popular Public DNS Resolvers
+
+| Provider | Primary | Secondary | Features |
+|----------|---------|-----------|----------|
+| Google | `8.8.8.8` | `8.8.4.4` | Reliability, global anycast |
+| Cloudflare | `1.1.1.1` | `1.0.0.1` | Privacy-focused, fastest |
+| Quad9 | `9.9.9.9` | `149.112.112.112` | Malware blocking |
+| OpenDNS | `208.67.222.222` | `208.67.220.220` | Parental controls, filtering |
 
