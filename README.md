@@ -1968,3 +1968,14 @@ sequenceDiagram
 | OS (Linux) | Respects TTL | `sudo systemd-resolve --flush-caches` |
 | OS (Windows) | Respects TTL | `ipconfig /flushdns` |
 
+### TTL (Time To Live)
+
+TTL defines how long (in seconds) a DNS record can be cached before requiring re-query.
+
+| TTL Value | Use Case |
+|-----------|----------|
+| **Low (60-300s)** | Frequently changing IPs, failover scenarios, during migrations |
+| **Medium (3600s/1hr)** | Standard websites, balanced freshness/performance |
+| **High (86400s/1day+)** | Stable infrastructure, reduce DNS load |
+
+
