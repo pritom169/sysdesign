@@ -1927,4 +1927,18 @@ sequenceDiagram
     Browser->>Browser: 11. Connect to 93.184.216.34
 ```
 
+#### Step-by-Step Resolution
+
+| Step | Action | Actor |
+|------|--------|-------|
+| 1 | User types `www.example.com` in browser | User/Browser |
+| 2 | Browser checks its DNS cache | Browser |
+| 3 | OS stub resolver checks `/etc/hosts` and OS cache | Stub Resolver |
+| 4 | Query sent to configured recursive resolver | Stub Resolver |
+| 5 | Recursive resolver checks its cache | Recursive Resolver |
+| 6 | Query root server → receives TLD referral | Recursive Resolver |
+| 7 | Query TLD server → receives authoritative referral | Recursive Resolver |
+| 8 | Query authoritative server → receives IP address | Recursive Resolver |
+| 9 | Response cached and returned to client | Recursive Resolver |
+| 10 | Browser connects to IP address | Browser |
 
