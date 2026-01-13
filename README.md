@@ -1813,3 +1813,28 @@ DNS is a hierarchical, distributed naming system that translates human-readable 
 | **sTLD** (Sponsored) | Restricted to specific communities | `.edu`, `.gov`, `.mil` |
 | **Infrastructure** | Technical operations | `.arpa` |
 
+### DNS Server Types
+
+```mermaid
+flowchart TB
+    subgraph DNS_Hierarchy [DNS Server Hierarchy]
+        ROOT[("Root Name Servers<br/>13 logical servers (a-m)<br/>Know TLD server locations")]
+        TLD[("TLD Name Servers<br/>Manage .com, .org, .net, etc.<br/>Know authoritative server locations")]
+        AUTH[("Authoritative Name Servers<br/>Hold actual DNS records<br/>Final source of truth")]
+    end
+
+    ROOT --> TLD
+    TLD --> AUTH
+
+    style ROOT fill:#e74c3c,stroke:#333,stroke-width:2px,color:white
+    style TLD fill:#f39c12,stroke:#333,stroke-width:2px,color:white
+    style AUTH fill:#27ae60,stroke:#333,stroke-width:2px,color:white
+```
+
+| Server Type | Function | Count/Scale |
+|-------------|----------|-------------|
+| **Root Name Servers** | Entry point to DNS hierarchy; directs queries to appropriate TLD servers | 13 logical servers (A-M), ~1500+ physical instances globally via anycast |
+| **TLD Name Servers** | Manage domains under specific TLDs; point to authoritative servers | Operated by registries (Verisign for .com, PIR for .org) |
+| **Authoritative Name Servers** | Store actual DNS records for domains; provide definitive answers | Managed by domain owners or DNS providers |
+
+
