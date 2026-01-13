@@ -1837,4 +1837,17 @@ flowchart TB
 | **TLD Name Servers** | Manage domains under specific TLDs; point to authoritative servers | Operated by registries (Verisign for .com, PIR for .org) |
 | **Authoritative Name Servers** | Store actual DNS records for domains; provide definitive answers | Managed by domain owners or DNS providers |
 
+### DNS Record Types
+
+| Record | Purpose | Example |
+|--------|---------|---------|
+| **A** | Maps domain to IPv4 address | `example.com → 93.184.216.34` |
+| **AAAA** | Maps domain to IPv6 address | `example.com → 2606:2800:220:1:248:1893:25c8:1946` |
+| **CNAME** | Alias pointing to another domain | `www.example.com → example.com` |
+| **MX** | Mail server for domain (with priority) | `example.com → mail.example.com (priority: 10)` |
+| **NS** | Authoritative name servers for domain | `example.com → ns1.example.com` |
+| **TXT** | Arbitrary text (SPF, DKIM, verification) | `v=spf1 include:_spf.google.com ~all` |
+| **SOA** | Start of Authority; zone metadata | Serial number, refresh intervals, admin contact |
+| **PTR** | Reverse DNS; IP to domain mapping | `34.216.184.93.in-addr.arpa → example.com` |
+| **SRV** | Service location (port, priority, weight) | `_sip._tcp.example.com → sipserver.example.com:5060` |
 
