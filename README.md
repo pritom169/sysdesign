@@ -1978,4 +1978,13 @@ TTL defines how long (in seconds) a DNS record can be cached before requiring re
 | **Medium (3600s/1hr)** | Standard websites, balanced freshness/performance |
 | **High (86400s/1day+)** | Stable infrastructure, reduce DNS load |
 
+### DNS Security
+
+| Threat | Description | Mitigation |
+|--------|-------------|------------|
+| **DNS Spoofing/Cache Poisoning** | Injecting false records into cache | DNSSEC |
+| **DNS Hijacking** | Redirecting queries to malicious servers | DNSSEC, DNS over HTTPS/TLS |
+| **DNS Amplification (DDoS)** | Using DNS for volumetric attacks | Response Rate Limiting (RRL) |
+| **Man-in-the-Middle** | Intercepting DNS queries | DoH (DNS over HTTPS), DoT (DNS over TLS) |
+
 
