@@ -1987,4 +1987,15 @@ TTL defines how long (in seconds) a DNS record can be cached before requiring re
 | **DNS Amplification (DDoS)** | Using DNS for volumetric attacks | Response Rate Limiting (RRL) |
 | **Man-in-the-Middle** | Intercepting DNS queries | DoH (DNS over HTTPS), DoT (DNS over TLS) |
 
+#### DNSSEC (DNS Security Extensions)
+
+Adds cryptographic signatures to DNS records to verify authenticity.
+
+| Record | Purpose |
+|--------|---------|
+| **RRSIG** | Contains signature for a record set |
+| **DNSKEY** | Public key used to verify signatures |
+| **DS** | Delegation Signer; links parent to child zone |
+| **NSEC/NSEC3** | Proves non-existence of a record |
+
 
