@@ -1778,4 +1778,38 @@ DNS is a hierarchical, distributed naming system that translates human-readable 
 | **Redundancy** | Distributed architecture ensures no single point of failure |
 | **Scalability** | Hierarchical design handles billions of queries daily |
 
+### DNS Components and Terminology
+
+#### Domain Names Structure
+
+```
+        ┌─────────────────────────────────────────────────────────┐
+        │              mail.support.example.com                   │
+        └─────────────────────────────────────────────────────────┘
+                │         │          │         │
+                ▼         ▼          ▼         ▼
+        ┌───────────┬──────────┬──────────┬─────────┐
+        │ Subdomain │ Subdomain│  SLD     │  TLD    │
+        │  (mail)   │(support) │(example) │ (.com)  │
+        └───────────┴──────────┴──────────┴─────────┘
+                          │
+                          ▼
+              Second-Level Domain (SLD)
+```
+
+| Component | Description | Examples |
+|-----------|-------------|----------|
+| **TLD (Top-Level Domain)** | Rightmost label in domain name | `.com`, `.org`, `.net`, `.io`, `.gov` |
+| **SLD (Second-Level Domain)** | Directly left of TLD, typically the brand/organization | `google` in `google.com` |
+| **Subdomain** | Any label to the left of SLD | `www`, `mail`, `api`, `blog` |
+| **FQDN (Fully Qualified Domain Name)** | Complete domain path ending with root (.) | `www.example.com.` |
+
+#### TLD Types
+
+| Type | Description | Examples |
+|------|-------------|----------|
+| **gTLD** (Generic) | Open registration, general purpose | `.com`, `.org`, `.net`, `.info` |
+| **ccTLD** (Country Code) | Reserved for countries/territories | `.us`, `.uk`, `.de`, `.jp` |
+| **sTLD** (Sponsored) | Restricted to specific communities | `.edu`, `.gov`, `.mil` |
+| **Infrastructure** | Technical operations | `.arpa` |
 
