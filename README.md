@@ -1968,6 +1968,34 @@ sequenceDiagram
 | OS (Linux) | Respects TTL | `sudo systemd-resolve --flush-caches` |
 | OS (Windows) | Respects TTL | `ipconfig /flushdns` |
 
+### Recursive vs Iterative DNS Queries
+
+```mermaid
+flowchart LR
+    subgraph Recursive_Query [Recursive Query]
+        direction TB
+        C1[Client] -->|"Query: example.com"| R1[Recursive Resolver]
+        R1 -->|"Does all the work"| R1
+        R1 -->|"Final Answer: 93.184.216.34"| C1
+    end
+
+    subgraph Iterative_Query [Iterative Query]
+        direction TB
+        R2[Recursive Resolver] -->|"Query"| ROOT2[Root Server]
+        ROOT2 -->|"Referral: Ask .com"| R2
+        R2 -->|"Query"| TLD2[TLD Server]
+        TLD2 -->|"Referral: Ask ns1.example.com"| R2
+        R2 -->|"Query"| AUTH2[Auth Server]
+        AUTH2 -->|"Answer: 93.184.216.34"| R2
+    end
+```
+
+| Query Type | Description | Who Does the Work | Flag in DNS |
+|------------|-------------|-------------------|-------------|
+| **Recursive** | Client asks resolver to provide the final answer; resolver must fully resolve or return an error | Resolver does all work on behalf of client | RD (Recursion Desired) = 1 |
+| **Iterative** | Each server returns the best answer it has (either the answer or a referral to another server) | Querying resolver follows referrals itself | RD = 0 |
+
+
 ### TTL (Time To Live)
 
 TTL defines how long (in seconds) a DNS record can be cached before requiring re-query.
