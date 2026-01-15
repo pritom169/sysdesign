@@ -1759,3 +1759,23 @@ Structure: urn:<namespace>:<specific-string>
 Real-world usage: URNs are often used in libraries, digital documents, and standard codes.
 
 Example: urn:isbn:978-0-123-45678-9 (This is the International Standard Book Number. It identifies that specific book regardless of whether it is in a library, a bookstore, or a PDF on your computer).
+
+---
+
+## DNS (Domain Name System)
+
+### What is DNS?
+
+DNS is a hierarchical, distributed naming system that translates human-readable domain names (e.g., `www.google.com`) into machine-readable IP addresses (e.g., `142.250.190.4`). It functions as the internet's phonebook.
+
+### Purpose and Importance of DNS
+
+| Purpose | Description |
+|---------|-------------|
+| **Human Usability** | Allows users to access websites using memorable names instead of IP addresses |
+| **Abstraction** | Decouples domain names from underlying IP addresses, enabling server migrations without user impact |
+| **Load Distribution** | Returns multiple IP addresses for a single domain to distribute traffic |
+| **Redundancy** | Distributed architecture ensures no single point of failure |
+| **Scalability** | Hierarchical design handles billions of queries daily |
+
+
