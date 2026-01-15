@@ -2062,7 +2062,75 @@ TTL defines how long (in seconds) a DNS record can be cached before requiring re
 | **TTL during migration** | Lower TTL before migration, raise after stable |
 | **Minimum TTL** | Some resolvers enforce minimum (e.g., 30s) regardless of record TTL |
 
+### Negative Caching
 
+Negative caching stores the **non-existence** of a DNS record, preventing repeated queries for domains that don't exist.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Negative Caching Flow                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Client queries: nonexistent.example.com                        │
+│           │                                                     │
+│           ▼                                                     │
+│  Recursive Resolver → Authoritative Server                      │
+│           │                                                     │
+│           ▼                                                     │
+│  Response: NXDOMAIN (Name Error) + SOA record                   │
+│           │                                                     │
+│           ▼                                                     │
+│  Resolver caches: "nonexistent.example.com does NOT exist"      │
+│  Cache TTL = minimum of (SOA MINIMUM field, SOA TTL)            │
+│           │                                                     │
+│           ▼                                                     │
+│  Next query for same name → Immediate NXDOMAIN from cache       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Negative Response Types
+
+| Response Code | Meaning | Cached? |
+|---------------|---------|---------|
+| **NXDOMAIN (RCODE 3)** | Domain name does not exist | Yes, with negative TTL |
+| **NODATA (RCODE 0, empty answer)** | Domain exists but requested record type doesn't | Yes, with negative TTL |
+| **SERVFAIL (RCODE 2)** | Server failure | Sometimes (shorter TTL) |
+| **REFUSED (RCODE 5)** | Server refuses to answer | Generally not cached |
+
+#### SOA Record and Negative TTL
+
+The SOA (Start of Authority) record controls negative caching:
+
+```
+example.com.  IN  SOA  ns1.example.com. admin.example.com. (
+                    2024011501  ; Serial
+                    3600        ; Refresh (1 hour)
+                    600         ; Retry (10 minutes)
+                    604800      ; Expire (1 week)
+                    300         ; Minimum TTL (negative cache TTL)
+                )
+```
+
+| SOA Field | Purpose |
+|-----------|---------|
+| **Minimum (last field)** | Maximum TTL for negative responses (RFC 2308) |
+| **SOA TTL** | TTL of the SOA record itself |
+| **Negative cache TTL** | `min(SOA Minimum, SOA TTL)` |
+
+#### Why Negative Caching Matters
+
+| Benefit | Description |
+|---------|-------------|
+| **Reduces load** | Prevents repeated queries for typos, non-existent subdomains |
+| **Faster failure** | Immediate NXDOMAIN response from cache |
+| **DDoS mitigation** | Limits impact of random subdomain attacks |
+| **Resource efficiency** | Saves bandwidth and server resources |
+
+| Risk | Mitigation |
+|------|------------|
+| **Newly created domains not resolving** | Keep negative TTL reasonable (300-3600s) |
+| **Cached NXDOMAIN after domain registration** | Wait for negative cache to expire |
 
 ### DNS Security
 
