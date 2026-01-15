@@ -2037,6 +2037,33 @@ TTL defines how long (in seconds) a DNS record can be cached before requiring re
 | **Medium (3600s/1hr)** | Standard websites, balanced freshness/performance |
 | **High (86400s/1day+)** | Stable infrastructure, reduce DNS load |
 
+#### TTL Mechanics
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    TTL Countdown Example                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Authoritative Server sets: example.com A 93.184.216.34 TTL=300 │
+│                                                                 │
+│  t=0s    Resolver receives record, caches with TTL=300          │
+│  t=100s  Client queries → Cache HIT, returns with TTL=200       │
+│  t=250s  Client queries → Cache HIT, returns with TTL=50        │
+│  t=300s  TTL expires → Cache entry removed                      │
+│  t=301s  Client queries → Cache MISS, must query upstream       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| TTL Consideration | Impact |
+|-------------------|--------|
+| **Lower TTL** | More DNS queries, higher load, faster propagation of changes |
+| **Higher TTL** | Fewer queries, lower load, slower propagation (stale data risk) |
+| **TTL during migration** | Lower TTL before migration, raise after stable |
+| **Minimum TTL** | Some resolvers enforce minimum (e.g., 30s) regardless of record TTL |
+
+
+
 ### DNS Security
 
 | Threat | Description | Mitigation |
