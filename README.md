@@ -1995,6 +1995,37 @@ flowchart LR
 | **Recursive** | Client asks resolver to provide the final answer; resolver must fully resolve or return an error | Resolver does all work on behalf of client | RD (Recursion Desired) = 1 |
 | **Iterative** | Each server returns the best answer it has (either the answer or a referral to another server) | Querying resolver follows referrals itself | RD = 0 |
 
+#### How They Work Together
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Client (Browser/App)                                                       │
+│     │                                                                       │
+│     │ ════════════════════════════════════════════════════════════════════  │
+│     │   RECURSIVE QUERY (RD=1)                                              │
+│     │   "Give me the final answer for example.com"                          │
+│     ▼                                                                       │
+│  Recursive Resolver (ISP/Public DNS)                                        │
+│     │                                                                       │
+│     │ ────────────────────────────────────────────────────────────────────  │
+│     │   ITERATIVE QUERIES (RD=0)                                            │
+│     │   "What do you know about example.com?"                               │
+│     │                                                                       │
+│     ├──────► Root Server ──────► "I don't know, ask .com TLD"               │
+│     │                                                                       │
+│     ├──────► .com TLD ──────► "I don't know, ask ns1.example.com"           │
+│     │                                                                       │
+│     └──────► ns1.example.com ──────► "Here's the IP: 93.184.216.34"         │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+| Aspect | Recursive | Iterative |
+|--------|-----------|-----------|
+| **Client complexity** | Simple (just wait for answer) | Complex (must follow referrals) |
+| **Server load** | High (does full resolution) | Low (just returns what it knows) |
+| **Typical usage** | Client → Recursive Resolver | Recursive Resolver → DNS Hierarchy |
+| **Caching benefit** | Resolver caches for all clients | Limited caching |
 
 ### TTL (Time To Live)
 
