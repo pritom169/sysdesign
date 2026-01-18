@@ -3439,3 +3439,66 @@ Data partitioning (sharding) splits a large dataset across multiple databases/se
 
 ---
 
+### Partitioning Methods
+
+#### 1. Horizontal Partitioning (Sharding)
+
+Splits rows across partitions. Each partition has same schema but different rows.
+
+```mermaid
+flowchart LR
+    subgraph Original [Original Table]
+        T[Users Table<br/>10M rows]
+    end
+
+    subgraph Sharded [Horizontal Partitions]
+        S1[Shard 1<br/>user_id 1-3.3M]
+        S2[Shard 2<br/>user_id 3.3M-6.6M]
+        S3[Shard 3<br/>user_id 6.6M-10M]
+    end
+
+    T --> S1
+    T --> S2
+    T --> S3
+
+    style T fill:#FFB6C1,stroke:#333
+    style S1 fill:#90EE90,stroke:#333
+    style S2 fill:#90EE90,stroke:#333
+    style S3 fill:#90EE90,stroke:#333
+```
+
+**Use case:** Most common. Users table split by user_id ranges.
+
+#### 2. Vertical Partitioning
+
+Splits columns across partitions. Each partition has different columns.
+
+```mermaid
+flowchart LR
+    subgraph Original [Original Table]
+        T[Users<br/>id, name, email,<br/>photo, bio, settings]
+    end
+
+    subgraph Vertical [Vertical Partitions]
+        V1[Core Data<br/>id, name, email]
+        V2[Profile Data<br/>id, photo, bio, settings]
+    end
+
+    T --> V1
+    T --> V2
+
+    style T fill:#FFB6C1,stroke:#333
+    style V1 fill:#87CEEB,stroke:#333
+    style V2 fill:#DDA0DD,stroke:#333
+```
+
+**Use case:** Separate frequently accessed columns from large/rarely accessed ones (e.g., blob storage).
+
+#### 3. Functional Partitioning
+
+Splits by business function. Different databases for different features.
+
+**Use case:** Orders DB, Users DB, Payments DB - each scaled independently.
+
+---
+
