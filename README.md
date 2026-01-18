@@ -3560,3 +3560,20 @@ flowchart TB
 
 ---
 
+### Choosing a Partition Key
+
+The partition key determines data distribution. Critical decision.
+
+**Good partition key:**
+- High cardinality (many unique values)
+- Even distribution (no hotspots)
+- Matches query patterns (queries hit single shard)
+
+| Scenario | Good Key | Bad Key |
+|----------|----------|---------|
+| User data | user_id | country (uneven) |
+| Time-series | device_id + time bucket | timestamp only (writes to one shard) |
+| Multi-tenant | tenant_id | created_at |
+
+---
+
