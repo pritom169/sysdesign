@@ -3423,3 +3423,19 @@ Quick reference for system design interviews involving CDN.
 | **Akamai** | Largest network, enterprise features | Enterprise, media streaming |
 | **Fastly** | Real-time purge, VCL customization | Dynamic content, API acceleration |
 | **Google Cloud CDN** | GCP integration, global load balancing | GCP-native applications |
+
+---
+
+## Data Partitioning
+
+### What is Data Partitioning?
+
+Data partitioning (sharding) splits a large dataset across multiple databases/servers. Each partition holds a subset of data, enabling horizontal scaling when a single database can't handle the load.
+
+**When to partition:**
+- Single database can't handle read/write throughput
+- Dataset exceeds single machine storage
+- Need to reduce query latency by limiting scan scope
+
+---
+
