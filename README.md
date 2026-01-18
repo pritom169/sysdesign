@@ -3502,3 +3502,61 @@ Splits by business function. Different databases for different features.
 
 ---
 
+### Sharding Strategies
+
+#### 1. Range-Based Sharding
+
+Partition by value ranges (e.g., user_id 1-1M → Shard 1).
+
+| Pros | Cons |
+|------|------|
+| Simple to implement | Uneven distribution (hotspots) |
+| Range queries efficient | New ranges need rebalancing |
+
+#### 2. Hash-Based Sharding
+
+`shard = hash(partition_key) % num_shards`
+
+| Pros | Cons |
+|------|------|
+| Even distribution | Range queries span all shards |
+| No hotspots | Adding shards requires rehashing |
+
+#### 3. Directory-Based Sharding
+
+Lookup service maps keys to shards.
+
+| Pros | Cons |
+|------|------|
+| Flexible mapping | Lookup service is SPOF |
+| Easy rebalancing | Extra network hop |
+
+#### 4. Consistent Hashing
+
+Keys and servers mapped to a hash ring. Minimizes data movement when adding/removing nodes.
+
+```mermaid
+flowchart TB
+    subgraph Ring [Hash Ring]
+        direction TB
+        N1((Node A<br/>pos: 0))
+        N2((Node B<br/>pos: 90))
+        N3((Node C<br/>pos: 180))
+        N4((Node D<br/>pos: 270))
+    end
+
+    K1[Key X → pos 45] -.->|Assigned to| N2
+    K2[Key Y → pos 200] -.->|Assigned to| N4
+
+    style N1 fill:#90EE90,stroke:#333
+    style N2 fill:#90EE90,stroke:#333
+    style N3 fill:#90EE90,stroke:#333
+    style N4 fill:#90EE90,stroke:#333
+    style K1 fill:#FFD700,stroke:#333
+    style K2 fill:#FFD700,stroke:#333
+```
+
+**Interview insight:** "When adding a new shard with consistent hashing, only K/N keys need redistribution (K=total keys, N=nodes), versus rehashing everything with modulo hashing."
+
+---
+
