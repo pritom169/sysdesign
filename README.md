@@ -3576,4 +3576,14 @@ The partition key determines data distribution. Critical decision.
 | Multi-tenant | tenant_id | created_at |
 
 ---
+### Benefits of Data Partitioning
+
+| Benefit | Description |
+|---------|-------------|
+| **Horizontal Scalability** | Add shards to handle more data/traffic |
+| **Improved Performance** | Queries scan smaller datasets |
+| **Increased Availability** | Shard failure affects only subset of data |
+| **Cost Efficiency** | Use commodity hardware instead of vertical scaling |
+
+---
 
