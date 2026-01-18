@@ -3587,3 +3587,45 @@ The partition key determines data distribution. Critical decision.
 
 ---
 
+### Common Problems with Data Partitioning
+
+#### 1. Cross-Shard Queries
+
+Queries spanning multiple shards require scatter-gather, increasing latency.
+
+**Mitigation:** Design schema so common queries hit single shard.
+
+#### 2. Cross-Shard Joins
+
+Joins across shards are expensive or impossible.
+
+**Mitigation:** Denormalize data or use application-level joins.
+
+#### 3. Hotspots
+
+Uneven data/traffic distribution overloads some shards.
+
+**Mitigation:** Better partition key, consistent hashing, or shard splitting.
+
+#### 4. Rebalancing
+
+Adding/removing shards requires data migration.
+
+**Mitigation:** Consistent hashing, virtual nodes, or directory-based routing.
+
+#### 5. Distributed Transactions
+
+ACID across shards is complex (2PC, Saga patterns).
+
+**Mitigation:** Design for eventual consistency where possible.
+
+#### 6. Referential Integrity
+
+Foreign keys can't span shards.
+
+**Mitigation:** Application-level enforcement, denormalization.
+
+---
+
+
+
