@@ -3626,6 +3626,18 @@ Foreign keys can't span shards.
 **Mitigation:** Application-level enforcement, denormalization.
 
 ---
+### Data Partitioning Interview Checklist
+
+| Topic | Key Points |
+|-------|------------|
+| **When to shard** | Exceeded single DB capacity (storage, throughput, or latency) |
+| **Partition key selection** | High cardinality, even distribution, matches access patterns |
+| **Horizontal vs Vertical** | Horizontal = rows, Vertical = columns |
+| **Hash vs Range** | Hash = even distribution; Range = efficient range queries |
+| **Consistent hashing** | Minimizes redistribution when cluster changes |
+| **Cross-shard operations** | Expensive; design to avoid them |
+| **Hotspot mitigation** | Salting keys, consistent hashing, virtual nodes |
+| **Rebalancing strategy** | Consistent hashing or directory-based for flexibility |
 
 
 
