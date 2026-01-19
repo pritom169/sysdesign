@@ -4891,4 +4891,20 @@ Monolithic:                    Federated:
 
 ---
 
+### Database Interview Checklist
+
+| Topic | Key Points |
+|-------|------------|
+| **SQL vs NoSQL** | SQL = ACID, complex queries; NoSQL = scale, flexibility |
+| **NoSQL types** | Document, Key-Value, Column-Family, Graph |
+| **ACID** | Atomicity, Consistency, Isolation, Durability |
+| **BASE** | Basically Available, Soft state, Eventually consistent |
+| **When SQL** | Transactions, complex relationships, data integrity |
+| **When NoSQL** | Scale, flexible schema, specific access patterns |
+| **Normalization** | Reduce redundancy, easier writes, slower reads |
+| **Denormalization** | Add redundancy, faster reads, update complexity |
+| **In-memory vs disk** | RAM = fast/volatile, Disk = slow/durable |
+| **Replication vs mirroring** | Async/scale vs sync/DR |
+| **Federation** | Split by function, microservices pattern |
+| **Polyglot persistence** | Use multiple databases for different needs |
 
