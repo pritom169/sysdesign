@@ -4718,5 +4718,71 @@ Denormalized Design:
 
 ---
 
+### In-Memory Database vs. On-Disk Database
 
+#### On-Disk Databases
+
+Data persisted to disk (SSD/HDD). Survives restarts.
+
+```
+Write Path:
+Application → Database → Write-Ahead Log (disk) → Memory → Background flush to disk
+
+Read Path:
+Application → Database → Check memory cache → If miss, read from disk
+```
+
+**Latency:** Milliseconds (disk I/O bound)
+**Durability:** Data survives power loss
+**Capacity:** Limited by disk size (terabytes+)
+
+**Examples:** PostgreSQL, MySQL, MongoDB, Cassandra.
+
+#### In-Memory Databases
+
+Data stored primarily in RAM. Optionally persisted to disk.
+
+```
+Write Path:
+Application → Database (RAM) → Optional async persistence
+
+Read Path:
+Application → Database (RAM) → Return immediately
+```
+
+**Latency:** Microseconds (memory-speed)
+**Durability:** Data lost on crash unless persisted
+**Capacity:** Limited by RAM (expensive at scale)
+
+**Examples:** Redis, Memcached, VoltDB, SAP HANA.
+
+#### Comparison
+
+| Aspect | On-Disk | In-Memory |
+|--------|---------|-----------|
+| **Latency** | ~1-10ms | ~0.1-1ms |
+| **Durability** | Default | Requires configuration |
+| **Cost** | Lower (disk is cheap) | Higher (RAM is expensive) |
+| **Capacity** | Terabytes+ | Gigabytes (practically) |
+| **Use case** | Primary data store | Cache, session, real-time |
+
+#### Redis Persistence Options
+
+```
+RDB (Snapshotting):
+  - Point-in-time snapshots every N minutes
+  - Fast recovery, but lose data since last snapshot
+
+AOF (Append-Only File):
+  - Log every write operation
+  - Better durability, slower recovery
+  - Can replay log to rebuild state
+
+Hybrid (RDB + AOF):
+  - Best of both: snapshots + recent operations log
+```
+
+**Interview insight:** "Redis is not just a cache—with AOF persistence, it can be a primary database for appropriate use cases. But always plan for data loss scenarios."
+
+---
 
