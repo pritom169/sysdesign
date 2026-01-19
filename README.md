@@ -4786,3 +4786,61 @@ Hybrid (RDB + AOF):
 
 ---
 
+### Data Replication vs. Data Mirroring
+
+Both create copies of data, but for different purposes.
+
+#### Data Replication
+
+Copies data across multiple nodes for availability and read scaling. Replicas may lag behind primary.
+
+```
+        ┌──────────┐
+        │  Primary │ ◄── All writes
+        └────┬─────┘
+             │ async replication
+     ┌───────┼───────┐
+     ▼       ▼       ▼
+┌────────┐┌────────┐┌────────┐
+│Replica1││Replica2││Replica3│ ◄── Handle reads
+└────────┘└────────┘└────────┘
+
+Replicas may be seconds/minutes behind (replication lag)
+```
+
+**Purpose:** High availability, read scaling, geographic distribution
+**Consistency:** Eventually consistent (unless synchronous)
+**Latency impact:** Minimal (async)
+
+#### Data Mirroring
+
+Creates exact, synchronous copy. Mirror is always identical to source.
+
+```
+┌──────────┐         ┌──────────┐
+│  Primary │◄──────► │  Mirror  │
+└──────────┘  sync   └──────────┘
+
+Write completes only after both acknowledge
+Mirror is ALWAYS identical to Primary
+```
+
+**Purpose:** Disaster recovery, zero data loss
+**Consistency:** Strongly consistent (synchronous)
+**Latency impact:** Higher (must wait for mirror ACK)
+
+#### Comparison
+
+| Aspect | Replication | Mirroring |
+|--------|-------------|-----------|
+| **Synchronization** | Async (usually) | Synchronous |
+| **Lag** | Seconds to minutes | Zero |
+| **Data loss risk** | Possible (lag window) | None |
+| **Performance impact** | Minimal | Higher latency |
+| **Use case** | Read scaling, HA | DR, compliance |
+| **Failover** | Promote replica (may lose recent data) | Instant, no data loss |
+
+**Interview insight:** "Replication is for scaling and availability. Mirroring is for disaster recovery with zero RPO. Use replication for read replicas, mirroring for critical DR requirements."
+
+---
+
