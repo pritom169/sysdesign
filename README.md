@@ -4844,3 +4844,51 @@ Mirror is ALWAYS identical to Primary
 
 ---
 
+### Database Federation
+
+Splitting databases by function/domain. Each service owns its database.
+
+```
+Monolithic:                    Federated:
+┌───────────────┐             ┌─────────┐  ┌─────────┐  ┌─────────┐
+│   Single DB   │             │ User DB │  │Order DB │  │Product DB│
+│ Users         │     →       └────┬────┘  └────┬────┘  └────┬────┘
+│ Orders        │                  │            │            │
+│ Products      │             ┌────┴────┐  ┌────┴────┐  ┌────┴────┐
+│ Payments      │             │User Svc │  │Order Svc│  │Product  │
+└───────────────┘             └─────────┘  └─────────┘  │   Svc   │
+                                                        └─────────┘
+```
+
+#### Benefits
+
+| Benefit | Description |
+|---------|-------------|
+| **Independent scaling** | Scale each database based on its load |
+| **Isolation** | User DB issues don't affect Order DB |
+| **Technology freedom** | Use PostgreSQL for users, Cassandra for events |
+| **Team autonomy** | Each team owns their data |
+
+#### Challenges
+
+| Challenge | Mitigation |
+|-----------|------------|
+| **Cross-database queries** | API calls between services, or data duplication |
+| **Distributed transactions** | Saga pattern, eventual consistency |
+| **Data consistency** | Event-driven sync, accept eventual consistency |
+| **Operational complexity** | More databases to manage, monitor, backup |
+
+#### Federation vs. Sharding
+
+| Aspect | Federation | Sharding |
+|--------|------------|----------|
+| **Split by** | Function/domain | Data (same schema) |
+| **Schema** | Different per database | Same across shards |
+| **Use case** | Microservices | Single service at scale |
+| **Example** | Users DB, Orders DB, Products DB | Users shard 1, Users shard 2, Users shard 3 |
+
+**Interview insight:** "Federation aligns with microservices—each service owns its data. But it introduces distributed systems complexity. Start with a monolith, federate when team/scale demands it."
+
+---
+
+
