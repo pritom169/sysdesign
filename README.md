@@ -5171,5 +5171,18 @@ Query: status = 'active' AND type = 'premium'
 
 ---
 
+### When NOT to Index
 
+Indexes are not always beneficial.
 
+| Scenario | Why Index Hurts |
+|----------|-----------------|
+| **Small tables** | Full scan faster than index lookup overhead |
+| **Write-heavy workloads** | Every write updates all indexes |
+| **Low selectivity columns** | Boolean/status columns return too many rows |
+| **Frequently updated columns** | Constant index maintenance |
+| **Wide columns** | Large index size, poor cache utilization |
+
+**Rule of thumb:** If a query returns >15-20% of table rows, full scan often beats index.
+
+---
