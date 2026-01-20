@@ -5382,3 +5382,29 @@ Bloom filter uses ~3% of the space!
 
 ---
 
+### Benefits
+
+| Benefit | Explanation |
+|---------|-------------|
+| **Space efficient** | Bits vs actual data. 1M elements in 1.2 MB vs 40+ MB |
+| **O(k) operations** | Insert and lookup are O(k), typically k < 10 |
+| **No false negatives** | "Not present" is always correct—safe for filtering |
+| **Parallelizable** | k hash computations are independent |
+| **Union operation** | Bitwise OR merges two filters instantly |
+| **No resizing needed** | Fixed memory footprint once allocated |
+
+---
+
+### Limitations
+
+| Limitation | Explanation |
+|------------|-------------|
+| **False positives** | Must handle "maybe yes" cases with secondary lookup |
+| **No deletion** | Cannot unset a bit—might affect other elements |
+| **No enumeration** | Cannot list what's in the filter |
+| **No count** | Cannot tell how many elements were inserted |
+| **Fixed capacity** | Exceeding planned n increases FP rate dramatically |
+| **Hash quality matters** | Poor hash functions increase collisions |
+
+
+
