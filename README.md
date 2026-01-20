@@ -4989,5 +4989,173 @@ The default index structure for most relational databases. Balanced tree where:
 
 ---
 
+### Types of Indexes
 
+#### 1. Primary Index (Clustered Index)
+
+Determines physical storage order of table data. Only one per table.
+
+```
+Clustered Index on id:
+┌─────────────────────────────────────┐
+│ Data stored in id order on disk     │
+├────┬──────────┬─────────────────────┤
+│ 1  │ Alice    │ alice@mail.com      │ ← Physically first
+│ 2  │ Bob      │ bob@mail.com        │ ← Physically second
+│ 3  │ Charlie  │ charlie@mail.com    │ ← Physically third
+└────┴──────────┴─────────────────────┘
+```
+
+**Characteristics:**
+- Table data IS the index (no separate structure)
+- Range queries on clustered key are fast (sequential disk read)
+- Inserts in middle require physical reorganization
+
+#### 2. Secondary Index (Non-Clustered Index)
+
+Separate structure pointing to row locations. Multiple allowed per table.
+
+```
+Secondary Index on email:
+┌──────────────────────┐     ┌─────────────────┐
+│     Email Index      │     │  Actual Table   │
+├──────────────────────┤     │  (clustered by  │
+│ alice@mail.com → ────┼────►│   id on disk)   │
+│ bob@mail.com → ──────┼────►│                 │
+│ charlie@mail... → ───┼────►│                 │
+└──────────────────────┘     └─────────────────┘
+          ↑
+   Stores pointer (row ID or primary key)
+```
+
+**Characteristics:**
+- Extra lookup required (index → pointer → data)
+- Multiple secondary indexes allowed
+- Can become stale, requires maintenance
+
+#### 3. Composite Index (Multi-Column Index)
+
+Index on multiple columns. Order matters.
+
+```sql
+CREATE INDEX idx_name_age ON users(last_name, first_name, age);
+```
+
+```
+Composite Index Structure:
+┌────────────────────────────────────┐
+│     last_name, first_name, age     │
+├────────────────────────────────────┤
+│ Adams, Alice, 25 → Row 5           │
+│ Adams, Bob, 30 → Row 12            │
+│ Baker, Alice, 22 → Row 3           │
+│ Baker, Carol, 28 → Row 8           │
+└────────────────────────────────────┘
+```
+
+**Leftmost prefix rule:** Index used only when query includes leftmost columns.
+
+| Query | Uses Index? |
+|-------|-------------|
+| `WHERE last_name = 'Adams'` | Yes |
+| `WHERE last_name = 'Adams' AND first_name = 'Alice'` | Yes |
+| `WHERE last_name = 'Adams' AND first_name = 'Alice' AND age = 25` | Yes |
+| `WHERE first_name = 'Alice'` | No (skipped last_name) |
+| `WHERE age = 25` | No (skipped last_name, first_name) |
+| `WHERE last_name = 'Adams' AND age = 25` | Partial (only last_name) |
+
+#### 4. Unique Index
+
+Enforces uniqueness constraint. Rejects duplicate values.
+
+```sql
+CREATE UNIQUE INDEX idx_email ON users(email);
+```
+
+**Characteristics:**
+- Constraint + performance in one
+- NULL handling varies by database (some allow multiple NULLs)
+
+#### 5. Covering Index
+
+Index contains all columns needed for query. No table lookup required.
+
+```sql
+-- Query
+SELECT email, name FROM users WHERE email = 'bob@mail.com';
+
+-- Covering index
+CREATE INDEX idx_cover ON users(email, name);
+```
+
+```
+Query uses only index data:
+┌────────────────────────────┐
+│   Index (email, name)      │
+├────────────────────────────┤
+│ alice@mail.com, Alice      │ ← All data here
+│ bob@mail.com, Bob          │ ← No table access needed
+└────────────────────────────┘
+```
+
+**Performance:** Eliminates secondary lookup. Significant for read-heavy queries.
+
+#### 6. Hash Index
+
+Uses hash function for O(1) lookups. Equality only—no ranges.
+
+```
+Hash Index:
+hash('alice@mail.com') = 42 → Bucket 42 → Row pointer
+hash('bob@mail.com') = 17 → Bucket 17 → Row pointer
+
+┌─────────────────────────────┐
+│ Bucket 17: bob@mail.com → 2 │
+│ Bucket 42: alice@...    → 1 │
+└─────────────────────────────┘
+```
+
+| Use Case | Hash Index |
+|----------|------------|
+| `WHERE email = 'x'` | O(1) |
+| `WHERE email LIKE 'a%'` | Not supported |
+| `WHERE email > 'a'` | Not supported |
+| `ORDER BY email` | Not supported |
+
+**Use case:** Memory databases (Redis), exact-match lookups.
+
+#### 7. Full-Text Index
+
+Specialized for text search. Tokenizes content into searchable terms.
+
+```sql
+CREATE FULLTEXT INDEX idx_content ON articles(title, body);
+
+SELECT * FROM articles WHERE MATCH(title, body) AGAINST('database indexing');
+```
+
+**Characteristics:**
+- Supports natural language queries
+- Handles stemming (running → run)
+- Relevance ranking
+
+#### 8. Bitmap Index
+
+Uses bit arrays for low-cardinality columns. Efficient for AND/OR operations.
+
+```
+Column: status (3 values: active, pending, closed)
+
+active:  [1,0,0,1,1,0,0,1...]  ← 1 where row is active
+pending: [0,1,0,0,0,1,0,0...]
+closed:  [0,0,1,0,0,0,1,0...]
+
+Query: status = 'active' AND type = 'premium'
+→ Bitwise AND between active bitmap and premium bitmap
+```
+
+**Best for:** Data warehouses, OLAP, columns with few distinct values.
+**Avoid for:** OLTP, frequently updated columns (bitmap rebuild expensive).
+
+---
 
