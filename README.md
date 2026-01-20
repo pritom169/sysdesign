@@ -5159,3 +5159,17 @@ Query: status = 'active' AND type = 'premium'
 
 ---
 
+### Index Comparison
+
+| Index Type | Best For | Limitations |
+|------------|----------|-------------|
+| **B+ Tree** | Range queries, sorting, most use cases | Write overhead |
+| **Hash** | Exact equality lookups | No range, no ordering |
+| **Bitmap** | Low cardinality, analytics | Poor for updates |
+| **Full-text** | Text search | Storage, complexity |
+| **Covering** | Eliminating table lookups | Index size |
+
+---
+
+
+
