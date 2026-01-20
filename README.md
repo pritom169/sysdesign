@@ -5222,5 +5222,17 @@ Common reasons index ignored:
 
 ---
 
+### Indexing Interview Checklist
 
+| Topic | Key Points |
+|-------|------------|
+| **What is an index** | Data structure for O(log n) lookups vs O(n) scan |
+| **B+ Tree** | Balanced, leaf-linked, range-friendly, most common |
+| **Clustered vs non-clustered** | Physical order vs separate pointer structure |
+| **Composite index** | Multi-column, leftmost prefix rule |
+| **Covering index** | All query columns in index, no table lookup |
+| **Hash index** | O(1) equality only, no ranges |
+| **Trade-off** | Faster reads, slower writes, more storage |
+| **When to avoid** | Small tables, write-heavy, low selectivity |
+| **EXPLAIN** | Always verify index usage with query plan |
 
