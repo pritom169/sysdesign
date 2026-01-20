@@ -5186,3 +5186,41 @@ Indexes are not always beneficial.
 **Rule of thumb:** If a query returns >15-20% of table rows, full scan often beats index.
 
 ---
+
+### Index Performance Considerations
+
+#### Write Amplification
+
+```
+Single INSERT without indexes:
+→ 1 write operation
+
+Single INSERT with 5 indexes:
+→ 1 table write + 5 index writes = 6 operations
+```
+
+#### Index Size
+
+Indexes consume disk space and memory. Large indexes may not fit in buffer pool, causing disk I/O.
+
+#### Fragmentation
+
+Over time, indexes become fragmented from updates/deletes. Periodic REBUILD/REORGANIZE needed.
+
+#### Query Planner
+
+Database optimizer decides whether to use index. Check with:
+```sql
+EXPLAIN SELECT * FROM users WHERE email = 'bob@mail.com';
+```
+
+Common reasons index ignored:
+- Query returns too many rows
+- Statistics outdated (run ANALYZE)
+- Wrong index for query pattern
+- Type mismatch in WHERE clause
+
+---
+
+
+
