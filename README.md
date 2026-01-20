@@ -4897,7 +4897,7 @@ Monolithic:                    Federated:
 |-------|------------|
 | **SQL vs NoSQL** | SQL = ACID, complex queries; NoSQL = scale, flexibility |
 | **NoSQL types** | Document, Key-Value, Column-Family, Graph |
-| **ACID** | Atomicity, Consistency, Isolation, Durability |
+| **ACID** | Atomicity, Conssistency, Isolation, Durability |
 | **BASE** | Basically Available, Soft state, Eventually consistent |
 | **When SQL** | Transactions, complex relationships, data integrity |
 | **When NoSQL** | Scale, flexible schema, specific access patterns |
@@ -4908,3 +4908,40 @@ Monolithic:                    Federated:
 | **Federation** | Split by function, microservices pattern |
 | **Polyglot persistence** | Use multiple databases for different needs |
 
+## Database Indexing
+
+### What is an Index?
+
+An index is a data structure that improves query speed at the cost of additional storage and write overhead. Without an index, the database performs a full table scan—examining every row to find matches.
+
+```
+Without Index (Full Table Scan):
+┌─────────────────────────────────────┐
+│         Users Table (1M rows)        │
+├────┬──────────┬─────────────────────┤
+│ id │   name   │        email        │
+├────┼──────────┼─────────────────────┤
+│ 1  │ Alice    │ alice@mail.com      │ ← Check
+│ 2  │ Bob      │ bob@mail.com        │ ← Check
+│ 3  │ Charlie  │ charlie@mail.com    │ ← Check
+│... │ ...      │ ...                 │ ← Check ALL rows
+│ 1M │ Zara     │ zara@mail.com       │ ← Check
+└────┴──────────┴─────────────────────┘
+Query: SELECT * FROM users WHERE email = 'bob@mail.com'
+Time: O(n) — must scan all 1M rows
+
+With Index on email:
+┌──────────────────┐      ┌─────────────────┐
+│   Email Index    │      │   Users Table   │
+│   (B+ Tree)      │      │                 │
+├──────────────────┤      ├─────────────────┤
+│ alice@mail.com →─┼──────│► Row 1          │
+│ bob@mail.com →───┼──────│► Row 2          │
+│ charlie@mail... →┼──────│► Row 3          │
+└──────────────────┘      └─────────────────┘
+Time: O(log n) — direct lookup via tree
+```
+
+**Core trade-off:** Faster reads, slower writes. Every INSERT/UPDATE/DELETE must also update the index.
+
+---
