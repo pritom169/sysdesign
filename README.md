@@ -5260,3 +5260,68 @@ Bloom Filter Structure:
 
 ---
 
+### How It Works
+
+#### Insert Operation
+
+Hash the element with k hash functions. Set corresponding bits to 1.
+
+```
+Insert "apple" (k=3 hash functions):
+  h1("apple") = 2
+  h2("apple") = 5
+  h3("apple") = 9
+
+Bit array (m=10):
+Index:   0  1  2  3  4  5  6  7  8  9
+Before: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+After:  [0, 0, 1, 0, 0, 1, 0, 0, 0, 1]
+               ↑        ↑           ↑
+              h1       h2          h3
+```
+
+**Key insight:** Setting a bit to 1 is idempotent. If the bit is already 1, nothing changes.
+
+#### Lookup Operation
+
+Hash the element. Check if ALL corresponding bits are 1.
+
+```
+Check "apple":
+  h1("apple") = 2 → bit[2] = 1 ✓
+  h2("apple") = 5 → bit[5] = 1 ✓
+  h3("apple") = 9 → bit[9] = 1 ✓
+  All bits set → "Probably in set"
+
+Check "banana":
+  h1("banana") = 1 → bit[1] = 0 ✗
+  At least one bit is 0 → "Definitely NOT in set"
+```
+
+**Why "definitely not"?** If an element was inserted, ALL its hash positions would be 1. Finding even one 0 proves the element was never added.
+
+#### False Positives Explained
+
+As more elements are inserted, more bits become 1. Eventually, an element that was never inserted might have all its hash positions coincidentally set by other elements.
+
+```
+State after inserting "apple", "orange", "mango":
+
+Index:   0  1  2  3  4  5  6  7  8  9
+Bits:   [0, 1, 1, 0, 1, 1, 0, 1, 0, 1]
+              ↑     ↑  ↑     ↑     ↑
+         apple(2) orange mango  apple(9)
+                   sets    sets
+                  1,4,5   5,7
+
+Check "grape" (never inserted):
+  h1("grape") = 1 → bit[1] = 1 ✓ (was set by "orange")
+  h2("grape") = 4 → bit[4] = 1 ✓ (was set by "orange")
+  h3("grape") = 9 → bit[9] = 1 ✓ (was set by "apple")
+  All bits set → "Probably in set" ← FALSE POSITIVE!
+```
+
+**The filter is "lying"** — grape was never inserted, but all its bit positions happen to be 1 from other insertions.
+
+---
+
