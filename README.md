@@ -5406,5 +5406,105 @@ Bloom filter uses ~3% of the space!
 | **Fixed capacity** | Exceeding planned n increases FP rate dramatically |
 | **Hash quality matters** | Poor hash functions increase collisions |
 
+#### Why No Deletion?
 
+```
+Insert "apple": sets bits 2, 5, 9
+Insert "orange": sets bits 2, 4, 7
 
+Bits: [0, 0, 1, 0, 1, 1, 0, 1, 0, 1]
+            ↑     ↑  ↑     ↑     ↑
+         shared  orange apple orange apple
+
+Delete "apple" by clearing bits 2, 5, 9:
+Bits: [0, 0, 0, 0, 1, 0, 0, 1, 0, 0]
+            ↑        ↑
+         WRONG!   WRONG!
+         Bit 2 was shared with "orange"
+         Now "orange" lookup fails → FALSE NEGATIVE
+```
+
+False negatives break the core guarantee. This is why standard Bloom filters don't support deletion.
+
+---
+
+### Variants
+
+#### Counting Bloom Filter
+
+Replace each bit with a counter (typically 4 bits). Increment on insert, decrement on delete.
+
+```
+Standard Bloom (bits):
+[0, 1, 1, 0, 1]  ← Can't tell which element set each bit
+
+Counting Bloom (4-bit counters):
+[0, 2, 1, 0, 3]  ← Bit 1 was set by 2 elements
+
+Insert "apple" (positions 1, 2):
+Before: [0, 2, 1, 0, 3]
+After:  [0, 3, 2, 0, 3]
+
+Delete "apple":
+Before: [0, 3, 2, 0, 3]
+After:  [0, 2, 1, 0, 3]  ← Safe! Other elements still tracked
+```
+
+**Trade-offs:**
+- 4x more space (4-bit counters vs 1-bit)
+- Counter overflow possible (rare with 4 bits)
+- Enables deletion without false negatives
+
+#### Scalable Bloom Filter
+
+Dynamically grows by chaining filters. Each new filter has tighter FP rate.
+
+```
+┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│    Filter 0      │   │    Filter 1      │   │    Filter 2      │
+│   FP rate: p₀    │ → │  FP rate: p₀×r   │ → │ FP rate: p₀×r²   │
+│    (full)        │   │     (full)       │   │   (active)       │
+└──────────────────┘   └──────────────────┘   └──────────────────┘
+
+Insert: Add to rightmost (active) filter
+Lookup: Check ALL filters, return "present" if ANY says yes
+```
+
+**Maintains overall FP rate:** p_total = p₀ + p₀×r + p₀×r² + ... converges if r < 1
+
+#### Cuckoo Filter
+
+Uses cuckoo hashing with fingerprints. Supports deletion without counters.
+
+```
+Structure: Array of buckets, each holds b fingerprints
+
+Insert "apple":
+1. Compute fingerprint: f = fingerprint("apple") = 0xA3
+2. Compute two bucket positions: h1("apple")=5, h2=h1 XOR hash(f)=12
+3. Store fingerprint in bucket 5 or 12
+
+┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+│  0  │  1  │ ... │  5  │ ... │ 12  │ ... │
+│     │     │     │[0xA3]│    │     │     │
+└─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+
+Delete "apple":
+- Find fingerprint 0xA3 in bucket 5 or 12
+- Remove it
+```
+
+**Advantages over Counting Bloom:**
+- Better space efficiency at FP < 3%
+- Supports deletion
+- Higher lookup performance (better cache locality)
+
+| Filter Type | Deletion | Space | Best For |
+|-------------|----------|-------|----------|
+| Standard Bloom | No | Smallest | Static sets |
+| Counting Bloom | Yes | 4x larger | Small sets needing deletion |
+| Cuckoo Filter | Yes | Similar to Bloom | Dynamic sets, low FP rates |
+
+---
+
+#
