@@ -4945,3 +4945,49 @@ Time: O(log n) — direct lookup via tree
 **Core trade-off:** Faster reads, slower writes. Every INSERT/UPDATE/DELETE must also update the index.
 
 ---
+
+### How Indexes Work Internally
+
+Indexes use specialized data structures to enable fast lookups.
+
+#### B+ Tree (Most Common)
+
+The default index structure for most relational databases. Balanced tree where:
+- All values stored in leaf nodes
+- Leaf nodes linked for range queries
+- Internal nodes contain only keys for navigation
+
+```
+                    ┌─────────────┐
+                    │   [50, 100] │  ← Root (navigation only)
+                    └──────┬──────┘
+           ┌───────────────┼───────────────┐
+           ▼               ▼               ▼
+      ┌─────────┐    ┌──────────┐    ┌───────────┐
+      │[10,30,40]│   │[60,70,80]│    │[110,120]  │ ← Internal
+      └────┬────┘    └────┬─────┘    └─────┬─────┘
+           ▼              ▼                ▼
+    ┌──────────────────────────────────────────┐
+    │ 10→20→30→40→50→60→70→80→100→110→120      │ ← Leaf nodes
+    └──────────────────────────────────────────┘   (linked list)
+              ↑ All data here, linked for range scans
+```
+
+**Why B+ Tree?**
+- Balanced: All leaf nodes at same depth → predictable O(log n)
+- High fanout: Few disk reads to reach any value
+- Range-friendly: Linked leaves enable efficient `BETWEEN`, `ORDER BY`
+
+**Lookup:** `WHERE id = 70`
+1. Start at root: 70 > 50, go right
+2. At [60,70,80]: Find 70
+3. Follow pointer to data row
+
+**Range query:** `WHERE id BETWEEN 60 AND 100`
+1. Find 60 in leaf
+2. Scan linked list until 100
+
+---
+
+
+
