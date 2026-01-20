@@ -5236,3 +5236,27 @@ Common reasons index ignored:
 | **When to avoid** | Small tables, write-heavy, low selectivity |
 | **EXPLAIN** | Always verify index usage with query plan |
 
+## Bloom Filters
+
+### What is a Bloom Filter?
+
+A probabilistic data structure that tests whether an element is a member of a set. It can tell you:
+- **"Definitely not in set"** — 100% accurate
+- **"Probably in set"** — may have false positives
+
+Space-efficient alternative to storing actual elements. Uses a bit array and multiple hash functions.
+
+```
+Bloom Filter Structure:
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ 0 │ 1 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │ 1 │ 0 │  ← Bit array (m bits)
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+      ↑       ↑           ↑       ↑
+      └───────┴───────────┴───────┘
+              Multiple hash functions set these bits
+```
+
+**Why "probabilistic"?** The filter never stores actual elements—only bits. When checking membership, matching bits could be from the element you're looking for OR from other elements that happened to hash to the same positions.
+
+---
+
