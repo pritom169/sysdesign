@@ -5507,4 +5507,87 @@ Delete "apple":
 
 ---
 
-#
+### Applications
+
+| Use Case | How Bloom Filter Helps |
+|----------|------------------------|
+| **Database queries** | Skip disk reads for non-existent keys |
+| **Cache systems** | Avoid thundering herd for uncacheable keys |
+| **Spell checkers** | Fast dictionary lookup before expensive check |
+| **Network routers** | Packet deduplication at line speed |
+| **Web crawlers** | Track billions of visited URLs in memory |
+| **CDN** | Check edge cache before origin fetch |
+| **Weak password detection** | Check against known breached passwords |
+
+#### Real-World Example: HBase/Cassandra
+
+LSM-tree databases use Bloom filters to avoid unnecessary disk reads.
+
+```
+Write path (no Bloom filter involvement):
+Data → MemTable (RAM) → Flush → SSTable (Disk)
+
+Read path WITH Bloom filter:
+┌─────────────────────────────────────────────────────────┐
+│  Read request: GET "user:12345"                         │
+└────────────────────┬────────────────────────────────────┘
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│  Check MemTable (RAM) → Not found                       │
+└────────────────────┬────────────────────────────────────┘
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│  SSTable 1: Bloom filter says "No" → SKIP (no disk I/O) │
+│  SSTable 2: Bloom filter says "No" → SKIP (no disk I/O) │
+│  SSTable 3: Bloom filter says "Maybe" → Read from disk  │
+│  SSTable 4: Bloom filter says "No" → SKIP (no disk I/O) │
+└─────────────────────────────────────────────────────────┘
+
+Result: 1 disk read instead of 4. 75% I/O reduction.
+```
+
+**Impact:** With 1% FP rate, 99% of unnecessary disk reads are avoided.
+
+#### Real-World Example: Chrome Safe Browsing
+
+Checks URLs against known malicious sites without sending every URL to Google.
+
+```
+User visits https://example.com
+           │
+           ▼
+┌─────────────────────────────┐
+│ Local Bloom filter          │  ← Updated periodically
+│ (millions of bad URL hashes)│     from Google
+└──────────────┬──────────────┘
+               │
+       ┌───────┴───────┐
+       │               │
+   "Definitely      "Maybe
+    safe"            unsafe"
+       │               │
+       ▼               ▼
+   Allow           Query Google
+   immediately     servers to confirm
+```
+
+**Privacy benefit:** Only potential matches are sent to Google, not every URL visited.
+
+---
+
+### Bloom Filter Interview Checklist
+
+| Topic | Key Points |
+|-------|------------|
+| **What it is** | Probabilistic set membership; bit array + k hash functions |
+| **Core guarantee** | No false negatives; possible false positives |
+| **Insert** | Hash k times, set k bits to 1 |
+| **Lookup** | Hash k times, check if all k bits are 1 |
+| **False positive rate** | p ≈ (1 - e^(-kn/m))^k |
+| **Optimal k** | k = 0.693 × (m/n) |
+| **Space formula** | m = -1.44 × n × ln(p) |
+| **Why no deletion** | Clearing shared bits causes false negatives |
+| **Counting Bloom** | Counters instead of bits; enables deletion; 4x space |
+| **Cuckoo filter** | Fingerprints + cuckoo hashing; deletion + space efficient |
+| **Key use cases** | Database lookups, caching, deduplication, safe browsing |
+
