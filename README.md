@@ -5325,3 +5325,60 @@ Check "grape" (never inserted):
 
 ---
 
+### Mathematical Properties
+
+#### False Positive Probability
+
+After inserting n elements into a filter with m bits using k hash functions:
+
+```
+p ≈ (1 - e^(-kn/m))^k
+
+Intuition:
+- Each hash sets 1 bit out of m
+- After kn hash operations, probability a specific bit is still 0: e^(-kn/m)
+- Probability a specific bit is 1: (1 - e^(-kn/m))
+- False positive = all k bits are 1 by chance: raise to power k
+```
+
+#### Optimal Number of Hash Functions
+
+Given m bits and n expected elements, the optimal k minimizes false positives:
+
+```
+k_optimal = (m/n) × ln(2) ≈ 0.693 × (m/n)
+
+Example: m = 1000 bits, n = 100 elements
+k = 0.693 × (1000/100) = 6.93 ≈ 7 hash functions
+```
+
+**Why not more hash functions?** Too few → not enough bits checked. Too many → too many bits set to 1, increasing collisions.
+
+#### Space Estimation
+
+For target false positive rate p with n elements:
+
+```
+m = -n × ln(p) / (ln(2))²
+m ≈ -1.44 × n × ln(p)
+
+Example calculations:
+
+| Elements (n) | Target FP Rate | Bits Needed (m) | Size     |
+|--------------|----------------|-----------------|----------|
+| 1 million    | 1% (0.01)      | 9.6M bits       | 1.2 MB   |
+| 1 million    | 0.1% (0.001)   | 14.4M bits      | 1.8 MB   |
+| 10 million   | 1% (0.01)      | 96M bits        | 12 MB    |
+```
+
+**Space comparison:**
+```
+Storing 1M email addresses (avg 25 bytes each):
+- HashSet: ~25 MB + overhead ≈ 40 MB
+- Bloom filter (1% FP): 1.2 MB
+
+Bloom filter uses ~3% of the space!
+```
+
+---
+
