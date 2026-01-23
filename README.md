@@ -601,18 +601,18 @@ GSLB is the "Big Brother" of DNS load balancing. While standard DNS balancing ju
 
 ---
 
-## 6. Hybrid Load Balancing
+### 6. Hybrid Load Balancing
 
 Why choose one when you can use them all? Hybrid load balancing mixes hardware, software, and cloud solutions.
 
 - **Think of it like:** A hybrid car. It uses an electric battery for low speeds and a gas engine for high speeds, optimizing for the best of both worlds.
 
-### Pros
+#### Pros
 
 - **Ultimate Flexibility:** You can keep sensitive data on secure hardware in your own building while offloading public web traffic to the cloud.
 - **Reliability:** You have multiple safety nets.
 
-### Cons
+#### Cons
 
 - **Management Nightmare:** You have to manage different systems that might not talk to each other easily.
 - **Skill Gap:** Your IT team needs to be expert in both cloud systems and physical hardware.
@@ -623,20 +623,20 @@ Why choose one when you can use them all? Hybrid load balancing mixes hardware, 
 
 ---
 
-## 7. Layer 4 Load Balancing (The "Transport" Layer)
+### 7. Layer 4 Load Balancing (The "Transport" Layer)
 
 Layer 4 load balancing operates at the fourth layer of the OSI model (Transport Layer). It is a "low-level" routing method that focuses purely on **speed and volume**.
 
 It routes traffic based on limited information: **Source IP + Port** and **Destination IP + Port**. It does _not_ look inside the data packet.
 
-### How it Works (Packet Inspection)
+#### How it Works (Packet Inspection)
 
 1. **The Handshake:** A client (user) tries to connect to your server.
 2. **The Decision:** The Load Balancer sees the request coming from `IP 1.2.3.4` on `Port 80`.
 3. **The NAT (Network Address Translation):** The Load Balancer changes the destination IP to one of your backend servers (e.g., Server A) and forwards the packet.
 4. **The Tunnel:** Once the connection is established, the Load Balancer just forwards packets back and forth without checking them again.
 
-### Pros
+#### Pros
 
 - **Super Fast:** Because it doesn't "read the letter" (inspect packet contents), it makes decisions incredibly quickly with very low CPU usage.
 - **Secure (by obscurity):** Since it doesn't decrypt data (like SSL/TLS), the data remains encrypted as it passes through the balancer.
@@ -653,7 +653,7 @@ It routes traffic based on limited information: **Source IP + Port** and **Desti
 
 ---
 
-## 8. Layer 7 Load Balancing (The "Application" Layer)
+### 8. Layer 7 Load Balancing (The "Application" Layer)
 
 Layer 7 load balancing operates at the top layer of the OSI model (Application Layer). It is a "high-level" routing method that focuses on **intelligence and content**.
 
@@ -665,18 +665,18 @@ It fully terminates the network connection, decrypts the request, inspects the d
 2. **Inspection:** It looks at the HTTP request. Is the user asking for `/video` or `/chat`? Is the user using an iPhone or Android? Is there a cookie saying they are a "Premium Member"?
 3. **Routing:** Based on these details, it initiates a _new_ connection to the specific server best suited to handle that request.
 
-### Specific Capabilities
+#### Specific Capabilities
 
 - **URL Path Routing:** Send `example.com/blog` to the Blog Server and `example.com/shop` to the Store Server.
 - **Host Routing:** Send `video.example.com` to powerful servers and `text.example.com` to cheaper servers.
 - **Cookie persistence (Sticky Sessions):** If a user is logged in, Layer 7 balancing can see their "Session ID" cookie and ensure they are always sent to the same server so they don't get logged out.
 
-### Pros
+#### Pros
 
 - **Very Smart:** Can optimize traffic flow based on exactly what the user is doing.
 - **Caching:** Since it sees the content, it can cache static files (like images or CSS) and serve them instantly without bothering the backend servers.
 
-### Cons
+#### Cons
 
 - **Slower (Computational Cost):** Decrypting SSL, reading headers, and making complex decisions takes more CPU power and time than Layer 4.
 - **Complex:** Requires more configuration and management (e.g., managing SSL certificates on the load balancer itself).
@@ -866,7 +866,7 @@ This is a nightmare scenario in Active-Passive setups. Suppose the network cable
 
 - **Distributed Configuration (Consul/Etcd):** These are specialized tools that ensure every load balancer has the exact same settings. If you update a rule on one, these tools instantly replicate that rule to all others.
 
-### Scalability and Performance
+## Scalability and Performance
 
 #### Horizontal and vertical scaling of load balancers
 
@@ -1089,21 +1089,21 @@ However, the very features that make an API Gateway powerful also create its dow
 - **Operational Complexity:** Managing a Gateway is not free. It requires its own infrastructure, monitoring, and scaling rules. It can also become a **development bottleneck**; if a team adds a new microservice but has to wait for the "Gateway Team" to update the routing configuration before they can go live, agility is lost.
 - **Risk of the "Monolithic Gateway":** There is a temptation to put too much business logic (like complex code or data processing) into the Gateway. If this happens, the Gateway essentially becomes a new monolith—bloated, hard to update, and difficult to test—recreating the exact problem microservices were meant to solve.
 
-# Key Characteristics of Distributed Systems
+## Key Characteristics of Distributed Systems
 
-## Scalability
+### Scalability
 
 Scalability is the ability of a system to handle an increasing workload, either by adding more resources (scaling out) or by upgrading the capacity of existing resources (scaling up).
 
-### A. Horizontal Scaling
+#### A. Horizontal Scaling
 
 Horizontal scaling, also known as scaling out, involves adding more machines or nodes to a system to distribute the workload evenly. This approach allows the system to handle an increased number of requests without overloading individual nodes. Horizontal scaling is particularly useful in distributed systems because it provides a cost-effective way to manage fluctuating workloads and maintain high availability.
 
-### B. Vertical Scaling
+#### B. Vertical Scaling
 
 Vertical scaling, or scaling up, refers to increasing the capacity of individual nodes within a system. This can be achieved by upgrading the hardware, such as adding more CPU, memory, or storage. Vertical scaling can help improve the performance of a system by allowing it to handle more workloads on a single node. However, this approach has limitations, as there is a physical limit to the amount of resources that can be added to a single machine, and it can also lead to single points of failure.
 
-### Horizontal vs. Vertical Scaling
+#### Horizontal vs. Vertical Scaling
 
 With horizontal-scaling it is often easier to scale dynamically by adding more machines into the existing pool; Vertical-scaling is usually limited to the capacity of a single server and scaling beyond that capacity often involves downtime and comes with an upper limit.
 
@@ -1171,11 +1171,11 @@ graph TD
     linkStyle 0,1,2,3,4,5,6,7,8,9,10,11 stroke-width:2px,fill:none,stroke:black;
 ```
 
-## Availability
+### Availability
 
 Availability is a measure of how accessible and reliable a system is to its users. In distributed systems, high availability is crucial to ensure that the system remains operational even in the face of failures or increased demand.
 
-### Definition of High Availability
+#### Definition of High Availability
 
 High availability is often measured in terms of uptime, which is the ratio of time that a system is operational to the total time it is supposed to be operational. Achieving high availability involves minimizing planned and unplanned downtime, eliminating single points of failure, and implementing redundant systems and processes.
 
@@ -1915,7 +1915,7 @@ CDNs use DNS to direct users to the nearest edge server.
 
 ---
 
-# Caching
+## Caching
 
 ## What is Caching?
 
@@ -2749,9 +2749,9 @@ Monitor these metrics to understand cache health:
 
 ---
 
-# CDN (Content Delivery Network)
+## CDN (Content Delivery Network)
 
-## What is CDN?
+### What is CDN?
 
 A Content Delivery Network (CDN) is a geographically distributed network of servers that delivers content to users from the server closest to them. Instead of every user fetching content from a single origin server (potentially thousands of miles away), a CDN caches content at multiple "edge" locations worldwide, dramatically reducing latency and load on the origin.
 
@@ -2809,11 +2809,11 @@ flowchart TB
 
 ---
 
-## Origin Server vs. Edge Server
+### Origin Server vs. Edge Server
 
 Understanding the distinction between origin and edge servers is fundamental to CDN architecture.
 
-### Origin Server
+#### Origin Server
 
 The **origin server** is the authoritative source of truth for your content. It hosts the original, canonical version of all files and data. When content isn't available at an edge location, the CDN fetches it from the origin.
 
@@ -2862,7 +2862,7 @@ flowchart LR
     style Edge_Characteristics fill:#90EE90,stroke:#333
 ```
 
-### Comparison Table
+#### Comparison Table
 
 | Aspect | Origin Server | Edge Server |
 |--------|---------------|-------------|
@@ -2877,7 +2877,7 @@ flowchart LR
 
 ---
 
-## CDN Architecture
+### CDN Architecture
 
 A CDN's architecture determines how content flows from origin to users. Understanding this flow is critical for system design interviews.
 
@@ -2920,7 +2920,7 @@ sequenceDiagram
 
 5. **Cache MISS:** If not cached, the edge fetches from origin, caches the response, then serves the user.
 
-### CDN Components Architecture
+#### CDN Components Architecture
 
 ```mermaid
 flowchart TB
@@ -3019,11 +3019,11 @@ flowchart LR
 
 ---
 
-## Push CDN vs. Pull CDN
+### Push CDN vs. Pull CDN
 
 The two fundamental CDN models differ in **who initiates content distribution**: the origin (push) or the edge (pull). This is one of the most common CDN questions in system design interviews.
 
-### Pull CDN (Lazy Loading)
+#### Pull CDN (Lazy Loading)
 
 In a **Pull CDN**, edge servers fetch content from the origin **on-demand** when a user requests it. The first user experiences a cache miss; subsequent users get cached content.
 
