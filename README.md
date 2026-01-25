@@ -6377,3 +6377,36 @@ tampered                 when needed
 ```
 
 ---
+
+### What is Authentication?
+
+**Authentication** verifies the identity of a user or system ("Who are you?").
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Authentication Flow                           │
+└─────────────────────────────────────────────────────────────────┘
+
+User                    Server                    Database
+  │                        │                          │
+  │── Username/Password ─▶│                          │
+  │                        │── Lookup user ─────────▶│
+  │                        │◀── Hashed password ─────│
+  │                        │                          │
+  │                        │ Hash(input) == stored?  │
+  │                        │                          │
+  │◀─── Auth token ───────│  (if match)              │
+  │                        │                          │
+```
+
+**Authentication Factors:**
+
+| Factor | Type | Example |
+|--------|------|---------|
+| **Something you know** | Knowledge | Password, PIN |
+| **Something you have** | Possession | Phone, hardware key |
+| **Something you are** | Inherence | Fingerprint, face |
+
+**Multi-Factor Authentication (MFA):** Combines 2+ factors.
+
+---
