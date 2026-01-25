@@ -6445,3 +6445,42 @@ User (authenticated)              Server
 | **ReBAC** | Relationship-Based | Social networks |
 
 ---
+
+### Authentication vs. Authorization
+
+| Aspect | Authentication | Authorization |
+|--------|----------------|---------------|
+| **Question** | Who are you? | What can you do? |
+| **When** | First (login) | After authentication |
+| **Mechanism** | Passwords, tokens, biometrics | Roles, permissions, policies |
+| **HTTP Code** | 401 Unauthorized | 403 Forbidden |
+| **Example** | Login with username/password | Can user delete this file? |
+
+```
+                          Request Flow
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   Authentication    │
+                    │   "Who are you?"    │
+                    └──────────┬──────────┘
+                               │
+                    ┌──────────┴──────────┐
+                    │                     │
+               ✗ Unknown             ✓ Known
+                    │                     │
+                    ▼                     ▼
+            401 Unauthorized     ┌─────────────────────┐
+                                 │   Authorization     │
+                                 │  "Can you do this?" │
+                                 └──────────┬──────────┘
+                                            │
+                                 ┌──────────┴──────────┐
+                                 │                     │
+                            ✗ Denied              ✓ Allowed
+                                 │                     │
+                                 ▼                     ▼
+                          403 Forbidden           200 OK
+```
+
+---
