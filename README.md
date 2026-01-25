@@ -6348,3 +6348,32 @@ Neither partition has majority → system waits for network heal.
 | **Redis Sentinel** | Master handles commands; slaves replicate |
 
 ---
+
+## Security
+
+### What is Security and Privacy?
+
+**Security** protects systems from unauthorized access and attacks. **Privacy** ensures data is handled according to user expectations and regulations.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Security Pillars (CIA Triad)                  │
+└─────────────────────────────────────────────────────────────────┘
+
+        ┌─────────────────┐
+        │ Confidentiality │  ← Only authorized access
+        └────────┬────────┘
+                 │
+    ┌────────────┴────────────┐
+    │                         │
+    ▼                         ▼
+┌─────────┐             ┌───────────┐
+│Integrity│             │Availability│
+└─────────┘             └───────────┘
+    ↑                         ↑
+    │                         │
+Data not                 System accessible
+tampered                 when needed
+```
+
+---
