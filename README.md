@@ -7458,4 +7458,59 @@ Request 2                     │
 
 ---
 
+### Event-Driven vs. Polling Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Event-Driven                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+Components react to events as they occur:
+
+┌──────────┐   Event: OrderCreated   ┌─────────────┐
+│  Order   │ ────────────────────▶   │   Event     │
+│  Service │                         │   Bus       │
+└──────────┘                         └──────┬──────┘
+                                            │
+              ┌─────────────────────────────┼───────────────────┐
+              │                             │                   │
+              ▼                             ▼                   ▼
+        ┌──────────┐                 ┌──────────┐        ┌──────────┐
+        │ Inventory│                 │   Email  │        │Analytics │
+        │  Service │                 │  Service │        │ Service  │
+        └──────────┘                 └──────────┘        └──────────┘
+        
+Subscribers react immediately when events published.
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Polling                                       │
+└─────────────────────────────────────────────────────────────────┘
+
+Components periodically check for updates:
+
+┌──────────┐         ┌──────────┐
+│ Inventory│ ─poll─▶ │  Order   │   "Any new orders?"
+│  Service │ ◀─────  │  Service │   "No" (empty response)
+└──────────┘         └──────────┘
+     │
+     │ wait 5 seconds
+     │
+     │ ─poll─▶        "Any new orders?"
+     │ ◀─────         "Yes, order 123"
+     │
+     ▼
+ Process order
+```
+
+| Aspect | Event-Driven | Polling |
+|--------|--------------|---------|
+| **Latency** | Low (immediate reaction) | High (poll interval) |
+| **Efficiency** | High (only when events occur) | Low (many empty polls) |
+| **Complexity** | Higher (event bus, handlers) | Lower (simple loops) |
+| **Coupling** | Loose (via events) | Tighter (direct calls) |
+| **Debugging** | Harder (async flow) | Easier (synchronous) |
+| **Use case** | Microservices, real-time | Batch jobs, legacy integration |
+
+---
 
