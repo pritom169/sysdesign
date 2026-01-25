@@ -1,262 +1,216 @@
 # System Design Fundamentals - Walkthrough
 
-This document provides a brief walkthrough of the core system design concepts covered in the `00-sysdesign-fundementals` folder. These topics form the foundation for any system design interview or real-world distributed systems work.
+A comprehensive guide to the 44 topics covered in `00-sysdesign-fundementals`.
 
 ---
 
-## Table of Contents
+## Topics Overview
 
-1. [Load Balancing](#load-balancing)
-2. [Scalability & Distributed Systems](#scalability--distributed-systems)
-3. [Networking Fundamentals](#networking-fundamentals)
-4. [Caching](#caching)
-5. [Content Delivery Networks (CDN)](#content-delivery-networks-cdn)
-6. [Data Management & Storage](#data-management--storage)
-7. [Communication Patterns](#communication-patterns)
-8. [Distributed System Patterns](#distributed-system-patterns)
-9. [Security & Miscellaneous](#security--miscellaneous)
-
----
-
-## Load Balancing
-
-📁 **Covered in:** [01-load-balancing](00-sysdesign-fundementals/01-load-balancing/README.md) | [02-load-balancing-algorithms](00-sysdesign-fundementals/02-load-balancing-algorithms/README.md) | [03-uses-of-load-balancing](00-sysdesign-fundementals/03-uses-of-load-balancing/README.md) | [04-load-balancer-types](00-sysdesign-fundementals/04-load-balancer-types/README.md)
-
-**What it is:** Load balancing distributes incoming traffic across multiple servers to ensure high availability, reliability, and performance.
-
-**Key Concepts:**
-- **Health Checks** - Periodic tests to determine server availability
-- **Session Persistence** - Ensuring requests from the same client go to the same server
-- **SSL/TLS Termination** - Offloading decryption at the load balancer level
-
-**Algorithms:**
-| Algorithm | Best For |
-|-----------|----------|
-| Round Robin | Equal server capacity |
-| Weighted Round Robin | Varied server capacity |
-| Least Connections | Long-lived connections |
-| IP Hash | Session persistence |
-
-**Placement:** Load balancers can be placed between clients → web servers → application servers → databases.
-
----
-
-## Scalability & Distributed Systems
-
-📁 **Covered in:** [05-scalability-and-performance](00-sysdesign-fundementals/05-scalability-and-performance/README.md) | [06-key-characteristics-of-distributed-systems](00-sysdesign-fundementals/06-key-characteristics-of-distributed-systems/README.md) | [07-latency-and-performance](00-sysdesign-fundementals/07-latency-and-performance/README.md) | [08-concurrency-and-coordination](00-sysdesign-fundementals/08-concurrency-and-coordination/README.md) | [09-monitoring-and-observability](00-sysdesign-fundementals/09-monitoring-and-observability/README.md) | [10-resilience-and-error-handling](00-sysdesign-fundementals/10-resilience-and-error-handling/README.md) | [11-fault-tolerance-vs.-high-availability](00-sysdesign-fundementals/11-fault-tolerance-vs.-high-availability/README.md)
-
-**Scaling Types:**
-- **Horizontal Scaling (Scale Out)** - Add more machines (Cassandra, MongoDB)
-- **Vertical Scaling (Scale Up)** - Upgrade existing machines (MySQL)
-
-**Key Characteristics:**
-| Characteristic | Description |
-|----------------|-------------|
-| **Scalability** | Ability to handle growing workloads |
-| **Availability** | System uptime and accessibility |
-| **Reliability** | Consistent performance over time |
-| **Efficiency** | Resource utilization and latency |
-| **Manageability** | Ease of operation and maintenance |
-
-**Consistency Models:**
-- **Strong** - All nodes see the same data at all times
-- **Weak** - Temporary inconsistencies allowed
-- **Eventual** - All replicas converge over time
+| # | Topic | Folder | Key Concept |
+|---|-------|--------|-------------|
+| 01 | Load Balancing | [01-load-balancing](00-sysdesign-fundementals/01-load-balancing/README.md) | Distributes traffic across servers for availability |
+| 02 | Load Balancing Algorithms | [02-load-balancing-algorithms](00-sysdesign-fundementals/02-load-balancing-algorithms/README.md) | Round Robin, Least Connections, IP Hash, Weighted |
+| 03 | Uses of Load Balancing | [03-uses-of-load-balancing](00-sysdesign-fundementals/03-uses-of-load-balancing/README.md) | Web tier, app tier, database tier placement |
+| 04 | Load Balancer Types | [04-load-balancer-types](00-sysdesign-fundementals/04-load-balancer-types/README.md) | L4 (transport) vs L7 (application) load balancers |
+| 05 | Scalability and Performance | [05-scalability-and-performance](00-sysdesign-fundementals/05-scalability-and-performance/README.md) | Horizontal vs vertical scaling strategies |
+| 06 | Key Characteristics of Distributed Systems | [06-key-characteristics-of-distributed-systems](00-sysdesign-fundementals/06-key-characteristics-of-distributed-systems/README.md) | Scalability, availability, reliability, efficiency |
+| 07 | Latency and Performance | [07-latency-and-performance](00-sysdesign-fundementals/07-latency-and-performance/README.md) | Response time optimization techniques |
+| 08 | Concurrency and Coordination | [08-concurrency-and-coordination](00-sysdesign-fundementals/08-concurrency-and-coordination/README.md) | Locks, semaphores, distributed coordination |
+| 09 | Monitoring and Observability | [09-monitoring-and-observability](00-sysdesign-fundementals/09-monitoring-and-observability/README.md) | Metrics, logging, tracing, alerting |
+| 10 | Resilience and Error Handling | [10-resilience-and-error-handling](00-sysdesign-fundementals/10-resilience-and-error-handling/README.md) | Circuit breakers, retries, fallbacks |
+| 11 | Fault Tolerance vs High Availability | [11-fault-tolerance-vs.-high-availability](00-sysdesign-fundementals/11-fault-tolerance-vs.-high-availability/README.md) | Redundancy, failover, recovery strategies |
+| 12 | Network Essentials | [12-network-essentials](00-sysdesign-fundementals/12-network-essentials/README.md) | OSI model, protocols, networking basics |
+| 13 | TCP vs UDP | [13-tcp-vs.-udp](00-sysdesign-fundementals/13-tcp-vs.-udp/README.md) | Connection-oriented vs connectionless protocols |
+| 14 | URL vs URI vs URN | [14-url-vs.-uri-vs.-urn](00-sysdesign-fundementals/14-url-vs.-uri-vs.-urn/README.md) | Resource identification and addressing |
+| 15 | DNS | [15-dns-(domain-name-system)](00-sysdesign-fundementals/15-dns-(domain-name-system)/README.md) | Domain name resolution, DNS hierarchy |
+| 16 | Caching | [16-caching](00-sysdesign-fundementals/16-caching/README.md) | Introduction to caching concepts |
+| 17 | What is Caching | [17-what-is-caching](00-sysdesign-fundementals/17-what-is-caching/README.md) | Cache fundamentals and benefits |
+| 18 | Cache Strategies | [18-cache-strategies](00-sysdesign-fundementals/18-cache-strategies/README.md) | Write-through, write-behind, cache-aside |
+| 19 | Cache Invalidation | [19-cache-invalidation](00-sysdesign-fundementals/19-cache-invalidation/README.md) | TTL, event-based, manual invalidation |
+| 20 | Cache Eviction Policies | [20-cache-eviction-policies](00-sysdesign-fundementals/20-cache-eviction-policies/README.md) | LRU, LFU, FIFO, TTL-based eviction |
+| 21 | Caching Challenges | [21-caching-challenges](00-sysdesign-fundementals/21-caching-challenges/README.md) | Thundering herd, cold start, coherence |
+| 22 | Distributed Caching | [22-distributed-caching](00-sysdesign-fundementals/22-distributed-caching/README.md) | Redis, Memcached, distributed cache patterns |
+| 23 | Cache Performance Metrics | [23-cache-performance-metrics](00-sysdesign-fundementals/23-cache-performance-metrics/README.md) | Hit ratio, miss ratio, latency metrics |
+| 24 | Interview Checklist | [24-interview-checklist](00-sysdesign-fundementals/24-interview-checklist/README.md) | Caching interview preparation guide |
+| 25 | CDN | [25-cdn-(content-delivery-network)](00-sysdesign-fundementals/25-cdn-(content-delivery-network)/README.md) | Geographically distributed content delivery |
+| 26 | CDN Use Cases and Content Types | [26-cdn-use-cases-and-content-types](00-sysdesign-fundementals/26-cdn-use-cases-and-content-types/README.md) | Static assets, video streaming, API caching |
+| 27 | CDN Challenges | [27-cdn-challenges](00-sysdesign-fundementals/27-cdn-challenges/README.md) | Cache invalidation, cost, origin protection |
+| 28 | CDN Interview Checklist | [28-cdn-interview-checklist](00-sysdesign-fundementals/28-cdn-interview-checklist/README.md) | CDN interview preparation guide |
+| 29 | Data Partitioning | [29-data-partitioning](00-sysdesign-fundementals/29-data-partitioning/README.md) | Horizontal, vertical, directory-based sharding |
+| 30 | Redundancy and Replication | [30-redundancy-and-replication](00-sysdesign-fundementals/30-redundancy-and-replication/README.md) | Data copies for availability and durability |
+| 31 | Proxy Servers | [31-proxy-servers](00-sysdesign-fundementals/31-proxy-servers/README.md) | Forward proxy, reverse proxy, use cases |
+| 32 | CAP Theorem | [32-cap-theorem](00-sysdesign-fundementals/32-cap-theorem/README.md) | Consistency, Availability, Partition Tolerance |
+| 33 | Databases | [33-databases](00-sysdesign-fundementals/33-databases/README.md) | SQL vs NoSQL, ACID vs BASE, database types |
+| 34 | Database Indexing | [34-database-indexing](00-sysdesign-fundementals/34-database-indexing/README.md) | B-tree, hash indexes, query optimization |
+| 35 | Bloom Filters | [35-bloom-filters](00-sysdesign-fundementals/35-bloom-filters/README.md) | Probabilistic data structure for membership |
+| 36 | Long Polling vs WebSockets vs SSE | [36-long-polling-vs.-websockets-vs.-server-sent-events](00-sysdesign-fundementals/36-long-polling-vs.-websockets-vs.-server-sent-events/README.md) | Real-time communication patterns |
+| 37 | Quorum | [37-quorum](00-sysdesign-fundementals/37-quorum/README.md) | Minimum nodes for consensus (W + R > N) |
+| 38 | Heartbeat | [38-heartbeat](00-sysdesign-fundementals/38-heartbeat/README.md) | Failure detection via periodic signals |
+| 39 | Checksum | [39-checksum](00-sysdesign-fundementals/39-checksum/README.md) | Data integrity verification |
+| 40 | Leader and Follower | [40-leader-and-follower](00-sysdesign-fundementals/40-leader-and-follower/README.md) | Leader election, replication patterns |
+| 41 | Security | [41-security](00-sysdesign-fundementals/41-security/README.md) | Auth, encryption, rate limiting, API security |
+| 42 | Distributed Messaging System | [42-distributed-messaging-system](00-sysdesign-fundementals/42-distributed-messaging-system/README.md) | Message queues, pub/sub, Kafka, RabbitMQ |
+| 43 | Distributed File Systems | [43-distributed-file-systems](00-sysdesign-fundementals/43-distributed-file-systems/README.md) | HDFS, GFS, data replication |
+| 44 | Misc Concepts | [44-misc-concepts](00-sysdesign-fundementals/44-misc-concepts/README.md) | Additional system design concepts |
 
 ---
 
-## Networking Fundamentals
+## Topics by Category
 
-📁 **Covered in:** [12-network-essentials](00-sysdesign-fundementals/12-network-essentials/README.md) | [13-tcp-vs.-udp](00-sysdesign-fundementals/13-tcp-vs.-udp/README.md) | [14-url-vs.-uri-vs.-urn](00-sysdesign-fundementals/14-url-vs.-uri-vs.-urn/README.md) | [15-dns-(domain-name-system)](00-sysdesign-fundementals/15-dns-(domain-name-system)/README.md)
+### Load Balancing
 
-**TCP vs UDP:**
-| Aspect | TCP | UDP |
-|--------|-----|-----|
-| Connection | Connection-oriented | Connectionless |
-| Reliability | Guaranteed delivery | Best effort |
-| Use Cases | Web, email, file transfer | Streaming, gaming, DNS |
+| Topic | Key Points | When to Use |
+|-------|------------|-------------|
+| [Load Balancing](00-sysdesign-fundementals/01-load-balancing/README.md) | Distributes traffic, health checks, session persistence | Any multi-server architecture |
+| [Algorithms](00-sysdesign-fundementals/02-load-balancing-algorithms/README.md) | Round Robin, Weighted, Least Connections, IP Hash | Based on server capacity and session needs |
+| [Uses](00-sysdesign-fundementals/03-uses-of-load-balancing/README.md) | Web tier, app tier, DB tier placement | At every layer for full redundancy |
+| [Types](00-sysdesign-fundementals/04-load-balancer-types/README.md) | L4 (transport), L7 (application) | L4 for speed, L7 for content-based routing |
 
-**DNS (Domain Name System):**
-- Translates domain names to IP addresses
-- Hierarchical structure: Root → TLD → Authoritative
-- Caching at multiple levels for performance
+### Scalability & System Characteristics
 
----
+| Topic | Key Points | Trade-offs |
+|-------|------------|------------|
+| [Scalability](00-sysdesign-fundementals/05-scalability-and-performance/README.md) | Horizontal (add machines) vs Vertical (bigger machine) | Cost vs complexity |
+| [Distributed System Characteristics](00-sysdesign-fundementals/06-key-characteristics-of-distributed-systems/README.md) | Scalability, availability, reliability, efficiency | Balance based on requirements |
+| [Latency](00-sysdesign-fundementals/07-latency-and-performance/README.md) | Network, processing, queue delays | Speed vs consistency |
+| [Concurrency](00-sysdesign-fundementals/08-concurrency-and-coordination/README.md) | Locks, semaphores, distributed coordination | Throughput vs correctness |
+| [Monitoring](00-sysdesign-fundementals/09-monitoring-and-observability/README.md) | Metrics, logs, traces, alerts | Visibility vs overhead |
+| [Resilience](00-sysdesign-fundementals/10-resilience-and-error-handling/README.md) | Circuit breakers, retries, fallbacks | Availability vs complexity |
+| [Fault Tolerance vs HA](00-sysdesign-fundementals/11-fault-tolerance-vs.-high-availability/README.md) | Redundancy, failover, recovery | Cost vs uptime guarantee |
 
-## Caching
+### Networking
 
-📁 **Covered in:** [16-caching](00-sysdesign-fundementals/16-caching/README.md) through [24-interview-checklist](00-sysdesign-fundementals/24-interview-checklist/README.md)
+| Topic | Key Points | Use Case |
+|-------|------------|----------|
+| [Network Essentials](00-sysdesign-fundementals/12-network-essentials/README.md) | OSI model, IP, ports, protocols | Foundation for all networking |
+| [TCP vs UDP](00-sysdesign-fundementals/13-tcp-vs.-udp/README.md) | TCP: reliable, ordered; UDP: fast, unreliable | TCP for web; UDP for streaming/gaming |
+| [URL vs URI vs URN](00-sysdesign-fundementals/14-url-vs.-uri-vs.-urn/README.md) | URI = identifier; URL = locator; URN = name | Resource addressing |
+| [DNS](00-sysdesign-fundementals/15-dns-(domain-name-system)/README.md) | Domain → IP resolution, hierarchy, caching | Every web request |
 
-**What it is:** Storing frequently accessed data in fast storage (memory) to reduce latency and database load.
+### Caching
 
-**Cache Strategies:**
-| Strategy | Write Behavior | Read Behavior |
-|----------|---------------|---------------|
-| **Cache-Aside** | App manages both | Read: cache first, then DB |
-| **Write-Through** | Write to cache + DB | Read: from cache |
-| **Write-Behind** | Write to cache, async to DB | Read: from cache |
-| **Read-Through** | Cache loads from DB | Read: cache handles miss |
+| Topic | Key Points | When to Apply |
+|-------|------------|---------------|
+| [Caching Intro](00-sysdesign-fundementals/16-caching/README.md) | Store frequently accessed data in fast storage | Read-heavy workloads |
+| [What is Caching](00-sysdesign-fundementals/17-what-is-caching/README.md) | Reduces latency, lowers DB load | High-traffic systems |
+| [Strategies](00-sysdesign-fundementals/18-cache-strategies/README.md) | Cache-aside, write-through, write-behind, read-through | Based on read/write patterns |
+| [Invalidation](00-sysdesign-fundementals/19-cache-invalidation/README.md) | TTL, event-based, manual purge | When data changes |
+| [Eviction Policies](00-sysdesign-fundementals/20-cache-eviction-policies/README.md) | LRU, LFU, FIFO, TTL | When cache is full |
+| [Challenges](00-sysdesign-fundementals/21-caching-challenges/README.md) | Thundering herd, cold start, coherence | Distributed systems |
+| [Distributed Caching](00-sysdesign-fundementals/22-distributed-caching/README.md) | Redis, Memcached clusters | Multi-node deployments |
+| [Performance Metrics](00-sysdesign-fundementals/23-cache-performance-metrics/README.md) | Hit ratio, miss ratio, latency | Monitoring cache health |
 
-**Eviction Policies:**
-- **LRU** (Least Recently Used) - Most common
-- **LFU** (Least Frequently Used)
-- **FIFO** (First In, First Out)
-- **TTL** (Time To Live)
+### CDN (Content Delivery Network)
 
-**Cache Invalidation Challenges:**
-- Cache coherence across distributed nodes
-- Thundering herd problem
-- Cold start issues
+| Topic | Key Points | Best For |
+|-------|------------|----------|
+| [CDN Basics](00-sysdesign-fundementals/25-cdn-(content-delivery-network)/README.md) | Geographically distributed cache servers | Global user base |
+| [Use Cases](00-sysdesign-fundementals/26-cdn-use-cases-and-content-types/README.md) | Static assets, video, API responses | Media-heavy applications |
+| [Challenges](00-sysdesign-fundementals/27-cdn-challenges/README.md) | Invalidation, cost, cache poisoning | Large-scale deployments |
 
----
+### Data Management
 
-## Content Delivery Networks (CDN)
+| Topic | Key Points | When to Use |
+|-------|------------|-------------|
+| [Data Partitioning](00-sysdesign-fundementals/29-data-partitioning/README.md) | Horizontal, vertical, hash-based, range-based | Data exceeds single node |
+| [Redundancy & Replication](00-sysdesign-fundementals/30-redundancy-and-replication/README.md) | Primary-replica, multi-master, sync vs async | HA and disaster recovery |
+| [Proxy Servers](00-sysdesign-fundementals/31-proxy-servers/README.md) | Forward (client-side), reverse (server-side) | Security, caching, load distribution |
+| [CAP Theorem](00-sysdesign-fundementals/32-cap-theorem/README.md) | Pick 2: Consistency, Availability, Partition Tolerance | Distributed database design |
+| [Databases](00-sysdesign-fundementals/33-databases/README.md) | SQL (ACID) vs NoSQL (BASE), types | Based on data model and scale |
+| [Indexing](00-sysdesign-fundementals/34-database-indexing/README.md) | B-tree, hash, composite indexes | Query optimization |
+| [Bloom Filters](00-sysdesign-fundementals/35-bloom-filters/README.md) | Probabilistic membership test | Avoiding expensive lookups |
 
-📁 **Covered in:** [25-cdn-(content-delivery-network)](00-sysdesign-fundementals/25-cdn-(content-delivery-network)/README.md) | [26-cdn-use-cases-and-content-types](00-sysdesign-fundementals/26-cdn-use-cases-and-content-types/README.md) | [27-cdn-challenges](00-sysdesign-fundementals/27-cdn-challenges/README.md) | [28-cdn-interview-checklist](00-sysdesign-fundementals/28-cdn-interview-checklist/README.md)
+### Communication Patterns
 
-**What it is:** Geographically distributed network of servers that cache content closer to users.
+| Pattern | Direction | Latency | Best For |
+|---------|-----------|---------|----------|
+| [Long Polling](00-sysdesign-fundementals/36-long-polling-vs.-websockets-vs.-server-sent-events/README.md) | Client → Server | Higher | Simple real-time (notifications) |
+| [WebSockets](00-sysdesign-fundementals/36-long-polling-vs.-websockets-vs.-server-sent-events/README.md) | Bidirectional | Lowest | Chat, gaming, collaboration |
+| [SSE](00-sysdesign-fundementals/36-long-polling-vs.-websockets-vs.-server-sent-events/README.md) | Server → Client | Low | Live feeds, dashboards |
 
-**Content Types:**
-- Static: Images, CSS, JS, videos
-- Dynamic: API responses (with short TTL)
+### Distributed System Patterns
 
-**Key Benefits:**
-- Reduced latency (geographic proximity)
-- Lower origin server load
-- DDoS protection
-- High availability
+| Pattern | Purpose | Example Use |
+|---------|---------|-------------|
+| [Quorum](00-sysdesign-fundementals/37-quorum/README.md) | Consensus for reads/writes (W + R > N) | Distributed databases |
+| [Heartbeat](00-sysdesign-fundementals/38-heartbeat/README.md) | Failure detection via periodic signals | Cluster health monitoring |
+| [Checksum](00-sysdesign-fundementals/39-checksum/README.md) | Data integrity verification | Replication, file transfer |
+| [Leader-Follower](00-sysdesign-fundementals/40-leader-and-follower/README.md) | Single writer, multiple readers | Database replication |
 
----
+### Security & Systems
 
-## Data Management & Storage
-
-📁 **Covered in:** [29-data-partitioning](00-sysdesign-fundementals/29-data-partitioning/README.md) | [30-redundancy-and-replication](00-sysdesign-fundementals/30-redundancy-and-replication/README.md) | [31-proxy-servers](00-sysdesign-fundementals/31-proxy-servers/README.md) | [32-cap-theorem](00-sysdesign-fundementals/32-cap-theorem/README.md) | [33-databases](00-sysdesign-fundementals/33-databases/README.md) | [34-database-indexing](00-sysdesign-fundementals/34-database-indexing/README.md) | [35-bloom-filters](00-sysdesign-fundementals/35-bloom-filters/README.md)
-
-### CAP Theorem
-
-A distributed system can only guarantee **two of three** properties:
-- **Consistency** - Every read gets the latest write
-- **Availability** - Every request gets a response
-- **Partition Tolerance** - System works despite network failures
-
-**Reality:** P is mandatory in distributed systems. The real choice is C vs A during partitions.
-
-| System Type | Examples | Use Case |
-|-------------|----------|----------|
-| **CP** | Zookeeper, etcd, MongoDB | Financial data, locks |
-| **AP** | Cassandra, DynamoDB | Shopping carts, social feeds |
-
-### Databases
-
-**SQL vs NoSQL:**
-| Aspect | SQL | NoSQL |
-|--------|-----|-------|
-| Schema | Fixed | Flexible |
-| Scaling | Vertical | Horizontal |
-| Transactions | ACID | BASE |
-| Best For | Complex queries | Scale, flexibility |
-
-**NoSQL Types:**
-- **Document** (MongoDB) - JSON documents
-- **Key-Value** (Redis) - Simple key-based access
-- **Column-Family** (Cassandra) - Time-series, analytics
-- **Graph** (Neo4j) - Relationship-heavy data
-
-### Data Partitioning (Sharding)
-
-**Methods:**
-- **Horizontal** - Split rows across shards
-- **Vertical** - Split columns/tables
-- **Directory-based** - Lookup service determines shard
-
-**Partitioning Schemes:**
-- Hash-based (consistent hashing)
-- Range-based
-- Geographic
+| Topic | Key Points | Importance |
+|-------|------------|------------|
+| [Security](00-sysdesign-fundementals/41-security/README.md) | AuthN/AuthZ, encryption, rate limiting | Every production system |
+| [Distributed Messaging](00-sysdesign-fundementals/42-distributed-messaging-system/README.md) | Queues (RabbitMQ), Pub/Sub (Kafka) | Async, decoupled systems |
+| [Distributed File Systems](00-sysdesign-fundementals/43-distributed-file-systems/README.md) | HDFS, GFS architecture | Big data storage |
+| [Misc Concepts](00-sysdesign-fundementals/44-misc-concepts/README.md) | Additional patterns and concepts | Supplementary knowledge |
 
 ---
 
-## Communication Patterns
+## Quick Reference Tables
 
-📁 **Covered in:** [36-long-polling-vs.-websockets-vs.-server-sent-events](00-sysdesign-fundementals/36-long-polling-vs.-websockets-vs.-server-sent-events/README.md)
+### CAP Theorem Decision Matrix
 
-| Pattern | Direction | Use Case |
-|---------|-----------|----------|
-| **Long Polling** | Client → Server | Simple real-time (notifications) |
-| **WebSockets** | Bidirectional | Chat, gaming, live collaboration |
-| **Server-Sent Events** | Server → Client | Live feeds, dashboards |
+| Scenario | Choose | Reason |
+|----------|--------|--------|
+| Bank transactions | CP | Wrong balance = money lost |
+| Shopping cart | AP | Unavailable cart = lost sale |
+| Distributed lock | CP | Two holders = data corruption |
+| Social media likes | AP | Stale count is acceptable |
+| Inventory (last item) | CP | Overselling = nightmare |
+| User session | AP | Logged out = bad UX |
 
----
+### Database Selection Guide
 
-## Distributed System Patterns
+| Requirement | Database Type | Examples |
+|-------------|---------------|----------|
+| ACID transactions | SQL | PostgreSQL, MySQL |
+| Flexible schema | Document | MongoDB, CouchDB |
+| Simple key-value | Key-Value | Redis, DynamoDB |
+| Time-series/analytics | Column | Cassandra, HBase |
+| Relationship traversal | Graph | Neo4j, Neptune |
 
-📁 **Covered in:** [37-quorum](00-sysdesign-fundementals/37-quorum/README.md) | [38-heartbeat](00-sysdesign-fundementals/38-heartbeat/README.md) | [39-checksum](00-sysdesign-fundementals/39-checksum/README.md) | [40-leader-and-follower](00-sysdesign-fundementals/40-leader-and-follower/README.md)
+### Cache Strategy Selection
 
-### Quorum
-Minimum number of nodes that must agree for an operation to succeed.
-- **Formula:** `W + R > N` guarantees consistency
-- N = total replicas, W = write acknowledgments, R = read nodes
+| Pattern | Write | Read | Best For |
+|---------|-------|------|----------|
+| Cache-Aside | App writes to DB | Check cache, then DB | General purpose |
+| Write-Through | Cache + DB together | From cache | Strong consistency |
+| Write-Behind | Cache first, async DB | From cache | Write-heavy |
+| Read-Through | Cache handles miss | From cache | Read-heavy |
 
-### Heartbeat
-Periodic signals between nodes to detect failures.
-- Failure detection through missed heartbeats
-- Enables automatic failover
+### Scaling Comparison
 
-### Checksum
-Data integrity verification using hash functions.
-- Detects data corruption during transfer/storage
-- Used in replication, networking, storage systems
-
-### Leader-Follower
-One node (leader) handles writes; followers replicate and serve reads.
-- Leader election on failure (Raft, Paxos)
-- Trade-off between consistency and availability
-
----
-
-## Security & Miscellaneous
-
-📁 **Covered in:** [41-security](00-sysdesign-fundementals/41-security/README.md) | [42-distributed-messaging-system](00-sysdesign-fundementals/42-distributed-messaging-system/README.md) | [43-distributed-file-systems](00-sysdesign-fundementals/43-distributed-file-systems/README.md) | [44-misc-concepts](00-sysdesign-fundementals/44-misc-concepts/README.md)
-
-### Security Essentials
-- Authentication vs Authorization
-- Encryption (at rest, in transit)
-- Rate limiting and DDoS protection
-- API security (OAuth, JWT, API keys)
-
-### Distributed Messaging
-- **Message Queues** (RabbitMQ, SQS) - Point-to-point
-- **Pub/Sub** (Kafka, SNS) - One-to-many
-- Guarantees: At-most-once, at-least-once, exactly-once
-
-### Distributed File Systems
-- HDFS, GFS architecture
-- Data replication and fault tolerance
-- Metadata management
+| Aspect | Horizontal | Vertical |
+|--------|------------|----------|
+| Method | Add more machines | Upgrade machine |
+| Cost | Linear | Exponential |
+| Limit | Theoretically unlimited | Hardware ceiling |
+| Complexity | Higher (distributed) | Lower |
+| Downtime | No | Usually required |
+| Examples | Cassandra, MongoDB | MySQL, traditional DBs |
 
 ---
 
-## Quick Reference: Interview Priorities
+## Interview Priority Guide
 
-| Priority | Topic | Why It Matters |
-|----------|-------|----------------|
-| 🔴 High | CAP Theorem | Foundation of distributed systems trade-offs |
-| 🔴 High | Databases (SQL/NoSQL) | Every system needs data storage |
-| 🔴 High | Caching | Critical for performance at scale |
-| 🔴 High | Load Balancing | Essential for availability |
-| 🟡 Medium | Data Partitioning | Required for horizontal scaling |
-| 🟡 Medium | Replication | High availability and disaster recovery |
-| 🟡 Medium | Messaging Systems | Async communication, decoupling |
-| 🟢 Lower | CDN | Important but often abstracted |
-| 🟢 Lower | Bloom Filters | Specific use cases |
+| Priority | Topics | Why |
+|----------|--------|-----|
+| 🔴 **Critical** | CAP Theorem, Databases, Caching, Load Balancing | Core concepts in every interview |
+| 🟠 **High** | Data Partitioning, Replication, Consistency Models | Required for scaling discussions |
+| 🟡 **Medium** | Messaging Systems, Communication Patterns, Monitoring | Common in real-world systems |
+| 🟢 **Good to Know** | CDN, Bloom Filters, Checksums | Specific but useful |
 
 ---
 
-## How to Use This Material
+## Study Path
 
-1. **Start with fundamentals:** Load balancing, caching, databases
-2. **Understand trade-offs:** CAP theorem, consistency models
-3. **Learn patterns:** Quorum, leader-follower, heartbeat
-4. **Practice application:** Apply concepts to real system design problems
-
-Each topic folder contains detailed explanations with diagrams, examples, and interview-specific insights.
+| Step | Focus Area | Topics |
+|------|------------|--------|
+| 1 | Fundamentals | Load Balancing, Caching, Databases |
+| 2 | Trade-offs | CAP Theorem, Consistency Models, ACID vs BASE |
+| 3 | Scaling | Partitioning, Replication, Horizontal Scaling |
+| 4 | Patterns | Quorum, Leader-Follower, Heartbeat |
+| 5 | Communication | WebSockets, Messaging, Pub/Sub |
+| 6 | Infrastructure | CDN, DNS, Proxy Servers |
