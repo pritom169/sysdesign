@@ -6410,3 +6410,38 @@ User                    Server                    Database
 **Multi-Factor Authentication (MFA):** Combines 2+ factors.
 
 ---
+
+### What is Authorization?
+
+**Authorization** determines what an authenticated user can do ("What can you access?").
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Authorization Flow                            │
+└─────────────────────────────────────────────────────────────────┘
+
+User (authenticated)              Server
+        │                            │
+        │── Request: DELETE /users ─▶│
+        │                            │
+        │                    Check permissions:
+        │                    ┌──────────────────────┐
+        │                    │ User role: "editor"  │
+        │                    │ Required: "admin"    │
+        │                    │ "editor" ⊄ "admin"   │
+        │                    └──────────────────────┘
+        │                            │
+        │◀── 403 Forbidden ─────────│
+        │                            │
+```
+
+**Common Authorization Models:**
+
+| Model | Description | Use Case |
+|-------|-------------|----------|
+| **RBAC** | Role-Based Access Control | Most applications |
+| **ABAC** | Attribute-Based (user, resource, context) | Complex policies |
+| **ACL** | Access Control Lists per resource | File systems |
+| **ReBAC** | Relationship-Based | Social networks |
+
+---
