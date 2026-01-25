@@ -6484,3 +6484,79 @@ User (authenticated)              Server
 ```
 
 ---
+
+### OAuth vs. JWT for Authentication
+
+**OAuth 2.0** is an authorization framework. **JWT** is a token format. They serve different purposes but are often used together.
+
+#### OAuth 2.0
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              OAuth 2.0 Authorization Code Flow                   │
+└─────────────────────────────────────────────────────────────────┘
+
+User          App              Auth Server         Resource Server
+ │             │                    │                     │
+ │── Login ──▶│                    │                     │
+ │             │── Redirect ──────▶│                     │
+ │◀────────────────── Login Page ──│                     │
+ │── Credentials ─────────────────▶│                     │
+ │◀───────── Authorization Code ───│                     │
+ │             │◀── Code ──────────│                     │
+ │             │                    │                     │
+ │             │── Code + Secret ─▶│                     │
+ │             │◀── Access Token ──│                     │
+ │             │                    │                     │
+ │             │── Request + Token ─────────────────────▶│
+ │             │◀── Protected Data ──────────────────────│
+ │◀── Data ───│                    │                     │
+```
+
+**OAuth 2.0 Roles:**
+- **Resource Owner:** User
+- **Client:** Application requesting access
+- **Authorization Server:** Issues tokens
+- **Resource Server:** Holds protected resources
+
+#### JWT (JSON Web Token)
+
+```
+JWT Structure:
+┌─────────────────────────────────────────────────────────────────┐
+│  Header          Payload            Signature                    │
+│  (algorithm)     (claims)           (verification)               │
+│                                                                  │
+│  eyJhbGc...  .  eyJzdWI...   .   SflKxwRJSM...                  │
+│  ─────────      ───────────       ─────────────                  │
+│  Base64URL      Base64URL         HMAC/RSA                       │
+└─────────────────────────────────────────────────────────────────┘
+
+Decoded:
+{                          {
+  "alg": "HS256",            "sub": "user123",
+  "typ": "JWT"               "name": "John",
+}                            "exp": 1735689600,
+                             "roles": ["admin"]
+                           }
+```
+
+**JWT Properties:**
+- Self-contained (no database lookup needed)
+- Stateless (server doesn't store sessions)
+- Signed (tamper-evident)
+- Optionally encrypted
+
+#### Comparison
+
+| Aspect | OAuth 2.0 | JWT |
+|--------|-----------|-----|
+| **What it is** | Authorization framework | Token format |
+| **Purpose** | Delegated access | Encode claims |
+| **Stateful?** | Can be either | Stateless |
+| **Revocation** | Easy (invalidate at server) | Hard (until expiry) |
+| **Used for** | Third-party access, SSO | Session tokens, API auth |
+
+**Common Pattern:** OAuth issues JWTs as access tokens.
+
+---
